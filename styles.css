@@ -106,7 +106,6 @@ h1 {
     color: white;
     text-decoration: none;
     border-radius: 5px;
-    transition: background 0.3s;
 }
 
 .game-card a:hover {
