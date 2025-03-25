@@ -112,18 +112,6 @@ h1 {
     background: #45a049;
 }
 
-footer {
-    text-align: center;
-    padding: 10px;
-    position: block;
-    bottom: 0;
-    width: 9O%;
-
-    background-color: #1f1f1f;
-    color: #777;
-    font-size: 14px;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .game-card img {
