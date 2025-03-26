@@ -3,7 +3,7 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     width: 100%;
-    height: 100vh;
+    height: 1000vh;
     overflow: hidden;
     --color: rgba(253, 190, 241, 0.538);
   background-color: #181a18;
