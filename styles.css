@@ -24,26 +24,11 @@ header {
     padding: 1px;
 }
 
-header button{
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    text-decoration:double;
-    padding: 10px 20px;
-    text-align: center;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    display: inline-block;
-    align-items: center;
-    justify-content: center;
-}
 
 
 .contenedor-juegos {
     max-width: 1200px;
+    height: 100vh;
     margin: 20px auto;
     padding: 10px;
     border-radius: 10px;
@@ -59,7 +44,7 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
-    max-height: 600px; /* Altura máxima del contenedor */
+    max-height: 100%; /* Altura máxima del contenedor */
     overflow-y: auto; /* Permitir desplazamiento vertical */
     overflow-x: hidden; /* Ocultar desplazamiento horizontal */
 }
