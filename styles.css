@@ -60,7 +60,7 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
-    max-height: 50vh; /* Altura máxima del contenedor */
+    max-height: 100vh; /* Altura máxima del contenedor */
     overflow-y: hidden; /* Permitir desplazamiento vertical */
     overflow-x: hidden; /* Ocultar desplazamiento horizontal */
 }
