@@ -12,11 +12,6 @@ body {
   background-size: 55px 55px;
 }
   
-
-
-
-
-
 header {
     background-color: #3e3d3db4;
     color: white;
@@ -24,11 +19,9 @@ header {
     padding: 1px;
 }
 
-
-
 .contenedor-juegos {
     max-width: 1200px;
-    height: 100vh;
+    max-height: 100vh;
     margin: 20px auto;
     padding: 10px;
     border-radius: 10px;
