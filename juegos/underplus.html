@@ -7,21 +7,33 @@
     <title>es un mod</title>
 
     <style>
-        /* General Styles */
-        body {
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #121212;
-            color: #f4f4f4;
-        }
+        /* Estilo general */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    --color: rgba(253, 190, 241, 0.538);
+    background-color: #000;
+    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+        linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+    background-size: 55px 55px;
+    min-width: 100vh;
+    overflow: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
 
-        header {
-            background-color: #1f1f1f;
-            color: #4CAF50;
-            text-align: center;
-            padding: 15px 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
+        /* Header con gradiente */
+.header {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    text-align: center;
+    padding: 20px;
+    color: #4CAF50;
+}
 
         .container {
             max-width: 900px;
@@ -30,10 +42,31 @@
             text-align: center;
         }
 
-        h1 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
+        /* Área principal del contenido */
+.content {
+    flex: 1; /* Esto hace que el contenido principal se expanda para llenar el espacio disponible */
+    padding: 20px;
+    text-align: center;
+    color:#fff;
+}
+
+
+
+/* Contenedor principal */
+.container {
+    backdrop-filter: blur(5px);
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.473);
+    border-radius: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.container p, h2, h3 {
+    color: #fff;
+}
 
         /* Carousel Styles */
         .carousel {
@@ -81,53 +114,62 @@
             right: 10px;
         }
 
-        .button-group {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
 
-        .button {
-            padding: 15px 25px;
-            font-size: 16px;
-            color: white;
-            background: #4CAF50;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-        }
+/* Botones */
+.button-group {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
 
-        .button:hover {
-            background: #45a049;
-            transform: scale(1.05);
-        }
+.button {
+    padding: 15px 25px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: transform 0.3s, background 0.3s;
+}
 
-        .button-secondary {
-            background: #555;
-        }
+.button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow:blueviolet;
+}
 
-        .button-secondary:hover {
-            background: #666;
-        }
+.button-secondary {
+    padding: 15px 25px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: transform 0.3s, background 0.3s;
+}
 
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 10px;
-            background-color: #1f1f1f;
-            color: #777;
-            font-size: 14px;
-        }
+.button-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    transform: scale(1.05);
+}
+
+        /* Footer */
+.footer {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
     </style>
 </head>
 <body>
-    <header>
-        <h1>Descarga Juegos</h1>
+    <header class="header">
+        <h1>Jueguitos Piola</h1>
     </header>
-
+<div class="content">
     <div class="container">
         <h1>Undertale Plus</h1>
 
@@ -147,13 +189,14 @@
 
         <div class="button-group">
             <a href="https://gamejolt.com/games/undertaleplus/895064" target="_blank" class="button">Más info</a>
-            <a href="https://hugoaleolguin.github.io/jueguitos-piola/" class="button button-secondary">Volver</a>
+            <a href="https://hugoaleolguin.github.io/jueguitos-piola/" class="button-secondary">Volver</a>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2025 Jueguitos Piola. Ningún derecho reservado.</p>
-    </footer>
+</div>
+<footer class="footer">
+    © 2025 Jueguitos Piola. Ningún derecho reservado.
+</footer>
 
     <script>
         let currentIndex = 0;
