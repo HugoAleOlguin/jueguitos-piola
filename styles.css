@@ -3,8 +3,7 @@ html, body {
     padding: 0;
     height: 100%;
     font-family: Arial, sans-serif;
-    width: 100%;
-    min-width: 100vh;
+    width: 100vw;
     overflow:auto;
     overflow-x: hidden;
     --color: rgba(253, 190, 241, 0.538);
@@ -127,3 +126,40 @@ header {
     text-align: center;
     padding: 10px 0;
 }
+
+/* Estilos para dispositivos pequeños */
+@media (max-width: 768px) {
+        
+
+
+    .contenedor-juegos {
+      max-width: 95%; /* Cambia el ancho máximo para que sea relativo a la pantalla */
+      padding: 10px;
+      overflow-x: hidden; /* Aseguramos que no haya desbordamiento horizontal */
+    }
+  
+    .game-list {
+    max-width: 95%;
+      grid-template-columns: repeat(auto-fit, minmax(auto-fit, 1fr)); /* Reduce el tamaño mínimo de las columnas */
+      gap: 5px; /* Reduce el espacio entre las tarjetas */
+    }
+  
+    .game-card {
+      padding: 10px;
+      box-shadow: none; /* Simplifica las sombras para pantallas pequeñas */
+    }
+  }
+  
+  /* Estilos para tablets */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .contenedor-juegos {
+      max-width: 90%; /* Ajusta el ancho máximo */
+      padding: 15px;
+    }
+  
+    .game-list {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ajusta el tamaño mínimo */
+      gap: 10px;
+    }
+  }
+  
