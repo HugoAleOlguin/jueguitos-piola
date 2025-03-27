@@ -110,3 +110,21 @@ html, body {
     text-align: center;
     padding: 10px 0;
 }
+
+/* Estilos para dispositivos pequeños */
+@media (max-width: 768px) {
+    .button-group{
+        margin-top: 10px;
+    display:flex;
+  }
+  .button {
+    width: 80%;
+    padding: 15px 0;
+}
+
+.button-secondary {
+    width: 60%;
+    padding: 15px 0px;
+}
+
+}
