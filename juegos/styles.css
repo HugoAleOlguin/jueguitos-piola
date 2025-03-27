@@ -43,7 +43,9 @@ html, body {
     margin: 20px auto;
     padding: 20px;
     background-color: rgba(0, 0, 0, 0.473);
-    border-radius: 30px;
+    border-style:dashed;
+    border-color: rgba(245, 137, 255, 0.76);
+    border-radius: 40px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
 }
