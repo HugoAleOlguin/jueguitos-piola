@@ -2,7 +2,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    width: 100%;
+    width: 100vh;
     height: 100vh;
     overflow: hidden;
     --color: rgba(253, 190, 241, 0.538);
@@ -37,7 +37,7 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
-    max-height: 100px; /* Altura máxima del contenedor */
+    max-height: 80%; /* Altura máxima del contenedor */
     overflow-y: auto; /* Permitir desplazamiento vertical */
     overflow-x: hidden; /* Ocultar desplazamiento horizontal */
 }
