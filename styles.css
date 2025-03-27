@@ -1,12 +1,14 @@
-/* From Uiverse.io by SelfMadeSystem */ 
-body {
+html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
     font-family: Arial, sans-serif;
     width: 100%;
-    height: 100vh;
-    overflow: hidden;
+    min-width: 100vh;
+    overflow:auto;
+    overflow-x: hidden;
     --color: rgba(253, 190, 241, 0.538);
-  background-color: #181a18;
+  background-color: #000000;
   background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
       linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
   background-size: 55px 55px;
@@ -14,52 +16,41 @@ body {
   
 
 
-
-
-
 header {
-    background-color: #3e3d3db4;
-    color: white;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
     text-align: center;
     padding: 1px;
+    color: #4CAF50;
+    position:relative;
 }
 
-header button{
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    text-decoration:double;
-    padding: 10px 20px;
+/* Área principal del contenido */
+.content {
+    flex: 1; /* Esto hace que el contenido principal se expanda para llenar el espacio disponible */
+    padding: 20px;
     text-align: center;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    display: inline-block;
-    align-items: center;
-    justify-content: center;
 }
 
 
 .contenedor-juegos {
+    backdrop-filter: blur(3px);
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 10px;
-    border-radius: 10px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.473);
+    border-radius: 30px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-h1 {
-    text-align: center;
-    color: #4CAF50;
+    margin: 20px auto;
 }
 
 .game-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    max-height: 600px; /* Altura máxima del contenedor */
+    gap: 10px;
+    margin-top: 20px;
+    max-height: 800px; /* Altura máxima del contenedor */
     overflow-y: auto; /* Permitir desplazamiento vertical */
     overflow-x: hidden; /* Ocultar desplazamiento horizontal */
 }
@@ -70,12 +61,15 @@ h1 {
     border-radius: 10px;
     border: rgba(255, 9, 148, 0.616) solid 1px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    transition: transform 1.3s;
+    overflow: auto;
+    transition: transform 0.7s;
 }
-
+#radmin.game-card{
+    border: rgba(9, 255, 111, 0.616) solid 1px;
+}
 .game-card:hover {
-    transform: scale(O.05);
+    transform: scale(1.03);
+    background-color: rgba(41, 2, 30, 0.541);
 }
 
 .game-card img {
@@ -96,9 +90,19 @@ h1 {
     padding: 10px;
     font-size: 14px;
     color: #555;
+    text-align: center;
 }
 
-.game-card a {
+/* Enlace de toda la tarjeta */
+.card-link {
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    color: inherit; /* Hereda el color de texto */
+}
+
+/* Botón de Jugar Ahora */
+.game-card a.jugar-ahora {
     display: block;
     margin: 10px;
     padding: 10px;
@@ -109,13 +113,17 @@ h1 {
     border-radius: 5px;
 }
 
-.game-card a:hover {
+.game-card a.jugar-ahora:hover {
     background: #45a049;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .game-card img {
-        height: 150px;
-    }
+
+/* Footer siempre abajo */
+.footer {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    position:relative;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
 }

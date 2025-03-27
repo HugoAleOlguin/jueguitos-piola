@@ -1,9 +1,12 @@
-/* General Styles */
-body {
+/* Asegura que el contenido ocupe al menos toda la pantalla */
+html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     font-family: 'Arial', sans-serif;
     background-color: #121212; /* Modo oscuro */
-    color: #f4f4f4;
 }
 
 header {
@@ -17,8 +20,9 @@ header {
 .container {
     max-width: 900px;
     margin: 20px auto;
-    padding: 15px;
     text-align: center;
+    flex: 1; /* Esto hace que el contenido principal se expanda para llenar el espacio disponible */
+    padding: 20px;
 }
 
 h1 {
@@ -69,11 +73,10 @@ h1 {
     background: #666;
 }
 
-footer {
+/* Footer siempre abajo */
+.footer {
+    background-color: #222;
+    color: #fff;
     text-align: center;
-    margin-top: 40px;
-    padding: 10px;
-    background-color: #1f1f1f;
-    color: #777;
-    font-size: 14px;
+    padding: 10px 0;
 }
