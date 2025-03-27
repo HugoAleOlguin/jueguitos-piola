@@ -21,7 +21,7 @@ header {
 
 .contenedor-juegos {
     max-width: 1200px;
-    max-height: 80%;
+    height: 80%;
     margin: 20px auto;
     padding: 10px;
     border-radius: 10px;
@@ -37,7 +37,7 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
-    max-height: 100%; /* Altura máxima del contenedor */
+    max-height: 100vh; /* Altura máxima del contenedor */
     overflow-y: auto; /* Permitir desplazamiento vertical */
     overflow-x: hidden; /* Ocultar desplazamiento horizontal */
 }
