@@ -65,7 +65,7 @@ html, body {
 /* Imagen de info */
 .info-image{
     width: 100%;
-    max-width: 600px;
+    max-width: 500px;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     margin-bottom: 20px;
@@ -110,6 +110,35 @@ html, body {
     background: rgba(255, 255, 255, 0.3);
     color: white;
     transform: scale(1.05);
+}
+
+.tabla-datos {
+    width: 80%; /* Ajusta el ancho para que no ocupe toda la pantalla */
+    max-width: 800px; /* Evita que sea demasiado ancha */
+    margin: auto; /* Centra la tabla */
+    border-collapse: collapse; /* Junta los bordes */
+    font-family: Arial, sans-serif; /* Fuente más moderna */
+    font-size: 14px; /* Texto más compacto */
+}
+
+.tabla-datos th, .tabla-datos td {
+    border: 1px solid rgba(245, 137, 255, 0.76); /* Bordes sutiles */
+    padding: 8px; /* Espaciado interno */
+    text-align: left;
+}
+
+.tabla-datos thead {
+    background-color: #351632; /* Color de fondo para el encabezado */
+    font-weight: bold;
+}
+
+.tabla-datos a {
+    color: #007bff; /* Color del enlace */
+    text-decoration: none;
+}
+
+.tabla-datos a:hover {
+    text-decoration: underline;
 }
 
 /* Footer */
