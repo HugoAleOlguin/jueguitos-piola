@@ -50,7 +50,7 @@ html, body {
     text-align: center;
 }
 
-.container p, h2, h3 {
+.container p, h2, h3, h4 {
     color: #fff;
 }
 /* Imagen del juego */
