@@ -22,10 +22,8 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100vh;
     font-family: Arial, sans-serif;
     width: 100vw;
-    overflow: hidden;
     --color: rgba(253, 190, 241, 0.538);
   background-color: #000000;
   background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
@@ -51,11 +49,9 @@ header {
 .content {
     flex: 1;
     text-align: center;
-    margin-top: 10px;
-    margin-bottom: 60px;
-    height: 90vh;
-    overflow-y: hidden ;
-    padding: 30px;
+    padding-top: 100px;
+    padding-bottom: 80px;
+    padding: 80px;
     color: #4CAF50;
 }
 
@@ -76,8 +72,6 @@ header {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 10px;
     margin-top: 20px;
-    max-height: 800px; /* Altura máxima del contenedor */
-    overflow-y: auto; /* Permitir desplazamiento vertical */
     overflow-x: hidden; /* Ocultar desplazamiento horizontal */
 }
 
@@ -157,14 +151,80 @@ header {
     z-index: 1000;
 }
 
+
+
+/* ========= ESTILOS PARA FILTROS Y SECCIÓN OCULTA ========= */
+
+/* Contenedor de botones de filtro */
+.filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Estilo de cada botón de filtro */
+.filter-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #f0f0f0;
+    background-color: rgba(76, 175, 80, 0.4);
+    border: 2px solid rgba(76, 175, 80, 0.7);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: rgba(76, 175, 80, 0.6);
+    border-color: #4CAF50;
+    transform: translateY(-2px);
+}
+
+/* Estilo del botón de filtro ACTIVO */
+.filter-btn.active {
+    background-color: #4CAF50;
+    color: white;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+}
+
+/* Botón para mostrar/ocultar "Próximamente" */
+.toggle-proximamente-btn {
+    display: block;
+    width: 90%;
+    max-width: 400px;
+    margin: 30px auto 20px auto;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #f0f0f0;
+    background-color: rgba(138, 43, 226, 0.4); /* Un color violeta/rosa */
+    border: 2px solid rgba(245, 137, 255, 0.5);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-proximamente-btn:hover {
+    background-color: rgba(138, 43, 226, 0.6);
+    border-color: rgba(245, 137, 255, 0.9);
+    transform: scale(1.02);
+}
+
+/* Sección "Próximamente" (oculta por defecto) */
+.proximamente-section {
+    display: none;
+    padding-top: 20px;
+    border-top: 2px dashed rgba(245, 137, 255, 0.3);
+}
+
 /* Estilos para dispositivos pequeños */
-@media (max-width: 768px) {
-
-
+@media (min-width: 769px) and (max-width: 1024px) {
     .contenedor-juegos {
-      max-width: 95%; /* Cambia el ancho máximo para que sea relativo a la pantalla */
-      padding: 10px;
-      overflow-x: hidden; /* Aseguramos que no haya desbordamiento horizontal */
+      max-width: 90%; /* Ajusta el ancho máximo */
+      padding: 15px;
     }
   
     .game-list {
@@ -172,10 +232,10 @@ header {
       grid-template-columns: repeat(auto-fit, minmax(auto-fit, 1fr)); /* Reduce el tamaño mínimo de las columnas */
       gap: 5px; /* Reduce el espacio entre las tarjetas */
     }
-  
-    .game-card {
-      padding: 10px;
-      box-shadow: none; /* Simplifica las sombras para pantallas pequeñas */
+    
+    .game-list {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ajusta el tamaño mínimo */
+      gap: 10px;
     }
   }
 
