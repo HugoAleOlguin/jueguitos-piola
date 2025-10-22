@@ -178,7 +178,24 @@ header {
       box-shadow: none; /* Simplifica las sombras para pantallas pequeñas */
     }
   }
-  
+
+  /* Estilos SIMPLES para juegos no disponibles */
+.game-card.not-available img {
+    filter: grayscale(100%); /* Pone la imagen en blanco y negro */
+    opacity: 0.7; /* La hace un poco transparente */
+}
+
+.game-card.not-available .card-link {
+    cursor: not-allowed; /* Muestra un cursor de "no permitido" */
+}
+
+.game-card.not-available .jugar-ahora {
+    background-color: #555; /* Un fondo gris para el botón falso */
+    color: #aaa;
+    cursor: not-allowed;
+    text-align: center; /* Asegura que el texto "Próximamente" esté centrado */
+}
+
   /* Estilos para tablets */
   @media (min-width: 769px) and (max-width: 1024px) {
     .contenedor-juegos {
