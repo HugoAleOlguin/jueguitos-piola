@@ -306,5 +306,17 @@ const gamesData = [
     "tags": [
       "Juego"
     ]
+  },
+  {
+    "id": "mudrunner",
+    "title": "MudRunner",
+    "description": "a manejar.",
+    "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/675010/header.jpg?t=1729687266",
+    "url": "games/mudrunner.html",
+    "tags": [
+      "Coop",
+      "simulador",
+      "autos"
+    ]
   }
 ];

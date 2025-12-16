@@ -1,37 +1,48 @@
 /* Estilo de scrollbar personalizado */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px; /* Slightly thinner */
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(245, 137, 255, 0.5);
-    border-radius: 10px;
-    border: 2px solid rgba(0, 0, 0, 0.3);
+    background: linear-gradient(180deg, #d53369, #daae51); /* Gradient thumb */
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(245, 137, 255, 0.7);
+    background: linear-gradient(180deg, #e84a82, #ecc36a);
 }
 
-html, body {
+::selection {
+    background: #ff007f;
+    color: white;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Modern Font */
     width: 100vw;
-    --color: rgba(253, 190, 241, 0.538);
-  background-color: #000000;
-  background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
-      linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
-  background-size: 55px 55px;
+    --color: rgba(253, 190, 241, 0.2); /* Reduced opacity for grid */
+    background-color: #050505; /* Blacker background */
+    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+        linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+    background-size: 50px 50px;
 }
-  
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 header {
     width: 100%;
@@ -76,41 +87,47 @@ header {
 }
 
 .game-card {
-    backdrop-filter: blur(5px);
-    background-color: rgba(27, 0, 19, 0.541);
+    /* backdrop-filter: blur(5px); REMOVED FOR PERFORMANCE */
+    background-color: rgba(20, 0, 15, 0.85); /* Increased opacity slightly */
     border-radius: 10px;
     border: rgba(255, 9, 148, 0.616) solid 1px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: auto;
-    transition: transform 0.7s;
+    overflow: hidden; /* Changed from auto to hidden for cleaner card */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Faster transition */
+    will-change: transform; /* Hint to browser for optimization */
+    display: flex;
+    flex-direction: column;
 }
 #radmin.game-card{
     border: rgba(9, 255, 111, 0.616) solid 1px;
 }
 .game-card:hover {
     transform: scale(1.03);
-    background-color: rgba(41, 2, 30, 0.541);
+    background-color: rgba(41, 2, 30, 0.9);
+    z-index: 1;
 }
 
 .game-card img {
     width: 100%;
     height: 200px;
     object-fit: cover;
+    background-color: #2a2a2a; /* Placeholder color while loading */
 }
 
 .game-card h3 {
     color: aliceblue;
     margin: 0;
-    padding: 10px;
+    padding: 10px 10px 5px 10px;
     font-size: 18px;
     text-align: center;
 }
 
 .game-card p {
-    padding: 10px;
+    padding: 0 10px 10px 10px;
     font-size: 14px;
-    color: #555;
+    color: #bbb; /* Lighter for better contrast on dark bg */
     text-align: center;
+    flex-grow: 1;
 }
 
 /* Enlace de toda la tarjeta */
@@ -131,6 +148,8 @@ header {
     color: white;
     text-decoration: none;
     border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.2s;
 }
 
 .game-card a.jugar-ahora:hover {
@@ -140,7 +159,7 @@ header {
 
 /* Footer siempre abajo */
 .footer {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.8); /* Less translucent */
     backdrop-filter: blur(5px);
     position: fixed;
     bottom: 0;
@@ -166,19 +185,20 @@ header {
 
 /* Estilo de cada botón de filtro */
 .filter-btn {
-    padding: 10px 20px;
+    padding: 10px 25px; /* Wider padding */
     font-size: 14px;
     font-weight: bold;
     color: #f0f0f0;
-    background-color: rgba(76, 175, 80, 0.4);
-    border: 2px solid rgba(76, 175, 80, 0.7);
-    border-radius: 8px;
+    background-color: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.5);
+    border-radius: 50px; /* Pill shape */
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
 }
 
 .filter-btn:hover {
-    background-color: rgba(76, 175, 80, 0.6);
+    background-color: rgba(76, 175, 80, 0.4);
     border-color: #4CAF50;
     transform: translateY(-2px);
 }
@@ -187,7 +207,7 @@ header {
 .filter-btn.active {
     background-color: #4CAF50;
     color: white;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
 }
 
 /* Botón para mostrar/ocultar "Próximamente" */
@@ -200,17 +220,17 @@ header {
     font-size: 16px;
     font-weight: bold;
     color: #f0f0f0;
-    background-color: rgba(138, 43, 226, 0.4); /* Un color violeta/rosa */
-    border: 2px solid rgba(245, 137, 255, 0.5);
+    background-color: rgba(138, 43, 226, 0.25); /* Un color violeta/rosa */
+    border: 2px solid rgba(245, 137, 255, 0.3);
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .toggle-proximamente-btn:hover {
-    background-color: rgba(138, 43, 226, 0.6);
-    border-color: rgba(245, 137, 255, 0.9);
-    transform: scale(1.02);
+    background-color: rgba(138, 43, 226, 0.4);
+    border-color: rgba(245, 137, 255, 0.7);
+    transform: scale(1.01);
 }
 
 /* Sección "Próximamente" (oculta por defecto) */
@@ -242,7 +262,7 @@ header {
   /* Estilos SIMPLES para juegos no disponibles */
 .game-card.not-available img {
     filter: grayscale(100%); /* Pone la imagen en blanco y negro */
-    opacity: 0.7; /* La hace un poco transparente */
+    opacity: 0.5; /* La hace un poco transparente */
 }
 
 .game-card.not-available .card-link {
@@ -250,8 +270,8 @@ header {
 }
 
 .game-card.not-available .jugar-ahora {
-    background-color: #555; /* Un fondo gris para el botón falso */
-    color: #aaa;
+    background-color: #333; /* Un fondo gris para el botón falso */
+    color: #888;
     cursor: not-allowed;
     text-align: center; /* Asegura que el texto "Próximamente" esté centrado */
 }
@@ -268,4 +288,45 @@ header {
       gap: 10px;
     }
   }
+
+/* === Beta Button Styles === */
+.beta-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(45deg, #00f2ff, #00a8ff);
+    color: #000;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+    z-index: 9999;
+    transition: all 0.3s ease;
+    border: 2px solid #fff;
+    animation: pulse-beta 2s infinite;
+}
+
+.beta-btn:hover {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 0 40px rgba(0, 242, 255, 0.9);
+    background: linear-gradient(45deg, #fff, #00f2ff);
+}
+
+@keyframes pulse-beta {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(0, 242, 255, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 242, 255, 0);
+    }
+}
+
   
