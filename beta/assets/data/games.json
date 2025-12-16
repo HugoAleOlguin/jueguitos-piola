@@ -1,0 +1,42 @@
+[
+  {
+    "id": "minecraft",
+    "title": "Minecraft",
+    "description": "Explora, construye y sobrevive en un mundo de bloques infinito.",
+    "image": "assets/img/minecraft-placeholder.jpg",
+    "url": "games/minecraft.html",
+    "tags": ["Aventura", "Supervivencia"]
+  },
+  {
+    "id": "peak",
+    "title": "Peak",
+    "description": "Alcanza la cima en este desafiante juego de plataformas.",
+    "image": "assets/img/peak-placeholder.jpg",
+    "url": "games/peak.html",
+    "tags": ["Plataformas", "Difícil"]
+  },
+  {
+    "id": "raft",
+    "title": "Raft",
+    "description": "Sobrevive en una balsa en medio del océano.",
+    "image": "assets/img/raft-placeholder.jpg",
+    "url": "games/raft.html",
+    "tags": ["Supervivencia", "Multijugador"]
+  },
+  {
+    "id": "aoe",
+    "title": "Age of Empires",
+    "description": "Estrategia en tiempo real clásica.",
+    "image": "assets/img/aoe-placeholder.jpg",
+    "url": "games/AoE.html",
+    "tags": ["Estrategia", "RTS"]
+  },
+  {
+    "id": "lethal-company",
+    "title": "Lethal Company",
+    "description": "Recolecta chatarra y sobrevive a los horrores.",
+    "image": "assets/img/lethal-placeholder.jpg",
+    "url": "games/lethal-company.html",
+    "tags": ["Terror", "Co-op"]
+  }
+]

@@ -300,7 +300,8 @@
                         <h3>Raft</h3>
                         <p>Aventura y supervivencia en el mar.</p>
                     </a>
-                    <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/raft.html" class="jugar-ahora">Jugar Ahora</a>
+                    <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/raft.html" class="jugar-ahora">Jugar
+                        Ahora</a>
                 </div>
 
                 <div class="game-card">
@@ -309,7 +310,8 @@
                             alt="Risk of Rain 2">
                         <h3>Risk of Rain 2</h3>
                         <p>Roguelike de acción con muchas balas.</p>
-                        <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/rain2.html" class="jugar-ahora">Jugar Ahora</a>
+                        <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/rain2.html"
+                            class="jugar-ahora">Jugar Ahora</a>
                     </div>
                 </div>
 
@@ -319,22 +321,24 @@
                             alt="Risk of Rain Returns">
                         <h3>Risk of Rain Returns</h3>
                         <p>Risk of Rain pero 2D.</p>
-                        <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/rain2d.html" class="jugar-ahora">Jugar Ahora</a>
+                        <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/rain2d.html"
+                            class="jugar-ahora">Jugar Ahora</a>
                     </div>
                 </div>
 
                 <div class="game-card">
-                        <div class="card-link">
-                            <img src="https://pivigames.blog/wp-content/uploads/2025/04/Forever-Skies-PC-Pivigames-Juego.jpg
-                                alt="Forever Skies">
-                            <h3>Forever Skies</h3>
-                            <p>Supervivencia en un mundo post-apocalíptico.<br>
-                                Tiene unos re graficos, no me anda :(
-                            </p>
-                            <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/forever.html" class="jugar-ahora">Jugar Ahora</a>
-                        </div>
+                    <div class="card-link">
+                        <img src="https://pivigames.blog/wp-content/uploads/2025/04/Forever-Skies-PC-Pivigames-Juego.jpg
+                                alt=" Forever Skies">
+                        <h3>Forever Skies</h3>
+                        <p>Supervivencia en un mundo post-apocalíptico.<br>
+                            Tiene unos re graficos, no me anda :(
+                        </p>
+                        <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/forever.html"
+                            class="jugar-ahora">Jugar Ahora</a>
                     </div>
-                
+                </div>
+
 
 
 
@@ -501,7 +505,8 @@
 
             // --- Lógica para Mostrar/Ocultar "Próximamente" ---
             toggleButton.addEventListener('click', () => {
-                const isHidden = proximamenteContainer.style.display === 'none' || proximamenteContainer.style.display === '';
+                const isHidden = proximamenteContainer.style.display === 'none' ||
+                    proximamenteContainer.style.display === '';
 
                 if (isHidden) {
                     proximamenteContainer.style.display = 'block';
@@ -514,6 +519,49 @@
         });
     </script>
 
+    <style>
+        .beta-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(45deg, #00f2ff, #00a8ff);
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+            z-index: 9999;
+            transition: all 0.3s ease;
+            border: 2px solid #fff;
+            animation: pulse-beta 2s infinite;
+        }
+
+        .beta-btn:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.9);
+            background: linear-gradient(45deg, #fff, #00f2ff);
+        }
+
+        @keyframes pulse-beta {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(0, 242, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 242, 255, 0);
+            }
+        }
+    </style>
+    <a href="beta/index.html" class="beta-btn">
+        🚀 PROBAR NUEVA BETA
+    </a>
 </body>
 
 </html>
