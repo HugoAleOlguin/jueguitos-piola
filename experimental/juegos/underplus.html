@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.png">
+    <title>es un mod</title>
+
+    <style>
+        /* Estilo general */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    --color: rgba(253, 190, 241, 0.538);
+    background-color: #000;
+    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+        linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+    background-size: 55px 55px;
+    min-width: 100vh;
+    overflow: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+        /* Header con gradiente */
+.header {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    text-align: center;
+    padding: 20px;
+    color: #4CAF50;
+}
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 15px;
+            text-align: center;
+        }
+
+        /* Área principal del contenido */
+.content {
+    flex: 1; /* Esto hace que el contenido principal se expanda para llenar el espacio disponible */
+    padding: 20px;
+    text-align: center;
+    color:#fff;
+}
+
+
+
+/* Contenedor principal */
+.container {
+    backdrop-filter: blur(5px);
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.473);
+    border-radius: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.container p, h2, h3 {
+    color: #fff;
+}
+
+        /* Carousel Styles */
+        .carousel {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .carousel-images {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .prev:hover, .next:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+
+/* Botones */
+.button-group {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.button {
+    padding: 15px 25px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow:blueviolet;
+}
+
+.button-secondary {
+    padding: 15px 25px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.button-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    transform: scale(1.05);
+}
+
+        /* Footer */
+.footer {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Jueguitos Piola</h1>
+    </header>
+<div class="content">
+    <div class="container">
+        <h1>Undertale Plus</h1>
+
+        <!-- Carrusel de imágenes -->
+        <div class="carousel">
+            <div class="carousel-images">
+                <img src="https://m.gjcdn.net/game-screenshot/1000/35192760-ll-bxei7uva-v4.webp" alt="Imagen 1">
+                <img src="https://m.gjcdn.net/game-screenshot/1000/35914833-s2xyj5ym-v4.webp" alt="Imagen 2">
+                <img src="https://m.gjcdn.net/game-screenshot/1000/35192683-ll-x7etkjmh-v4.webp" alt="Imagen 3">
+                <img src="https://m.gjcdn.net/game-screenshot/1000/35191578-ll-edbhebkz-v4.webp" alt="Imagen 4">
+                <img src="https://m.gjcdn.net/game-screenshot/1000/35457209-ll-sejzdepv-v4.webp" alt="Imagen 5">
+                <img src="https://m.gjcdn.net/fireside-post-image/700/39165598-ccj5wyzb-v4.webp" alt="image 6">
+            </div>
+            <button class="prev" onclick="moveSlide(-1)">❮</button>
+            <button class="next" onclick="moveSlide(1)">❯</button>
+        </div>
+
+        <div class="button-group">
+            <a href="https://gamejolt.com/games/undertaleplus/895064" target="_blank" class="button">Más info</a>
+            <a href="https://hugoaleolguin.github.io/jueguitos-piola/" class="button-secondary">Volver</a>
+        </div>
+    </div>
+
+</div>
+<footer class="footer">
+    © 2025 Jueguitos Piola. Ningún derecho reservado.
+</footer>
+
+    <script>
+        let currentIndex = 0;
+
+        function moveSlide(direction) {
+            const slides = document.querySelector('.carousel-images');
+            const totalSlides = document.querySelectorAll('.carousel img').length;
+            currentIndex += direction;
+
+            if (currentIndex < 0) {
+                currentIndex = totalSlides - 1;
+            } else if (currentIndex >= totalSlides) {
+                currentIndex = 0;
+            }
+
+            const offset = -currentIndex * 100 + '%';
+            slides.style.transform = 'translateX(' + offset + ')';
+        }
+    </script>
+
+    <!-- Script para efectos visuales y funcionalidades -->    
+    <script src="https://hugoaleolguin.github.io/jueguitos-piola/juegos/js/effects.js"></script>
+
+</body>
+</html>
