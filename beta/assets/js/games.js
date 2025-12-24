@@ -318,5 +318,16 @@ const gamesData = [
       "simulador",
       "autos"
     ]
-  }
+  },
+  {
+  "id": "absolum",
+  "title": "ABSOLUM",
+  "description": "un roguelite de chill.",
+  "image": "https://pivigames.blog/wp-content/uploads/2025/10/Absolum-Pivigames.jpg",
+  "url": "games/absolum.html",
+  "tags": [
+    "coop",
+    "roguelite"
+  ]
+}
 ];
