@@ -320,14 +320,15 @@ const gamesData = [
     ]
   },
   {
-  "id": "absolum",
-  "title": "ABSOLUM",
-  "description": "un roguelite de chill.",
-  "image": "https://pivigames.blog/wp-content/uploads/2025/10/Absolum-Pivigames.jpg",
-  "url": "games/absolum.html",
+  "id": "sworn",
+  "title": "Sworn",
+  "description": "ta weno.",
+  "image": "https://assets.nintendo.com/image/upload/ar_16:9,c_lpad,w_1240/b_white/f_auto/q_auto/store/software/switch/70010000078501/3394878a0b7ff522fe98cf73415727b641e278bc79782aeb7d35753cd4e3d9be",
+  "url": "games/sworn.html",
   "tags": [
-    "coop",
-    "roguelite"
+    "Coop",
+    "Rogue Like",
+    "Rogue Lite"
   ]
 }
 ];
