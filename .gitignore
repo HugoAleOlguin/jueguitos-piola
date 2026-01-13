@@ -1,5 +1,33 @@
+# =====================================================
+# GITIGNORE - Jueguitos Piola
+# =====================================================
+
+# Dependencias de Node (si las usás en el futuro)
 node_modules/
+
+# Archivos del sistema
 .DS_Store
+Thumbs.db
+*.log
+
+# Archivos de configuración local
 package-lock.json
 package.json
-add_games.js
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Carpetas de build (si usás algún bundler)
+dist/
+build/
+
+# Archivos de caché del navegador y herramientas
+.cache/
+.parcel-cache/
