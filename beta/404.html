@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<!--
+============================================================================
+404.HTML - PÁGINA DE ERROR
+============================================================================
+Se muestra cuando alguien intenta acceder a una página que no existe.
+============================================================================
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página no encontrada | Jueguitos Piola</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="favicon.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Estilos específicos para la página 404 */
+        .error-container {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .error-code {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            line-height: 1;
+            text-shadow: none;
+        }
+
+        .error-title {
+            font-size: 1.5rem;
+            color: #888;
+            margin: 1rem 0 2rem;
+        }
+
+        .error-message {
+            color: #666;
+            margin-bottom: 2rem;
+            max-width: 400px;
+        }
+
+        .glitch {
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+
+            0%,
+            90%,
+            100% {
+                transform: translate(0);
+            }
+
+            92% {
+                transform: translate(-2px, 2px);
+            }
+
+            94% {
+                transform: translate(2px, -2px);
+            }
+
+            96% {
+                transform: translate(-2px, 0);
+            }
+
+            98% {
+                transform: translate(2px, 0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html" style="text-decoration:none; color:inherit;">JUEGUITOS PIOLA</a>
+            <span style="font-size: 0.5em; color: var(--secondary-color); vertical-align: super;">BETA</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
+    </header>
+
+    <main class="error-container">
+        <h1 class="error-code glitch">404</h1>
+        <p class="error-title">Página no encontrada</p>
+        <p class="error-message">
+            Algo salió mal.
+            O encontraste algo que no debías...
+            <br>
+            Volvé al inicio, por las dudas.
+            <br>
+            <a href="index.html" class="btn btn-primary">Volver al Hub</a>
+        </p>
+    </main>
+
+    <footer>
+        <p>© 2026 Jueguitos Piola.</p>
+    </footer>
+
+    <script src="assets/js/theme.js"></script>
+</body>
+
+</html>

@@ -20,8 +20,14 @@
     <header>
         <div class="logo">JUEGUITOS PIOLA <span
                 style="font-size: 0.5em; color: var(--secondary-color); vertical-align: super;">BETA</span></div>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Buscar juegos...">
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar juegos...">
+            </div>
+            <!-- Botón para cambiar entre tema claro/oscuro -->
+            <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
+                🌙
+            </button>
         </div>
     </header>
 
@@ -32,9 +38,10 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 Jueguitos Piola.</p>
+        <p>&copy; 2026 Jueguitos Piola.</p>
     </footer>
 
+    <script src="assets/js/theme.js"></script>
     <script src="assets/js/games.js"></script>
     <script src="assets/js/app.js"></script>
 </body>

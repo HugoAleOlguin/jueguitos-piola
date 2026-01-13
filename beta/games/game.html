@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<!--
+============================================================================
+GAME.HTML - PLANTILLA UNIVERSAL PARA PÁGINAS DE JUEGOS
+============================================================================
+
+Esta es la ÚNICA página que necesitás para mostrar cualquier juego.
+El contenido se carga dinámicamente desde games.js usando el parámetro "id" de la URL.
+
+EJEMPLO DE USO:
+  game.html?id=lethal-company  →  Muestra la página de Lethal Company
+  game.html?id=content-warning →  Muestra la página de Content Warning
+
+¿CÓMO FUNCIONA?
+  1. El navegador abre esta página con un ?id=xxx en la URL
+  2. El script game-loader.js lee ese ID
+  3. Busca el juego en games.js
+  4. Renderiza todo el contenido dinámicamente
+
+============================================================================
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- El título se actualiza dinámicamente con JavaScript -->
+    <title>Cargando... | Jueguitos Piola</title>
+
+    <!-- Estilos y fuentes -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" href="../favicon.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- ================================================================
+         HEADER - Igual para todas las páginas
+         ================================================================ -->
+    <header>
+        <div class="logo">
+            <a href="../index.html" style="text-decoration:none; color:inherit;">JUEGUITOS PIOLA</a>
+            <span style="font-size: 0.5em; color: var(--secondary-color); vertical-align: super;">BETA</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
+    </header>
+
+    <!-- ================================================================
+         CONTENIDO PRINCIPAL
+         Este div se llena dinámicamente con game-loader.js
+         ================================================================ -->
+    <main>
+        <div id="game-container">
+            <!-- Estado de carga inicial -->
+            <div class="game-detail-container" style="text-align: center; padding: 4rem;">
+                <p style="color: #666; font-size: 1.2rem;">Cargando juego...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================================================================
+         FOOTER - Igual para todas las páginas
+         ================================================================ -->
+    <footer>
+        <p>© 2026 Jueguitos Piola.</p>
+    </footer>
+
+    <!-- ================================================================
+         SCRIPTS
+         Primero cargamos los datos (games.js), luego el renderizador
+         ================================================================ -->
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/games.js"></script>
+    <script src="../assets/js/game-loader.js"></script>
+</body>
+
+</html>
