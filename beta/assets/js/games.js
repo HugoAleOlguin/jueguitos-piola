@@ -279,8 +279,8 @@ const gamesData = [
   },
   {
     "id": "rain2",
-    "title": "Risk of Rain 2",
-    "description": "Roguelike de acción con muchas balas.",
+    "title": "Risk of Rain 2 V1.4.1",
+    "description": "Este juego me salvó de vanguards.",
     "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/632360/header.jpg",
     "url": "games/rain2.html",
     "tags": [
