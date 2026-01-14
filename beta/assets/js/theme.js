@@ -429,7 +429,7 @@
     if (Math.random() > PROBABILITY) return;
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Esperar 5 segundos antes de mostrar
+        // Esperar 2 segundos antes de mostrar
         setTimeout(() => {
             const hint = document.createElement('div');
             hint.className = 'prime-hint';
@@ -473,15 +473,15 @@
                 setTimeout(() => hint.remove(), 300);
             });
 
-            // Auto-ocultar después de 8 segundos
+            // Auto-ocultar después de 15 segundos
             setTimeout(() => {
                 if (hint.parentNode) {
                     localStorage.setItem(HINT_SHOWN_KEY, 'true');
                     hint.style.animation = 'slideOutHint 0.3s ease forwards';
                     setTimeout(() => hint.remove(), 300);
                 }
-            }, 8000);
-        }, 5000);
+            }, 15000);
+        }, 2000);
     });
 
     // Agregar estilos de animación
@@ -494,6 +494,370 @@
         @keyframes slideOutHint {
             from { opacity: 1; transform: translateX(0); }
             to { opacity: 0; transform: translateX(-20px); }
+        }
+    `;
+    document.head.appendChild(style);
+})();
+
+
+// ============================================================================
+// EASTER EGG: CLICKS EN EL LOGO
+// ============================================================================
+// Hace muchos clicks rapidos en el logo y te dice algo
+//
+// COMO AGREGAR/QUITAR FRASES:
+// Solo edita el array LOGO_MESSAGES abajo
+// ============================================================================
+
+(function () {
+    // ========== FRASES (editar aca) ==========
+    const LOGO_MESSAGES = [
+        "deja de joder",
+        "sos pesado eh",
+        "ya para",
+        "que queres?",
+        "no hay nada aca",
+        "en serio seguis?",
+        "ok, me rindo",
+        "felicidades, rompiste algo en el codigo"
+    ];
+    // =========================================
+
+    const CLICKS_NEEDED = 7; // Clicks necesarios
+    const TIMEOUT = 2000;    // Tiempo para resetear (ms)
+
+    let clickCount = 0;
+    let lastClick = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const logo = document.querySelector('.logo');
+        if (!logo) return;
+
+        logo.style.cursor = 'pointer';
+        logo.style.userSelect = 'none';
+
+        logo.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            const now = Date.now();
+
+            // Resetear si paso mucho tiempo
+            if (now - lastClick > TIMEOUT) {
+                clickCount = 0;
+            }
+
+            lastClick = now;
+            clickCount++;
+
+            // Si llego a los clicks necesarios
+            if (clickCount >= CLICKS_NEEDED) {
+                // Elegir mensaje random
+                const msg = LOGO_MESSAGES[Math.floor(Math.random() * LOGO_MESSAGES.length)];
+                showLogoMessage(msg);
+                clickCount = 0;
+            }
+        });
+    });
+
+    function showLogoMessage(text) {
+        // Quitar mensaje anterior si existe
+        const old = document.querySelector('.logo-message');
+        if (old) old.remove();
+
+        const logo = document.querySelector('.logo');
+        if (!logo) return;
+
+        // Obtener posicion del logo
+        const rect = logo.getBoundingClientRect();
+
+        const msg = document.createElement('div');
+        msg.className = 'logo-message';
+        msg.textContent = text;
+        msg.style.cssText = `
+            position: fixed;
+            top: ${rect.bottom + 10}px;
+            left: ${rect.left + rect.width / 2}px;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 10000;
+            animation: logoMsgIn 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        `;
+
+        document.body.appendChild(msg);
+
+        // Quitar despues de 2 segundos
+        setTimeout(() => {
+            msg.style.animation = 'logoMsgOut 0.3s ease forwards';
+            setTimeout(() => msg.remove(), 300);
+        }, 2000);
+    }
+
+    // Estilos de animacion
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes logoMsgIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes logoMsgOut {
+            from { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        }
+    `;
+    document.head.appendChild(style);
+})();
+
+
+// ============================================================================
+// MODO VOID (3AM - 4AM) - Horror Analogico
+// ============================================================================
+// Entre las 3:00 y las 3:59 AM, el sitio se vuelve tetrico
+// ============================================================================
+
+(function () {
+    // ========== MENSAJES HORROR (editar aca) ==========
+    const VOID_MESSAGES = [
+        "no deberias estar despierto",
+        "algo te observa",
+        "escuchaste eso?",
+        "detras de ti",
+        "no mires",
+        "la senal se pierde...",
+        "ERROR DE TRANSMISION",
+        "h̷͈̾o̶̼͑l̵̰̔a̸̱̿",
+        "...",
+        "no hay nadie aqui",
+        "por que seguis aca?",
+        "la cinta se rebobina",
+        "Ya me dió miedito la verdad",
+        "3:33",
+        "...",
+        "Anda a dormir",
+        "Vaya Vaya",
+        "hmm..."
+    ];
+    // ================================================
+
+    function isVoidHour() {
+        const hour = new Date().getHours();
+        return hour === 3; // 3:00 - 3:59 AM
+    }
+
+    function formatTime() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    }
+
+    function getRandomMessage() {
+        return VOID_MESSAGES[Math.floor(Math.random() * VOID_MESSAGES.length)];
+    }
+
+    if (!isVoidHour()) return;
+
+    // === ACTIVAR MODO VOID ===
+    document.addEventListener('DOMContentLoaded', () => {
+        // Aplicar estilos void
+        document.documentElement.setAttribute('data-void', 'true');
+
+        // Crear overlay de efectos
+        const overlay = document.createElement('div');
+        overlay.className = 'void-overlay';
+        document.body.appendChild(overlay);
+
+        // Crear reloj dentro del header
+        const header = document.querySelector('header');
+        const clock = document.createElement('div');
+        clock.className = 'void-clock';
+        clock.innerHTML = `
+            <span class="void-rec">REC</span>
+            <span class="void-time">${formatTime()}</span>
+        `;
+        if (header) {
+            header.appendChild(clock);
+        } else {
+            document.body.appendChild(clock);
+        }
+
+        // Actualizar reloj cada segundo
+        setInterval(() => {
+            clock.querySelector('.void-time').textContent = formatTime();
+        }, 1000);
+
+        // Crear mensajes dentro del footer
+        const footer = document.querySelector('footer');
+        const msgBox = document.createElement('div');
+        msgBox.className = 'void-message';
+        if (footer) {
+            footer.style.position = 'relative';
+            footer.appendChild(msgBox);
+        } else {
+            document.body.appendChild(msgBox);
+        }
+
+
+        // Mostrar mensaje inicial
+        setTimeout(() => {
+            msgBox.textContent = getRandomMessage();
+            msgBox.classList.add('show');
+        }, 2000);
+
+        // Cambiar mensaje cada 8-15 segundos
+        setInterval(() => {
+            msgBox.classList.remove('show');
+            setTimeout(() => {
+                msgBox.textContent = getRandomMessage();
+                msgBox.classList.add('show');
+            }, 500);
+        }, 8000 + Math.random() * 7000);
+
+        // Efecto de glitch ocasional
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                document.body.classList.add('void-glitch');
+                setTimeout(() => document.body.classList.remove('void-glitch'), 150);
+            }
+        }, 5000);
+    });
+
+    // Estilos del modo void
+    const style = document.createElement('style');
+    style.textContent = `
+        [data-void="true"] {
+            --bg-color: #000 !important;
+            --text-color: #555 !important;
+        }
+
+        [data-void="true"] body {
+            filter: saturate(0.1) brightness(0.5) contrast(1.1);
+            background-color: #000 !important;
+        }
+
+        [data-void="true"] .game-card {
+            filter: grayscale(0.8) brightness(0.6);
+            opacity: 0.7;
+        }
+
+        [data-void="true"] .game-card:hover {
+            filter: grayscale(0.5) brightness(0.8);
+        }
+
+        [data-void="true"] .logo {
+            animation: voidFlicker 3s infinite;
+            color: #444 !important;
+        }
+
+        [data-void="true"] header {
+            background: rgba(0, 0, 0, 0.95) !important;
+        }
+
+        .void-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9990;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(0, 0, 0, 0.15) 1px,
+                    rgba(0, 0, 0, 0.15) 2px
+                ),
+                radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+        }
+
+        .void-clock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #ff0000;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .void-rec {
+            animation: voidBlink 1s infinite;
+            font-weight: bold;
+            font-size: 10px;
+            background: #ff0000;
+            color: #000;
+            padding: 2px 5px;
+            border-radius: 2px;
+        }
+
+        .void-time {
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .void-message {
+            position: absolute;
+            top: 50%;
+            left: 20%;
+            transform: translate(-50%, -50%);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #888;
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .void-message.show {
+            opacity: 1;
+        }
+
+        .void-glitch {
+            animation: voidGlitch 0.2s linear !important;
+        }
+
+        @keyframes voidBlink {
+            0%, 45% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        @keyframes voidFlicker {
+            0%, 90%, 100% { opacity: 0.8; }
+            92%, 98% { opacity: 0.3; }
+            94% { opacity: 0.1; }
+        }
+
+        @keyframes voidGlitch {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg) saturate(2); }
+            40% { transform: translate(3px, -2px); filter: hue-rotate(180deg); }
+            60% { transform: translate(-2px, 3px); filter: hue-rotate(270deg) saturate(0); }
+            80% { transform: translate(2px, -1px); filter: hue-rotate(360deg); }
+            100% { transform: translate(0); filter: hue-rotate(0deg); }
         }
     `;
     document.head.appendChild(style);
