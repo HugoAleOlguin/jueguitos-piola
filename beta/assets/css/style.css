@@ -1087,19 +1087,23 @@ img {
 }
 
 /* =====================================================
-   🕹️ MODO RETRO / LEGACY (Easter Egg)
+   🕹️ MODO PRIME / LEGACY (Easter Egg)
    =====================================================
-   Activa estos estilos escribiendo "legacy" en el buscador
+   Activa estos estilos escribiendo "prime" en el buscador
+   Replica el estilo original del sitio
    ===================================================== */
 [data-theme="retro"] {
-    /* Fondo con grilla rosa como el sitio original */
+    /* Variables del sitio legacy original */
     --color-grid: rgba(253, 190, 241, 0.2);
     --bg-color: #050505;
     --primary-color: #4CAF50;
-    /* Verde OG */
     --secondary-color: #ff007f;
-    /* Rosa OG */
     --card-bg: rgba(20, 0, 15, 0.85);
+    --text-color: #bbb;
+
+    /* Quitar efectos neón modernos */
+    --glow-cyan: none;
+    --glow-magenta: none;
 }
 
 [data-theme="retro"] body {
@@ -1125,51 +1129,126 @@ img {
     color: white;
 }
 
-/* Header con estilo verde */
+/* Header estilo legacy - más simple y centrado */
 [data-theme="retro"] header {
     background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+[data-theme="retro"] header::after {
+    display: none;
 }
 
 [data-theme="retro"] .logo {
     color: #4CAF50 !important;
+    text-shadow: none !important;
 }
 
-/* Tarjetas con borde rosa */
+[data-theme="retro"] .logo:hover {
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.5) !important;
+}
+
+/* Barra de búsqueda estilo legacy */
+[data-theme="retro"] .search-bar input {
+    border-color: rgba(76, 175, 80, 0.5);
+}
+
+[data-theme="retro"] .search-bar input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+/* Tarjetas estilo legacy - sin efectos modernos */
 [data-theme="retro"] .game-card {
     background-color: rgba(20, 0, 15, 0.85);
     border: 1px solid rgba(255, 9, 148, 0.616);
     border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="retro"] .game-card::before {
+    display: none;
 }
 
 [data-theme="retro"] .game-card:hover {
     transform: scale(1.03);
     background-color: rgba(41, 2, 30, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 9, 148, 0.8);
 }
 
-/* Botones verdes */
-[data-theme="retro"] .btn-primary {
+[data-theme="retro"] .game-card:hover .card-title {
+    color: #fff;
+}
+
+[data-theme="retro"] .card-title {
+    color: aliceblue;
+    font-family: var(--font-main);
+}
+
+[data-theme="retro"] .card-desc {
+    color: #bbb;
+}
+
+/* Tags estilo legacy */
+[data-theme="retro"] .tag {
+    background: rgba(76, 175, 80, 0.1);
+    border-color: rgba(76, 175, 80, 0.5);
+    color: #4CAF50;
+}
+
+[data-theme="retro"] .tag-coop {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border-color: rgba(76, 175, 80, 0.6);
+}
+
+/* Botones verdes estilo legacy */
+[data-theme="retro"] .btn-primary,
+[data-theme="retro"] .button {
     background: #4CAF50;
+    box-shadow: none;
 }
 
-[data-theme="retro"] .btn-primary:hover {
+[data-theme="retro"] .btn-primary:hover,
+[data-theme="retro"] .button:hover {
     background: #45a049;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    transform: translateY(-2px);
 }
 
-/* Footer retro */
+/* Footer estilo legacy */
 [data-theme="retro"] footer {
     background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
 }
 
-/* El modo retro se activa escribiendo 'prime' en el buscador */
+[data-theme="retro"] footer::before {
+    display: none;
+}
 
-@keyframes pulse-retro {
+/* Página de detalle estilo legacy */
+[data-theme="retro"] .game-detail-container {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 9, 148, 0.4);
+}
 
-    0%,
-    100% {
-        opacity: 1;
-    }
+[data-theme="retro"] .game-detail-container::before {
+    display: none;
+}
 
-    50% {
-        opacity: 0.7;
-    }
+[data-theme="retro"] .game-info-header h1 {
+    color: #4CAF50;
+    text-shadow: none;
+}
+
+[data-theme="retro"] .game-poster {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 9, 148, 0.4);
+}
+
+[data-theme="retro"] .game-meta span {
+    background: rgba(255, 0, 127, 0.15);
+    border-color: rgba(255, 0, 127, 0.4);
+    color: #ff007f;
 }

@@ -300,7 +300,8 @@
         'tormenta': 'https://i.ibb.co/LWw3SJc/tormenta.png',
         'vecina': 'https://i.ibb.co/HTtGBHVq/vecina.png',
         'rem': 'https://i.ibb.co/HfQ63z7M/rem.png',
-        'el mismo': 'https://i.ibb.co/gb6ZQPc4/el-mismo.png'
+        'el mismo': 'https://i.ibb.co/ycf4B6my/el-mismo-1.png',
+        'jesse': 'https://i.ibb.co/6cXbs5nx/jesse.png'
     };
 
     // Estado
