@@ -862,3 +862,72 @@
     `;
     document.head.appendChild(style);
 })();
+
+
+// ============================================================================
+// SCROLL TO TOP (sutil)
+// ============================================================================
+// Botón que aparece al bajar para volver arriba
+// ============================================================================
+
+(function () {
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.createElement('button');
+        btn.className = 'scroll-top-btn';
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>';
+        btn.title = 'Volver arriba';
+        document.body.appendChild(btn);
+
+        // Mostrar/ocultar según scroll
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        });
+
+        // Click para subir
+        btn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            background: var(--glass-bg, rgba(30, 30, 35, 0.9));
+            border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+            border-radius: 50%;
+            color: var(--text-color, #fff);
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .scroll-top-btn.show {
+            opacity: 0.7;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .scroll-top-btn:hover {
+            opacity: 1;
+            transform: translateY(-3px);
+            background: var(--primary-color, #00f3ff);
+            color: #fff;
+        }
+    `;
+    document.head.appendChild(style);
+})();

@@ -54,14 +54,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollPos = sessionStorage.getItem('scrollPos');
     const shouldAnimate = !scrollPos;
 
-    if (typeof gamesData !== 'undefined') {
-        renderGames(sortGamesWithFavorites(gamesData), shouldAnimate);
+    // Leer parámetro de búsqueda de la URL (viene de game.html)
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchFromUrl = urlParams.get('search');
 
-        if (scrollPos) {
-            setTimeout(() => {
-                window.scrollTo(0, parseInt(scrollPos));
-                sessionStorage.removeItem('scrollPos');
-            }, 0);
+    if (typeof gamesData !== 'undefined') {
+        // Si hay búsqueda en la URL, filtrar y mostrar
+        if (searchFromUrl) {
+            searchInput.value = searchFromUrl;
+            const filtered = gamesData.filter(game =>
+                game.title.toLowerCase().includes(searchFromUrl.toLowerCase()) ||
+                game.tags.some(tag => tag.toLowerCase().includes(searchFromUrl.toLowerCase()))
+            );
+            renderGames(sortGamesWithFavorites(filtered), true);
+            // Limpiar la URL sin recargar
+            window.history.replaceState({}, '', window.location.pathname);
+        } else {
+            renderGames(sortGamesWithFavorites(gamesData), shouldAnimate);
+
+            if (scrollPos) {
+                setTimeout(() => {
+                    window.scrollTo(0, parseInt(scrollPos));
+                    sessionStorage.removeItem('scrollPos');
+                }, 0);
+            }
         }
     } else {
         gamesGrid.innerHTML = '<p style="color: red; text-align: center;">Error: No se pudieron cargar los datos de los juegos.</p>';
@@ -80,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             const gameIsFavorite = isFavorite(game.id);
             card.className = `game-card${gameIsFavorite ? ' is-favorite' : ''}`;
+            card.setAttribute('data-game-id', game.id);
 
             if (animate) {
                 card.style.animationDelay = `${index * 0.05}s`;

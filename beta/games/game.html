@@ -38,14 +38,19 @@ EJEMPLO DE USO:
 
 <body>
     <!-- ================================================================
-         HEADER - Igual para todas las páginas
+         HEADER - Igual que index.html para consistencia
          ================================================================ -->
     <header>
         <div class="logo">
             <a href="../index.html" style="text-decoration:none; color:inherit;">JUEGUITOS PIOLA</a>
             <span style="font-size: 0.5em; color: var(--secondary-color); vertical-align: super;">BETA</span>
         </div>
-        <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar juegos...">
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
+        </div>
     </header>
 
     <!-- ================================================================
@@ -75,6 +80,15 @@ EJEMPLO DE USO:
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/games.js"></script>
     <script src="../assets/js/game-loader.js"></script>
+
+    <!-- Búsqueda redirige al index -->
+    <script>
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+                window.location.href = '../index.html?search=' + encodeURIComponent(e.target.value.trim());
+            }
+        });
+    </script>
 </body>
 
 </html>

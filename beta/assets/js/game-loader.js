@@ -97,13 +97,6 @@ function renderizarPagina(game) {
     const descripcion = game.fullDescription || game.description;
 
     // -------------------------------------------------------------------------
-    // Generar las especificaciones
-    // -------------------------------------------------------------------------
-    // Si el juego tiene specs personalizadas, las usamos
-    // Si no, mostramos las specs por defecto
-    const specsHTML = generarSpecs(game.specs);
-
-    // -------------------------------------------------------------------------
     // RENDERIZAR TODO EL HTML
     // -------------------------------------------------------------------------
     container.innerHTML = `
@@ -141,11 +134,6 @@ function renderizarPagina(game) {
                         ${botones}
                     </div>
                 </div>
-            </div>
-
-            <!-- Especificaciones del juego -->
-            <div class="game-specs">
-                ${specsHTML}
             </div>
         </div>
     `;
@@ -224,45 +212,6 @@ function generarTags(tags) {
 }
 
 
-// =============================================================================
-// FUNCIÓN: generarSpecs
-// =============================================================================
-// Genera el HTML de las especificaciones del juego
-// Si el juego tiene specs personalizadas, las usa
-// Si no, muestra valores por defecto
-//
-function generarSpecs(specs) {
-    // Especificaciones por defecto (funciona para la mayoría de juegos)
-    const defaultSpecs = {
-        os: 'Windows 7 o superior',
-        cpu: 'Intel Core i3 / AMD Ryzen 3',
-        ram: '4GB RAM',
-        gpu: 'Compatible con DirectX 11'
-    };
-
-    // Usar specs del juego o valores por defecto
-    const finalSpecs = specs || defaultSpecs;
-
-    return `
-        <div class="spec-item">
-            <h3>Sistema</h3>
-            <p>${finalSpecs.os || defaultSpecs.os}</p>
-        </div>
-        <div class="spec-item">
-            <h3>Procesador</h3>
-            <p>${finalSpecs.cpu || defaultSpecs.cpu}</p>
-        </div>
-        <div class="spec-item">
-            <h3>Memoria</h3>
-            <p>${finalSpecs.ram || defaultSpecs.ram}</p>
-        </div>
-        <div class="spec-item">
-            <h3>Gráficos</h3>
-            <p>${finalSpecs.gpu || defaultSpecs.gpu}</p>
-        </div>
-    `;
-}
-
 
 // =============================================================================
 // FUNCIÓN: mostrarError
@@ -289,25 +238,11 @@ function mostrarError(mensaje) {
 // NOTAS PARA AGREGAR NUEVAS FUNCIONALIDADES:
 // =============================================================================
 //
-// 1. Para agregar SPECS PERSONALIZADAS a un juego, agregá esto en games.js:
-//
-//    {
-//        id: "mi-juego",
-//        title: "Mi Juego",
-//        ...
-//        specs: {
-//            os: "Windows 10",
-//            cpu: "Intel i7 / AMD Ryzen 7",
-//            ram: "16GB RAM",
-//            gpu: "GTX 1080 / RTX 3060"
-//        }
-//    }
-//
-// 2. Para agregar NUEVOS BOTONES:
+// 1. Para agregar NUEVOS BOTONES:
 //    - Agregá el campo en games.js (ej: "trailerUrl")
 //    - Modificá la función generarBotones() para incluirlo
 //
-// 3. Para agregar NUEVAS SECCIONES (ej: galería de imágenes):
+// 2. Para agregar NUEVAS SECCIONES (ej: galería de imágenes):
 //    - Agregá el campo en games.js (ej: "gallery": ["url1", "url2"])
 //    - Creá una función generarGaleria() similar a las existentes
 //    - Llamala desde renderizarPagina() y agregá el HTML

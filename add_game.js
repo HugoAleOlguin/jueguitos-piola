@@ -1,15 +1,11 @@
 // ============================================================================
-// ADD_GAME.JS - Herramienta para agregar juegos fácilmente
+// GAME MANAGER - Herramienta para gestionar juegos
 // ============================================================================
-//
-// Este script te ayuda a agregar nuevos juegos a games.js de forma interactiva.
 //
 // CÓMO USAR:
 // 1. Abrí la terminal en la carpeta del proyecto
 // 2. Ejecutá: node add_game.js
 // 3. Seguí las instrucciones en pantalla
-//
-// NOTA: Este archivo está en .gitignore, es solo una herramienta local.
 //
 // ============================================================================
 
@@ -21,14 +17,21 @@ const path = require('path');
 const GAMES_FILE = path.join(__dirname, 'beta', 'assets', 'js', 'games.js');
 
 // Colores para la consola
-const colors = {
+const c = {
+    reset: '\x1b[0m',
+    bold: '\x1b[1m',
+    dim: '\x1b[2m',
     cyan: '\x1b[36m',
     green: '\x1b[32m',
     yellow: '\x1b[33m',
     red: '\x1b[31m',
     magenta: '\x1b[35m',
-    reset: '\x1b[0m',
-    bold: '\x1b[1m'
+    blue: '\x1b[34m',
+    white: '\x1b[37m',
+    bgBlue: '\x1b[44m',
+    bgGreen: '\x1b[42m',
+    bgRed: '\x1b[41m',
+    bgYellow: '\x1b[43m'
 };
 
 // Interfaz de readline
@@ -37,174 +40,369 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-// Función para hacer preguntas
-function preguntar(pregunta, obligatorio = true) {
-    return new Promise((resolve) => {
-        const prefix = obligatorio
-            ? `${colors.cyan}${pregunta}${colors.reset}`
-            : `${colors.yellow}${pregunta} (opcional, Enter para omitir)${colors.reset}`;
+// ============================================================================
+// UTILIDADES
+// ============================================================================
 
-        rl.question(`${prefix}\n> `, (respuesta) => {
-            if (obligatorio && !respuesta.trim()) {
-                console.log(`${colors.red}⚠️  Este campo es obligatorio${colors.reset}`);
-                resolve(preguntar(pregunta, obligatorio));
+function clear() {
+    console.clear();
+}
+
+function linea(char = '─', len = 60) {
+    return char.repeat(len);
+}
+
+function titulo(text) {
+    const padding = Math.floor((56 - text.length) / 2);
+    console.log(`\n${c.cyan}╔${linea('═', 58)}╗${c.reset}`);
+    console.log(`${c.cyan}║${' '.repeat(padding)}${c.bold}${text}${c.reset}${c.cyan}${' '.repeat(58 - padding - text.length)}║${c.reset}`);
+    console.log(`${c.cyan}╚${linea('═', 58)}╝${c.reset}\n`);
+}
+
+function subtitulo(text) {
+    console.log(`\n${c.yellow}── ${text} ${linea('─', 50 - text.length)}${c.reset}\n`);
+}
+
+function exito(text) {
+    console.log(`${c.green}✓ ${text}${c.reset}`);
+}
+
+function error(text) {
+    console.log(`${c.red}✗ ${text}${c.reset}`);
+}
+
+function info(text) {
+    console.log(`${c.dim}  ${text}${c.reset}`);
+}
+
+async function preguntar(pregunta, valorActual = '', obligatorio = true) {
+    const actual = valorActual ? ` ${c.dim}[${valorActual}]${c.reset}` : '';
+    const opcional = !obligatorio ? ` ${c.dim}(opcional)${c.reset}` : '';
+
+    return new Promise((resolve) => {
+        rl.question(`${c.cyan}${pregunta}${actual}${opcional}${c.reset}\n> `, (respuesta) => {
+            const valor = respuesta.trim() || valorActual;
+            if (obligatorio && !valor) {
+                error('Este campo es obligatorio');
+                resolve(preguntar(pregunta, valorActual, obligatorio));
             } else {
-                resolve(respuesta.trim());
+                resolve(valor);
             }
         });
     });
 }
 
-// Función para confirmar
-function confirmar(pregunta) {
+async function seleccionar(pregunta, opciones) {
+    console.log(`\n${c.cyan}${pregunta}${c.reset}\n`);
+    opciones.forEach((op, i) => {
+        console.log(`  ${c.yellow}${i + 1}.${c.reset} ${op}`);
+    });
+
     return new Promise((resolve) => {
-        rl.question(`${colors.magenta}${pregunta} (y/n)${colors.reset} `, (respuesta) => {
-            resolve(respuesta.toLowerCase() === 'y' || respuesta.toLowerCase() === 'si');
+        rl.question(`\n${c.dim}Selecciona (1-${opciones.length}):${c.reset} `, (respuesta) => {
+            const num = parseInt(respuesta);
+            if (num >= 1 && num <= opciones.length) {
+                resolve(num);
+            } else {
+                error('Opción inválida');
+                resolve(seleccionar(pregunta, opciones));
+            }
         });
     });
 }
 
-// Función principal
-async function main() {
-    console.log(`
-${colors.bold}${colors.cyan}╔════════════════════════════════════════════════════════════╗
-║           🎮 AGREGAR NUEVO JUEGO A JUEGUITOS PIOLA          ║
-╚════════════════════════════════════════════════════════════╝${colors.reset}
-`);
+async function confirmar(pregunta) {
+    return new Promise((resolve) => {
+        rl.question(`${c.magenta}${pregunta} ${c.dim}(s/n)${c.reset} `, (respuesta) => {
+            resolve(['s', 'si', 'y', 'yes'].includes(respuesta.toLowerCase()));
+        });
+    });
+}
 
-    // Recopilar datos obligatorios
-    console.log(`${colors.green}📝 Datos obligatorios:${colors.reset}\n`);
+// ============================================================================
+// CARGAR/GUARDAR JUEGOS
+// ============================================================================
 
-    const id = await preguntar('ID del juego (sin espacios, minúsculas, ej: "lethal-company"):');
-    const title = await preguntar('Nombre del juego:');
-    const description = await preguntar('Descripción corta (para la tarjeta):');
-    const image = await preguntar('URL de la imagen:');
+function cargarJuegos() {
+    try {
+        const contenido = fs.readFileSync(GAMES_FILE, 'utf8');
+        // Extraer el array de gamesData
+        const match = contenido.match(/const gamesData = \[([\s\S]*)\];/);
+        if (!match) throw new Error('No se encontró gamesData');
 
-    console.log(`\n${colors.yellow}Tags disponibles: Coop, Terror, Party, Accion, Roguelike, Supervivencia, Simulacion, Estrategia, Puzzle, Carreras, Crafteo, Sandbox${colors.reset}`);
-    const tagsInput = await preguntar('Tags (separados por coma, ej: "Coop, Terror"):');
+        // Evaluar el array (cuidado: solo para uso local)
+        const arrayStr = '[' + match[1] + ']';
+        return eval(arrayStr);
+    } catch (err) {
+        error(`Error cargando juegos: ${err.message}`);
+        return [];
+    }
+}
+
+function guardarJuegos(juegos) {
+    try {
+        const contenidoJuegos = juegos.map(j =>
+            '    ' + JSON.stringify(j, null, 4).split('\n').join('\n    ')
+        ).join(',\n');
+
+        const nuevoContenido = `const gamesData = [\n${contenidoJuegos}\n];\n`;
+        fs.writeFileSync(GAMES_FILE, nuevoContenido);
+        return true;
+    } catch (err) {
+        error(`Error guardando: ${err.message}`);
+        return false;
+    }
+}
+
+// ============================================================================
+// MENÚ PRINCIPAL
+// ============================================================================
+
+async function menuPrincipal() {
+    clear();
+    titulo('GAME MANAGER');
+
+    const juegos = cargarJuegos();
+    info(`${juegos.length} juegos en la base de datos\n`);
+
+    const opcion = await seleccionar('¿Qué querés hacer?', [
+        'Agregar nuevo juego',
+        'Editar juego existente',
+        'Ver lista de juegos',
+        'Eliminar juego',
+        'Salir'
+    ]);
+
+    switch (opcion) {
+        case 1: await agregarJuego(); break;
+        case 2: await editarJuego(); break;
+        case 3: await listarJuegos(); break;
+        case 4: await eliminarJuego(); break;
+        case 5:
+            console.log(`\n${c.cyan}¡Hasta luego!${c.reset}\n`);
+            rl.close();
+            return;
+    }
+
+    await menuPrincipal();
+}
+
+// ============================================================================
+// AGREGAR JUEGO
+// ============================================================================
+
+async function agregarJuego() {
+    clear();
+    titulo('AGREGAR NUEVO JUEGO');
+
+    subtitulo('Datos obligatorios');
+
+    const id = await preguntar('ID (ej: lethal-company)');
+    const title = await preguntar('Nombre del juego');
+    const description = await preguntar('Descripción corta');
+    const image = await preguntar('URL de la imagen');
+
+    console.log(`\n${c.dim}Tags disponibles: Coop, Terror, Party, Accion, Roguelike, Supervivencia, Simulacion, Estrategia, Puzzle, Carreras, Crafteo, Sandbox${c.reset}`);
+    const tagsInput = await preguntar('Tags (separados por coma)');
     const tags = tagsInput.split(',').map(t => t.trim()).filter(t => t);
 
-    const downloadUrl = await preguntar('URL de descarga:');
+    const downloadUrl = await preguntar('URL de descarga');
 
-    // Datos opcionales
-    console.log(`\n${colors.green}📝 Datos opcionales:${colors.reset}\n`);
+    subtitulo('Datos opcionales');
 
-    const fullDescription = await preguntar('Descripción larga (para la página de detalle):', false);
-    const fixOnlineUrl = await preguntar('URL de Fix Online:', false);
-    const modsUrl = await preguntar('URL de Mods:', false);
+    const fullDescription = await preguntar('Descripción larga', '', false);
+    const fixOnlineUrl = await preguntar('URL Fix Online', '', false);
+    const modsUrl = await preguntar('URL de Mods', '', false);
 
-    // Specs personalizadas
-    const customSpecs = await confirmar('\n¿Querés agregar specs personalizadas?');
-    let specs = null;
-
-    if (customSpecs) {
-        console.log(`\n${colors.yellow}Dejá vacío para usar el valor por defecto${colors.reset}\n`);
-        const os = await preguntar('Sistema operativo:', false);
-        const cpu = await preguntar('Procesador:', false);
-        const ram = await preguntar('Memoria RAM:', false);
-        const gpu = await preguntar('Gráficos:', false);
-
-        if (os || cpu || ram || gpu) {
-            specs = {};
-            if (os) specs.os = os;
-            if (cpu) specs.cpu = cpu;
-            if (ram) specs.ram = ram;
-            if (gpu) specs.gpu = gpu;
-        }
-    }
-
-    // Opciones especiales
-    const externalLink = await confirmar('\n¿Es un link externo (como RadminVPN)?');
-    const customPage = await confirmar('¿Tiene una página personalizada (como schedule.html)?');
-
-    let customUrl = '';
-    if (customPage) {
-        customUrl = await preguntar('URL de la página personalizada (ej: "games/schedule.html"):');
-    }
-
-    // Construir el objeto del juego
-    const nuevoJuego = {
-        id,
-        title,
-        description,
-        image,
-        tags,
-        downloadUrl
-    };
-
+    // Construir juego
+    const nuevoJuego = { id, title, description, image, tags, downloadUrl };
     if (fullDescription) nuevoJuego.fullDescription = fullDescription;
     if (fixOnlineUrl) nuevoJuego.fixOnlineUrl = fixOnlineUrl;
     if (modsUrl) nuevoJuego.modsUrl = modsUrl;
-    if (specs) nuevoJuego.specs = specs;
-    if (externalLink) nuevoJuego.externalLink = true;
-    if (customPage) {
-        nuevoJuego.customPage = true;
-        nuevoJuego.customUrl = customUrl;
+
+    // Preview
+    subtitulo('Preview');
+    console.log(JSON.stringify(nuevoJuego, null, 2));
+
+    if (await confirmar('\n¿Guardar este juego?')) {
+        const juegos = cargarJuegos();
+        juegos.push(nuevoJuego);
+        if (guardarJuegos(juegos)) {
+            exito(`¡"${title}" agregado exitosamente!`);
+        }
+    } else {
+        info('Operación cancelada');
     }
 
-    // Mostrar preview
-    console.log(`
-${colors.bold}${colors.green}═══════════════════════════════════════════════════════════${colors.reset}
-${colors.bold}📋 PREVIEW DEL JUEGO:${colors.reset}
-${colors.bold}${colors.green}═══════════════════════════════════════════════════════════${colors.reset}
-`);
-    console.log(JSON.stringify(nuevoJuego, null, 4));
-    console.log(`
-${colors.bold}${colors.green}═══════════════════════════════════════════════════════════${colors.reset}
-`);
+    await preguntar('\nPresiona Enter para continuar...', '', false);
+}
 
-    // Confirmar
-    const confirmarAgregar = await confirmar('¿Agregar este juego a games.js?');
+// ============================================================================
+// EDITAR JUEGO
+// ============================================================================
 
-    if (!confirmarAgregar) {
-        console.log(`${colors.yellow}❌ Operación cancelada${colors.reset}`);
-        rl.close();
+async function editarJuego() {
+    clear();
+    titulo('EDITAR JUEGO');
+
+    const juegos = cargarJuegos();
+
+    if (juegos.length === 0) {
+        error('No hay juegos para editar');
+        await preguntar('\nPresiona Enter para continuar...', '', false);
         return;
     }
 
-    // Leer el archivo games.js
-    try {
-        let contenido = fs.readFileSync(GAMES_FILE, 'utf8');
+    // Mostrar lista
+    console.log(`${c.dim}Juegos disponibles:${c.reset}\n`);
+    juegos.forEach((j, i) => {
+        console.log(`  ${c.yellow}${(i + 1).toString().padStart(2)}.${c.reset} ${j.title} ${c.dim}(${j.id})${c.reset}`);
+    });
 
-        // Buscar el último objeto del array (antes del ];)
-        const insertIndex = contenido.lastIndexOf('}');
+    const busqueda = await preguntar('\nEscribí el número o parte del nombre');
 
-        if (insertIndex === -1) {
-            throw new Error('No se pudo encontrar dónde insertar el juego');
-        }
-
-        // Formatear el nuevo juego
-        const nuevoJuegoStr = ',\n    ' + JSON.stringify(nuevoJuego, null, 4)
-            .split('\n')
-            .map((line, i) => i === 0 ? line : '    ' + line)
-            .join('\n');
-
-        // Insertar el nuevo juego
-        contenido = contenido.slice(0, insertIndex + 1) + nuevoJuegoStr + contenido.slice(insertIndex + 1);
-
-        // Guardar
-        fs.writeFileSync(GAMES_FILE, contenido);
-
-        console.log(`
-${colors.bold}${colors.green}✅ ¡Juego agregado exitosamente!${colors.reset}
-
-${colors.cyan}Ahora podés:${colors.reset}
-1. Verificar en: file:///${GAMES_FILE.replace(/\\/g, '/')}
-2. Probar localmente abriendo beta/index.html
-3. Hacer commit y push para publicar
-
-${colors.yellow}Comando sugerido:${colors.reset}
-git add -A && git commit -m "✨ Agregado ${title}" && git push
-`);
-
-    } catch (error) {
-        console.log(`${colors.red}❌ Error al guardar: ${error.message}${colors.reset}`);
-        console.log(`\n${colors.yellow}Copiá esto y pegalo manualmente en games.js:${colors.reset}\n`);
-        console.log(JSON.stringify(nuevoJuego, null, 4));
+    // Buscar juego
+    let juegoIndex = -1;
+    const num = parseInt(busqueda);
+    if (!isNaN(num) && num >= 1 && num <= juegos.length) {
+        juegoIndex = num - 1;
+    } else {
+        juegoIndex = juegos.findIndex(j =>
+            j.title.toLowerCase().includes(busqueda.toLowerCase()) ||
+            j.id.toLowerCase().includes(busqueda.toLowerCase())
+        );
     }
 
-    rl.close();
+    if (juegoIndex === -1) {
+        error('Juego no encontrado');
+        await preguntar('\nPresiona Enter para continuar...', '', false);
+        return;
+    }
+
+    const juego = juegos[juegoIndex];
+
+    clear();
+    titulo(`EDITANDO: ${juego.title}`);
+
+    // Mostrar campos actuales y permitir editar
+    subtitulo('Editá los campos (Enter para mantener)');
+
+    juego.id = await preguntar('ID', juego.id);
+    juego.title = await preguntar('Título', juego.title);
+    juego.description = await preguntar('Descripción', juego.description);
+    juego.image = await preguntar('Imagen URL', juego.image);
+
+    const tagsStr = (juego.tags || []).join(', ');
+    const nuevosTags = await preguntar('Tags', tagsStr);
+    juego.tags = nuevosTags.split(',').map(t => t.trim()).filter(t => t);
+
+    juego.downloadUrl = await preguntar('Download URL', juego.downloadUrl);
+    juego.fullDescription = await preguntar('Descripción larga', juego.fullDescription || '', false);
+    juego.fixOnlineUrl = await preguntar('Fix Online URL', juego.fixOnlineUrl || '', false);
+    juego.modsUrl = await preguntar('Mods URL', juego.modsUrl || '', false);
+
+    // Limpiar campos vacíos
+    if (!juego.fullDescription) delete juego.fullDescription;
+    if (!juego.fixOnlineUrl) delete juego.fixOnlineUrl;
+    if (!juego.modsUrl) delete juego.modsUrl;
+
+    // Preview
+    subtitulo('Preview');
+    console.log(JSON.stringify(juego, null, 2));
+
+    if (await confirmar('\n¿Guardar cambios?')) {
+        juegos[juegoIndex] = juego;
+        if (guardarJuegos(juegos)) {
+            exito(`¡"${juego.title}" actualizado!`);
+        }
+    } else {
+        info('Cambios descartados');
+    }
+
+    await preguntar('\nPresiona Enter para continuar...', '', false);
 }
 
-// Ejecutar
-main().catch(console.error);
+// ============================================================================
+// LISTAR JUEGOS
+// ============================================================================
+
+async function listarJuegos() {
+    clear();
+    titulo('LISTA DE JUEGOS');
+
+    const juegos = cargarJuegos();
+
+    if (juegos.length === 0) {
+        info('No hay juegos');
+    } else {
+        juegos.forEach((j, i) => {
+            const tags = (j.tags || []).slice(0, 3).join(', ');
+            console.log(`${c.yellow}${(i + 1).toString().padStart(2)}.${c.reset} ${c.bold}${j.title}${c.reset}`);
+            console.log(`   ${c.dim}ID: ${j.id} | Tags: ${tags}${c.reset}`);
+            console.log(`   ${c.dim}${j.description}${c.reset}\n`);
+        });
+    }
+
+    await preguntar('\nPresiona Enter para volver...', '', false);
+}
+
+// ============================================================================
+// ELIMINAR JUEGO
+// ============================================================================
+
+async function eliminarJuego() {
+    clear();
+    titulo('ELIMINAR JUEGO');
+
+    const juegos = cargarJuegos();
+
+    if (juegos.length === 0) {
+        error('No hay juegos para eliminar');
+        await preguntar('\nPresiona Enter para continuar...', '', false);
+        return;
+    }
+
+    // Mostrar lista
+    juegos.forEach((j, i) => {
+        console.log(`  ${c.yellow}${(i + 1).toString().padStart(2)}.${c.reset} ${j.title}`);
+    });
+
+    const busqueda = await preguntar('\nNúmero o nombre del juego a eliminar');
+
+    let juegoIndex = -1;
+    const num = parseInt(busqueda);
+    if (!isNaN(num) && num >= 1 && num <= juegos.length) {
+        juegoIndex = num - 1;
+    } else {
+        juegoIndex = juegos.findIndex(j =>
+            j.title.toLowerCase().includes(busqueda.toLowerCase())
+        );
+    }
+
+    if (juegoIndex === -1) {
+        error('Juego no encontrado');
+        await preguntar('\nPresiona Enter para continuar...', '', false);
+        return;
+    }
+
+    const juego = juegos[juegoIndex];
+
+    console.log(`\n${c.red}¿Estás seguro de eliminar "${juego.title}"?${c.reset}`);
+
+    if (await confirmar('Esta acción no se puede deshacer')) {
+        juegos.splice(juegoIndex, 1);
+        if (guardarJuegos(juegos)) {
+            exito(`"${juego.title}" eliminado`);
+        }
+    } else {
+        info('Operación cancelada');
+    }
+
+    await preguntar('\nPresiona Enter para continuar...', '', false);
+}
+
+// ============================================================================
+// EJECUTAR
+// ============================================================================
+
+menuPrincipal().catch(console.error);

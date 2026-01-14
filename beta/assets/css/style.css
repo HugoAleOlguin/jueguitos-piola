@@ -640,17 +640,19 @@ footer:hover p {
 }
 
 .game-poster {
-    width: 320px;
-    border-radius: 16px;
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
-    border: 2px solid var(--glass-border);
+    width: 350px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 243, 255, 0.15);
+    border: 1px solid var(--glass-border);
     transition: all 0.4s var(--ease-smooth);
     object-fit: cover;
 }
 
 .game-poster:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 40px rgba(0, 243, 255, 0.3);
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 243, 255, 0.25);
     border-color: var(--primary-color);
 }
 
@@ -663,11 +665,12 @@ footer:hover p {
 
 .game-info-header h1 {
     font-family: var(--font-display);
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     color: var(--primary-color);
-    margin-bottom: 1rem;
-    text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-    line-height: 1.2;
+    margin-bottom: 1.2rem;
+    text-shadow: 0 0 30px rgba(0, 243, 255, 0.25);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
 }
 
 .game-meta {
@@ -688,10 +691,11 @@ footer:hover p {
 }
 
 .game-description {
-    line-height: 1.8;
-    color: #ccc;
-    font-size: 1.05rem;
-    margin-bottom: 2rem;
+    line-height: 1.85;
+    color: #aaa;
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
 }
 
 /* =====================================================
@@ -794,60 +798,6 @@ footer:hover p {
 .btn-secondary:active,
 .button-secondary:active {
     transform: translateY(-1px);
-}
-
-/* =====================================================
-   ESPECIFICACIONES DEL JUEGO
-   ===================================================== */
-.game-specs {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--glass-border);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
-
-.spec-item {
-    padding: 1.25rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 16px;
-    border: 1px solid var(--glass-border);
-    transition: all 0.3s var(--ease-smooth);
-}
-
-.spec-item:hover {
-    border-color: var(--secondary-color);
-    background: rgba(188, 19, 254, 0.05);
-}
-
-.spec-item h3 {
-    color: var(--secondary-color);
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-}
-
-.spec-item p {
-    color: #bbb;
-    font-size: 0.95rem;
-}
-
-/* Specs en tema claro */
-[data-theme="light"] .spec-item {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .spec-item:hover {
-    background: rgba(188, 19, 254, 0.08);
-    border-color: var(--secondary-color);
-}
-
-[data-theme="light"] .spec-item p {
-    color: #444;
 }
 
 /* =====================================================

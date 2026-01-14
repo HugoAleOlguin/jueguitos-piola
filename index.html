@@ -387,15 +387,13 @@
 </footer>
 
 <!-- Modal de invitación a la Beta -->
-
-<!-- Modal de invitación a la Beta -->
 <div id="betaModal" class="beta-modal">
     <div class="beta-modal-content">
-        <p class="beta-modal-title">¡Nueva version disponible!</p>
-        <p class="beta-modal-desc">Proba la beta para nuevos juegos <br> (con mejoras y nuevas funciones)</p>
+        <p class="beta-modal-title">Nueva version disponible!</p>
+        <p class="beta-modal-desc">Proba la beta para nuevos juegos<br>(con mejoras y nuevas funciones)</p>
         <div class="beta-modal-buttons">
             <a href="beta/index.html" class="beta-modal-btn beta-modal-go">Ir a Beta</a>
-            <button class="beta-modal-btn beta-modal-dismiss">No mostrar mas</button>
+            <button class="beta-modal-btn beta-modal-dismiss">No por ahora</button>
         </div>
     </div>
 </div>
@@ -405,24 +403,16 @@
 <script>
     // Modal de invitación a la Beta
     (function () {
-        const BETA_DISMISSED_KEY = 'betaModalDismissed';
         const modal = document.getElementById('betaModal');
-
-        // No mostrar si ya fue descartado
-        if (localStorage.getItem(BETA_DISMISSED_KEY)) {
-            modal.style.display = 'none';
-            return;
-        }
 
         // Mostrar modal después de 2 segundos
         setTimeout(() => {
             modal.classList.add('show');
         }, 2000);
 
-        // Botón "No mostrar más"
+        // Botón "No por ahora" - solo oculta, no guarda
         const dismissBtn = modal.querySelector('.beta-modal-dismiss');
         dismissBtn.addEventListener('click', () => {
-            localStorage.setItem(BETA_DISMISSED_KEY, 'true');
             modal.classList.remove('show');
         });
     })();
