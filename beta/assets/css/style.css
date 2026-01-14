@@ -1135,3 +1135,91 @@ img {
         font-size: 2rem;
     }
 }
+
+/* =====================================================
+   🕹️ MODO RETRO / LEGACY (Easter Egg)
+   =====================================================
+   Activa estos estilos escribiendo "legacy" en el buscador
+   ===================================================== */
+[data-theme="retro"] {
+    /* Fondo con grilla rosa como el sitio original */
+    --color-grid: rgba(253, 190, 241, 0.2);
+    --bg-color: #050505;
+    --primary-color: #4CAF50;
+    /* Verde OG */
+    --secondary-color: #ff007f;
+    /* Rosa OG */
+    --card-bg: rgba(20, 0, 15, 0.85);
+}
+
+[data-theme="retro"] body {
+    background-color: #050505;
+    background-image:
+        linear-gradient(0deg, transparent 24%, var(--color-grid) 25%, var(--color-grid) 26%, transparent 27%, transparent 74%, var(--color-grid) 75%, var(--color-grid) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, var(--color-grid) 25%, var(--color-grid) 26%, transparent 27%, transparent 74%, var(--color-grid) 75%, var(--color-grid) 76%, transparent 77%, transparent);
+    background-size: 50px 50px;
+}
+
+/* Scrollbar retro con gradiente rosa/dorado */
+[data-theme="retro"] ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d53369, #daae51);
+}
+
+[data-theme="retro"] ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #e84a82, #ecc36a);
+}
+
+/* Selección rosa */
+[data-theme="retro"] ::selection {
+    background: #ff007f;
+    color: white;
+}
+
+/* Header con estilo verde */
+[data-theme="retro"] header {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="retro"] .logo {
+    color: #4CAF50 !important;
+}
+
+/* Tarjetas con borde rosa */
+[data-theme="retro"] .game-card {
+    background-color: rgba(20, 0, 15, 0.85);
+    border: 1px solid rgba(255, 9, 148, 0.616);
+    border-radius: 10px;
+}
+
+[data-theme="retro"] .game-card:hover {
+    transform: scale(1.03);
+    background-color: rgba(41, 2, 30, 0.9);
+}
+
+/* Botones verdes */
+[data-theme="retro"] .btn-primary {
+    background: #4CAF50;
+}
+
+[data-theme="retro"] .btn-primary:hover {
+    background: #45a049;
+}
+
+/* Footer retro */
+[data-theme="retro"] footer {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* El modo retro se activa escribiendo 'prime' en el buscador */
+
+@keyframes pulse-retro {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
