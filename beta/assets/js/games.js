@@ -75,7 +75,7 @@ const gamesData = [
     title: "Halo 1 Online",
     description: "7 palabras.",
     fullDescription: "El clásico Halo Combat Evolved con multiplayer online.",
-    image: "https://pressover.news/wp-content/uploads/2021/11/Halo-CE-1.jpg",
+    image: "https://cdn.displate.com/artwork/380x270/2022-12-02/fca2ccd2d33b1e9b72c1aec020195f89_e95a5af6ed022868b7ebc046db7e2a3a.jpg",
     tags: ["Accion", "Coop"],
     downloadUrl: "https://www.mediafire.com/file/mx83lirxptvfzw6/HALO_CE_v.1.10_%5BDarkMaster%5D.rar/file",
     fixOnlineUrl: "",
@@ -372,6 +372,18 @@ const gamesData = [
     downloadUrl: "https://www.mediafire.com/file/sworn",
     fixOnlineUrl: "",
     modsUrl: ""
+  },
+  {
+    "id": "hytale",
+    "title": "Hytale (OFFLINE)",
+    "description": "Recien salió (NO TIENE ONLINE AÚN)",
+    "image": "https://hytale.com/static/images/logo.png",
+    "tags": [
+      "Coop",
+      "Craft",
+      "Sandbox"
+    ],
+    "downloadUrl": "https://gofile.io/d/cddJ67"
   }
 ];
 

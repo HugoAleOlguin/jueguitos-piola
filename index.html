@@ -73,8 +73,8 @@
 
                 <div class="game-card" data-category="accion coop">
                     <a href="https://hugoaleolguin.github.io/jueguitos-piola/juegos/halo.html" class="card-link">
-                        <img src="https://pressover.news/wp-content/uploads/2021/11/Halo-CE-1.jpg" loading="lazy"
-                            decoding="async" alt="Halo">
+                        <img src="https://cdn.displate.com/artwork/380x270/2022-12-02/fca2ccd2d33b1e9b72c1aec020195f89_e95a5af6ed022868b7ebc046db7e2a3a.jpg"
+                            loading="lazy" decoding="async" alt="Halo">
                         <h3>Halo 1 Online</h3>
                         <p>7 palabras.</p>
                     </a>
@@ -386,11 +386,47 @@
     © 2026 Jueguitos Piola. Ningún derecho reservado.
 </footer>
 
-<a href="beta/index.html" class="beta-btn">
-    PROBAR NUEVA BETA
-</a>
+<!-- Modal de invitación a la Beta -->
+
+<!-- Modal de invitación a la Beta -->
+<div id="betaModal" class="beta-modal">
+    <div class="beta-modal-content">
+        <p class="beta-modal-title">¡Nueva version disponible!</p>
+        <p class="beta-modal-desc">Proba la beta para nuevos juegos <br> (con mejoras y nuevas funciones)</p>
+        <div class="beta-modal-buttons">
+            <a href="beta/index.html" class="beta-modal-btn beta-modal-go">Ir a Beta</a>
+            <button class="beta-modal-btn beta-modal-dismiss">No mostrar mas</button>
+        </div>
+    </div>
+</div>
 
 <script src="scripts.js" defer></script>
+
+<script>
+    // Modal de invitación a la Beta
+    (function () {
+        const BETA_DISMISSED_KEY = 'betaModalDismissed';
+        const modal = document.getElementById('betaModal');
+
+        // No mostrar si ya fue descartado
+        if (localStorage.getItem(BETA_DISMISSED_KEY)) {
+            modal.style.display = 'none';
+            return;
+        }
+
+        // Mostrar modal después de 2 segundos
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 2000);
+
+        // Botón "No mostrar más"
+        const dismissBtn = modal.querySelector('.beta-modal-dismiss');
+        dismissBtn.addEventListener('click', () => {
+            localStorage.setItem(BETA_DISMISSED_KEY, 'true');
+            modal.classList.remove('show');
+        });
+    })();
+</script>
 </body>
 
 </html>

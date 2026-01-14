@@ -40,7 +40,10 @@
         // Actualizar el ícono del botón si existe
         const toggleBtn = document.getElementById('themeToggle');
         if (toggleBtn) {
-            toggleBtn.textContent = theme === 'light' ? '☀️' : '🌙';
+            // SVG iconos de sol y luna
+            const sunIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+            const moonIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+            toggleBtn.innerHTML = theme === 'light' ? sunIcon : moonIcon;
             toggleBtn.title = theme === 'light' ? 'Cambiar a tema oscuro' : 'Cambiar a tema claro';
         }
     };
@@ -192,16 +195,17 @@
             document.documentElement.setAttribute('data-theme', 'retro');
             localStorage.setItem('jueguitosTheme', 'retro');
 
-            // Actualizar botón de tema
+            // Actualizar botón de tema con icono retro
             const toggleBtn = document.getElementById('themeToggle');
             if (toggleBtn) {
-                toggleBtn.textContent = '🕹️';
-                toggleBtn.title = 'Modo Legacy activado';
+                const retroIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="4" width="20" height="16" rx="2"/><rect x="5" y="7" width="8" height="6" fill="none" stroke="currentColor"/><circle cx="17" cy="10" r="2"/><circle cx="17" cy="15" r="1"/></svg>';
+                toggleBtn.innerHTML = retroIcon;
+                toggleBtn.title = 'Modo Prime activado';
             }
 
             // Notificación
-            mostrarNotificacion('🕹️ ¡Modo Legacy activado!', 'retro');
-            console.log('🕹️ Easter egg activado: Modo Legacy');
+            mostrarNotificacion('Modo Prime activado', 'retro');
+            console.log('Easter egg activado: Modo Prime');
 
         } else {
             // Volver al modo normal (oscuro)
@@ -211,12 +215,13 @@
             // Actualizar botón de tema
             const toggleBtn = document.getElementById('themeToggle');
             if (toggleBtn) {
-                toggleBtn.textContent = '🌙';
+                const moonIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+                toggleBtn.innerHTML = moonIcon;
                 toggleBtn.title = 'Cambiar a tema claro';
             }
 
             // Notificación
-            mostrarNotificacion('👋 Modo Legacy desactivado', 'normal');
+            mostrarNotificacion('Modo Prime desactivado', 'normal');
         }
     }
 
@@ -297,78 +302,97 @@
         'rem': 'https://i.ibb.co/HfQ63z7M/rem.png'
     };
 
-    // Elemento contenedor de la imagen (se crea una sola vez)
+    // Estado
     let eggContainer = null;
-    let currentEgg = null; // Track cual egg está activo
+    let currentWord = null;
+    let loadVersion = 0; // Para cancelar cargas anteriores
 
-    // Crear el contenedor de la imagen (lazy load)
-    function getEggContainer() {
-        if (!eggContainer) {
-            eggContainer = document.createElement('div');
-            eggContainer.id = 'easter-egg-image';
-            eggContainer.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                z-index: 9998;
-                pointer-events: none;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            `;
+    // Crear el contenedor (una sola vez)
+    function createContainer() {
+        if (eggContainer) return eggContainer;
 
-            const img = document.createElement('img');
-            img.style.cssText = `
-                max-width: 80vw;
-                max-height: 70vh;
-                border-radius: 16px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            `;
-            eggContainer.appendChild(img);
-            document.body.appendChild(eggContainer);
-        }
+        eggContainer = document.createElement('div');
+        eggContainer.id = 'easter-egg-image';
+        eggContainer.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        `;
+
+        const img = document.createElement('img');
+        img.style.cssText = `
+            max-width: 80vw;
+            max-height: 70vh;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        `;
+        eggContainer.appendChild(img);
+        document.body.appendChild(eggContainer);
+
         return eggContainer;
     }
 
     // Mostrar imagen
     function showEgg(word, url) {
-        if (currentEgg === word) return; // Ya está mostrando esta
+        // Si ya está mostrando esta palabra, no hacer nada
+        if (currentWord === word) return;
 
-        const container = getEggContainer();
+        const container = createContainer();
         const img = container.querySelector('img');
 
-        // Ocultar imagen actual primero
+        // Incrementar versión para cancelar cargas anteriores
+        loadVersion++;
+        const thisVersion = loadVersion;
+
+        // Ocultar inmediatamente
         container.style.opacity = '0';
+        currentWord = word;
 
-        // Esperar a que cargue la nueva imagen antes de mostrar
-        const newImg = new Image();
-        newImg.onload = () => {
-            // Solo mostrar si todavía es el egg que queremos
-            if (currentEgg === word) {
-                img.src = url;
-                img.alt = word;
-                requestAnimationFrame(() => {
+        // Precargar nueva imagen
+        const preload = new Image();
+        preload.onload = () => {
+            // Verificar que esta carga todavía es válida
+            if (thisVersion !== loadVersion) return;
+            if (currentWord !== word) return;
+
+            // Aplicar imagen y mostrar
+            img.src = url;
+            img.alt = word;
+
+            // Pequeño delay para asegurar que la transición de ocultar terminó
+            setTimeout(() => {
+                if (thisVersion === loadVersion && currentWord === word) {
                     container.style.opacity = '1';
-                });
-            }
+                }
+            }, 50);
         };
-        newImg.src = url;
-        currentEgg = word;
+        preload.onerror = () => {
+            console.warn('No se pudo cargar imagen:', url);
+            currentWord = null;
+        };
+        preload.src = url;
 
-        console.log(`🥚 Easter egg encontrado: ${word}`);
+        console.log('Easter egg encontrado:', word);
     }
 
     // Ocultar imagen
     function hideEgg() {
-        if (!currentEgg) return; // No hay nada que ocultar
+        if (!currentWord) return;
+
+        loadVersion++; // Cancelar cualquier carga en progreso
+        currentWord = null;
 
         if (eggContainer) {
             eggContainer.style.opacity = '0';
         }
-        currentEgg = null;
     }
 
-    // Inicializar listener
+    // Inicializar
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchInput');
         if (!searchInput) return;
@@ -376,7 +400,6 @@
         searchInput.addEventListener('input', (e) => {
             const value = e.target.value.toLowerCase().trim();
 
-            // Buscar coincidencia exacta
             if (IMAGE_EGGS[value]) {
                 showEgg(value, IMAGE_EGGS[value]);
             } else {
@@ -384,10 +407,94 @@
             }
         });
 
-        // Ocultar al perder foco del buscador
+        // Ocultar al perder foco
         searchInput.addEventListener('blur', () => {
-            setTimeout(hideEgg, 200);
+            setTimeout(hideEgg, 150);
         });
     });
 
+})();
+
+
+// ============================================================================
+// PISTA DEL EASTER EGG (aparece con probabilidad)
+// ============================================================================
+
+(function () {
+    const HINT_SHOWN_KEY = 'primeHintShown';
+    const PROBABILITY = 0.9; // 90% de probabilidad
+
+    // No mostrar si ya se vio o si no pasa la probabilidad
+    if (localStorage.getItem(HINT_SHOWN_KEY)) return;
+    if (Math.random() > PROBABILITY) return;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Esperar 5 segundos antes de mostrar
+        setTimeout(() => {
+            const hint = document.createElement('div');
+            hint.className = 'prime-hint';
+            hint.innerHTML = `
+                <span>Escribe "prime" en el buscador para una sorpresa</span>
+                <button class="prime-hint-close">x</button>
+            `;
+            hint.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background: rgba(20, 20, 25, 0.95);
+                border: 1px solid rgba(213, 51, 105, 0.4);
+                border-radius: 8px;
+                padding: 12px 16px;
+                color: #ccc;
+                font-size: 13px;
+                z-index: 9000;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: slideInHint 0.4s ease;
+                backdrop-filter: blur(8px);
+            `;
+
+            document.body.appendChild(hint);
+
+            // Botón cerrar
+            const closeBtn = hint.querySelector('.prime-hint-close');
+            closeBtn.style.cssText = `
+                background: none;
+                border: none;
+                color: #666;
+                cursor: pointer;
+                font-size: 16px;
+                padding: 0 4px;
+            `;
+            closeBtn.addEventListener('click', () => {
+                localStorage.setItem(HINT_SHOWN_KEY, 'true');
+                hint.style.animation = 'slideOutHint 0.3s ease forwards';
+                setTimeout(() => hint.remove(), 300);
+            });
+
+            // Auto-ocultar después de 8 segundos
+            setTimeout(() => {
+                if (hint.parentNode) {
+                    localStorage.setItem(HINT_SHOWN_KEY, 'true');
+                    hint.style.animation = 'slideOutHint 0.3s ease forwards';
+                    setTimeout(() => hint.remove(), 300);
+                }
+            }, 8000);
+        }, 5000);
+    });
+
+    // Agregar estilos de animación
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInHint {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOutHint {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-20px); }
+        }
+    `;
+    document.head.appendChild(style);
 })();

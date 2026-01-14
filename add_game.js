@@ -58,8 +58,8 @@ function preguntar(pregunta, obligatorio = true) {
 // Función para confirmar
 function confirmar(pregunta) {
     return new Promise((resolve) => {
-        rl.question(`${colors.magenta}${pregunta} (s/n)${colors.reset} `, (respuesta) => {
-            resolve(respuesta.toLowerCase() === 's' || respuesta.toLowerCase() === 'si');
+        rl.question(`${colors.magenta}${pregunta} (y/n)${colors.reset} `, (respuesta) => {
+            resolve(respuesta.toLowerCase() === 'y' || respuesta.toLowerCase() === 'si');
         });
     });
 }

@@ -1,6 +1,7 @@
 /* Estilo de scrollbar personalizado */
 ::-webkit-scrollbar {
-    width: 8px; /* Slightly thinner */
+    width: 8px;
+    /* Slightly thinner */
     height: 8px;
 }
 
@@ -10,7 +11,8 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #d53369, #daae51); /* Gradient thumb */
+    background: linear-gradient(180deg, #d53369, #daae51);
+    /* Gradient thumb */
     border-radius: 4px;
 }
 
@@ -30,18 +32,28 @@ html {
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Modern Font */
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    /* Modern Font */
     width: 100vw;
-    --color: rgba(253, 190, 241, 0.2); /* Reduced opacity for grid */
-    background-color: #050505; /* Blacker background */
-    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
-        linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+    --color: rgba(253, 190, 241, 0.2);
+    /* Reduced opacity for grid */
+    background-color: #050505;
+    /* Blacker background */
+    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent);
     background-size: 50px 50px;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 header {
@@ -83,24 +95,31 @@ header {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 10px;
     margin-top: 20px;
-    overflow-x: hidden; /* Ocultar desplazamiento horizontal */
+    overflow-x: hidden;
+    /* Ocultar desplazamiento horizontal */
 }
 
 .game-card {
     /* backdrop-filter: blur(5px); REMOVED FOR PERFORMANCE */
-    background-color: rgba(20, 0, 15, 0.85); /* Increased opacity slightly */
+    background-color: rgba(20, 0, 15, 0.85);
+    /* Increased opacity slightly */
     border-radius: 10px;
     border: rgba(255, 9, 148, 0.616) solid 1px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: hidden; /* Changed from auto to hidden for cleaner card */
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Faster transition */
-    will-change: transform; /* Hint to browser for optimization */
+    overflow: hidden;
+    /* Changed from auto to hidden for cleaner card */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* Faster transition */
+    will-change: transform;
+    /* Hint to browser for optimization */
     display: flex;
     flex-direction: column;
 }
-#radmin.game-card{
+
+#radmin.game-card {
     border: rgba(9, 255, 111, 0.616) solid 1px;
 }
+
 .game-card:hover {
     transform: scale(1.03);
     background-color: rgba(41, 2, 30, 0.9);
@@ -111,7 +130,8 @@ header {
     width: 100%;
     height: 200px;
     object-fit: cover;
-    background-color: #2a2a2a; /* Placeholder color while loading */
+    background-color: #2a2a2a;
+    /* Placeholder color while loading */
 }
 
 .game-card h3 {
@@ -125,7 +145,8 @@ header {
 .game-card p {
     padding: 0 10px 10px 10px;
     font-size: 14px;
-    color: #bbb; /* Lighter for better contrast on dark bg */
+    color: #bbb;
+    /* Lighter for better contrast on dark bg */
     text-align: center;
     flex-grow: 1;
 }
@@ -135,7 +156,8 @@ header {
     text-decoration: none;
     display: block;
     cursor: pointer;
-    color: inherit; /* Hereda el color de texto */
+    color: inherit;
+    /* Hereda el color de texto */
 }
 
 /* Botón de Jugar Ahora */
@@ -159,7 +181,8 @@ header {
 
 /* Footer siempre abajo */
 .footer {
-    background-color: rgba(0, 0, 0, 0.8); /* Less translucent */
+    background-color: rgba(0, 0, 0, 0.8);
+    /* Less translucent */
     backdrop-filter: blur(5px);
     position: fixed;
     bottom: 0;
@@ -185,13 +208,15 @@ header {
 
 /* Estilo de cada botón de filtro */
 .filter-btn {
-    padding: 10px 25px; /* Wider padding */
+    padding: 10px 25px;
+    /* Wider padding */
     font-size: 14px;
     font-weight: bold;
     color: #f0f0f0;
     background-color: rgba(76, 175, 80, 0.1);
     border: 1px solid rgba(76, 175, 80, 0.5);
-    border-radius: 50px; /* Pill shape */
+    border-radius: 50px;
+    /* Pill shape */
     cursor: pointer;
     transition: all 0.2s ease;
     backdrop-filter: blur(5px);
@@ -220,7 +245,8 @@ header {
     font-size: 16px;
     font-weight: bold;
     color: #f0f0f0;
-    background-color: rgba(138, 43, 226, 0.25); /* Un color violeta/rosa */
+    background-color: rgba(138, 43, 226, 0.25);
+    /* Un color violeta/rosa */
     border: 2px solid rgba(245, 137, 255, 0.3);
     border-radius: 8px;
     cursor: pointer;
@@ -243,51 +269,62 @@ header {
 /* Estilos para dispositivos pequeños */
 @media (min-width: 769px) and (max-width: 1024px) {
     .contenedor-juegos {
-      max-width: 90%; /* Ajusta el ancho máximo */
-      padding: 15px;
+        max-width: 90%;
+        /* Ajusta el ancho máximo */
+        padding: 15px;
     }
-  
-    .game-list {
-    max-width: 95%;
-      grid-template-columns: repeat(auto-fit, minmax(auto-fit, 1fr)); /* Reduce el tamaño mínimo de las columnas */
-      gap: 5px; /* Reduce el espacio entre las tarjetas */
-    }
-    
-    .game-list {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ajusta el tamaño mínimo */
-      gap: 10px;
-    }
-  }
 
-  /* Estilos SIMPLES para juegos no disponibles */
+    .game-list {
+        max-width: 95%;
+        grid-template-columns: repeat(auto-fit, minmax(auto-fit, 1fr));
+        /* Reduce el tamaño mínimo de las columnas */
+        gap: 5px;
+        /* Reduce el espacio entre las tarjetas */
+    }
+
+    .game-list {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        /* Ajusta el tamaño mínimo */
+        gap: 10px;
+    }
+}
+
+/* Estilos SIMPLES para juegos no disponibles */
 .game-card.not-available img {
-    filter: grayscale(100%); /* Pone la imagen en blanco y negro */
-    opacity: 0.5; /* La hace un poco transparente */
+    filter: grayscale(100%);
+    /* Pone la imagen en blanco y negro */
+    opacity: 0.5;
+    /* La hace un poco transparente */
 }
 
 .game-card.not-available .card-link {
-    cursor: not-allowed; /* Muestra un cursor de "no permitido" */
+    cursor: not-allowed;
+    /* Muestra un cursor de "no permitido" */
 }
 
 .game-card.not-available .jugar-ahora {
-    background-color: #333; /* Un fondo gris para el botón falso */
+    background-color: #333;
+    /* Un fondo gris para el botón falso */
     color: #888;
     cursor: not-allowed;
-    text-align: center; /* Asegura que el texto "Próximamente" esté centrado */
+    text-align: center;
+    /* Asegura que el texto "Próximamente" esté centrado */
 }
 
-  /* Estilos para tablets */
-  @media (min-width: 769px) and (max-width: 1024px) {
+/* Estilos para tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
     .contenedor-juegos {
-      max-width: 90%; /* Ajusta el ancho máximo */
-      padding: 15px;
+        max-width: 90%;
+        /* Ajusta el ancho máximo */
+        padding: 15px;
     }
-  
+
     .game-list {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ajusta el tamaño mínimo */
-      gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        /* Ajusta el tamaño mínimo */
+        gap: 10px;
     }
-  }
+}
 
 /* === Beta Button Styles === */
 .beta-btn {
@@ -329,4 +366,84 @@ header {
     }
 }
 
-  
+/* === Beta Modal (invitación lateral) === */
+.beta-modal {
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    z-index: 9998;
+    opacity: 0;
+    transform: translateX(-120%);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.beta-modal.show {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.beta-modal-content {
+    background: rgba(10, 10, 15, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    max-width: 280px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.beta-modal-title {
+    color: #00f2ff;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.beta-modal-desc {
+    color: #aaa;
+    font-size: 13px;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.beta-modal-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.beta-modal-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+}
+
+.beta-modal-go {
+    background: linear-gradient(135deg, #00f2ff, #00a8ff);
+    color: #000;
+}
+
+.beta-modal-go:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 242, 255, 0.4);
+}
+
+.beta-modal-dismiss {
+    background: rgba(255, 255, 255, 0.1);
+    color: #888;
+}
+
+.beta-modal-dismiss:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #aaa;
+}
