@@ -152,11 +152,11 @@
 
 
 // ============================================================================
-// 🕹️ EASTER EGG: MODO RETRO / LEGACY
+// 🕹️ EASTER EGG: MODO RETRO / prime
 // ============================================================================
 //
-// Escribí "legacy" en el buscador para activar el modo retro
-// Escribí "legacy" de nuevo para desactivarlo
+// Escribí "prime" en el buscador para activar el modo retro
+// Escribí "prime" de nuevo para desactivarlo
 //
 // ============================================================================
 
@@ -299,7 +299,8 @@
     const IMAGE_EGGS = {
         'tormenta': 'https://i.ibb.co/LWw3SJc/tormenta.png',
         'vecina': 'https://i.ibb.co/HTtGBHVq/vecina.png',
-        'rem': 'https://i.ibb.co/HfQ63z7M/rem.png'
+        'rem': 'https://i.ibb.co/HfQ63z7M/rem.png',
+        'el mismo': 'https://i.ibb.co/gb6ZQPc4/el-mismo.png'
     };
 
     // Estado
