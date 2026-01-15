@@ -18,9 +18,46 @@
 
         body {
             font-family: 'Roboto', sans-serif;
-            background: #0a0a0f;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0d1117 100%);
             color: #fff;
             min-height: 100vh;
+        }
+
+        /* Animaciones globales */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 20px 5px rgba(0, 243, 255, 0.2);
+            }
         }
 
         /* Login Screen */
@@ -35,12 +72,14 @@
         }
 
         .login-box {
-            background: rgba(20, 20, 30, 0.9);
-            border: 1px solid rgba(0, 243, 255, 0.2);
+            background: rgba(20, 20, 30, 0.95);
+            border: 1px solid rgba(0, 243, 255, 0.3);
             border-radius: 16px;
-            padding: 2rem;
-            width: 320px;
+            padding: 2.5rem;
+            width: 340px;
             text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            backdrop-filter: blur(10px);
         }
 
         .login-box h2 {
@@ -69,18 +108,24 @@
 
         .login-box button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: linear-gradient(135deg, #00f3ff, #00a8b3);
             border: none;
             border-radius: 8px;
             color: #000;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1rem;
         }
 
         .login-box button:hover {
-            transform: scale(1.02);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 243, 255, 0.3);
+        }
+
+        .login-box button:active {
+            transform: translateY(0);
         }
 
         .login-error {
@@ -96,6 +141,7 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
+            animation: fadeIn 0.4s ease-out;
         }
 
         .admin-header {
@@ -111,20 +157,23 @@
             font-family: 'Orbitron', sans-serif;
             color: #00f3ff;
             font-size: 1.5rem;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
         }
 
         .logout-btn {
-            background: rgba(255, 71, 87, 0.2);
-            border: 1px solid #ff4757;
+            background: transparent;
+            border: 1px solid rgba(255, 71, 87, 0.5);
             color: #ff4757;
             padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.85rem;
+            transition: all 0.3s ease;
         }
 
         .logout-btn:hover {
-            background: rgba(255, 71, 87, 0.3);
+            background: rgba(255, 71, 87, 0.15);
+            border-color: #ff4757;
         }
 
         /* Tabs */
@@ -135,32 +184,40 @@
         }
 
         .tab {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #888;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            color: #666;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
         }
 
         .tab:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            color: #aaa;
         }
 
         .tab.active {
             background: rgba(0, 243, 255, 0.1);
-            border-color: #00f3ff;
+            border-color: rgba(0, 243, 255, 0.5);
             color: #00f3ff;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
         }
 
         /* Form */
         .form-section {
-            background: rgba(20, 20, 30, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1.75rem;
             margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
         .form-section h3 {
@@ -409,14 +466,35 @@
             font-size: 0.8rem;
         }
 
+        .game-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
         .game-item-actions button {
-            background: rgba(255, 71, 87, 0.2);
-            border: 1px solid #ff4757;
-            color: #ff4757;
-            padding: 6px 12px;
+            background: transparent;
+            border: none;
+            padding: 8px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .game-item-actions button:first-child {
+            color: #00f3ff;
+        }
+
+        .game-item-actions button:first-child:hover {
+            background: rgba(0, 243, 255, 0.2);
+        }
+
+        .game-item-actions button:last-child {
+            color: #ff4757;
+        }
+
+        .game-item-actions button:last-child:hover {
+            background: rgba(255, 71, 87, 0.2);
         }
     </style>
 </head>
@@ -569,7 +647,56 @@
         const REPO_OWNER = 'HugoAleOlguin';
         const REPO_NAME = 'jueguitos-piola';
         const FILE_PATH = 'beta/assets/js/games.js';
+        const VERSION_PATH = 'beta/version.json';
         const BRANCH = 'gh-pages';
+
+        // Generar versión automática (año.mes.dia.hora)
+        function generateVersion() {
+            const now = new Date();
+            return `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2,
+                '0')}.${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // Actualizar version.json automáticamente
+        async function updateVersionFile() {
+            try {
+                const token = localStorage.getItem('githubToken');
+
+                // Obtener archivo actual
+                const response = await fetch(
+                    `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${VERSION_PATH}?ref=${BRANCH}`,
+                    { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+                );
+
+                const fileData = await response.json();
+                const newVersion = {
+                    version: generateVersion(),
+                    updated: new Date().toISOString()
+                };
+
+                // Actualizar archivo
+                await fetch(
+                    `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${VERSION_PATH}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: 'update version',
+                            content: btoa(JSON.stringify(newVersion, null, 4)),
+                            sha: fileData.sha,
+                            branch: BRANCH
+                        })
+                    }
+                );
+                console.log('Versión actualizada:', newVersion.version);
+            } catch (e) {
+                console.warn('No se pudo actualizar version.json:', e);
+            }
+        }
 
         // Función para hashear con SHA-256
         async function hashPassword(password) {
@@ -804,11 +931,14 @@
                 await updateFile(
                     newContent,
                     fileData.sha,
-                    `➕ Agregar juego: ${newGame.title}`
+                    `+ ${newGame.title}`
                 );
 
                 status.className = 'status success';
                 status.textContent = `✅ ¡"${newGame.title}" agregado y publicado!`;
+
+                // Actualizar versión para forzar recarga en clientes
+                await updateVersionFile();
 
                 // Limpiar formulario
                 clearForm();
@@ -834,28 +964,177 @@
         // GAMES LIST
         // =====================================================================
 
+        let currentGames = [];
+        let currentSha = '';
+
         async function loadGamesList() {
             const container = document.getElementById('gamesListContainer');
             container.innerHTML = '<p style="color: #888;">Cargando...</p>';
 
             try {
                 const fileData = await getFileContent();
+                currentSha = fileData.sha;
                 const content = decodeURIComponent(escape(atob(fileData.content)));
                 const match = content.match(/const gamesData = \[([\s\S]*)\];/);
-                const games = eval('[' + match[1] + ']');
+                currentGames = eval('[' + match[1] + ']');
 
-                container.innerHTML = games.map(game => `
-                    <div class="game-item">
-                        <img src="${game.image}" alt="${game.title}" onerror="this.src='favicon.png'">
-                        <div class="game-item-info">
-                            <h4>${game.title}</h4>
-                            <p>${game.id} • ${(game.tags || []).join(', ')}</p>
-                        </div>
-                    </div>
-                `).join('');
+                container.innerHTML = currentGames.map((game, index) => `
+    <div class="game-item">
+        <img src="${game.image}" alt="${game.title}" onerror="this.src='favicon.png'">
+        <div class="game-item-info">
+            <h4>${game.title}</h4>
+            <p>${game.id} • ${(game.tags || []).join(', ')}</p>
+        </div>
+        <div class="game-item-actions">
+            <button onclick="editGame(${index})" title="Editar">✏️</button>
+            <button onclick="deleteGame(${index})" title="Eliminar">🗑️</button>
+        </div>
+    </div>
+    `).join('');
 
             } catch (error) {
                 container.innerHTML = `<p style="color: #ff4757;">Error: ${error.message}</p>`;
+            }
+        }
+
+        // =====================================================================
+        // EDITAR JUEGO
+        // =====================================================================
+
+        function editGame(index) {
+            const game = currentGames[index];
+            if (!game) return;
+
+            // Llenar formulario con datos del juego
+            document.getElementById('gameId').value = game.id;
+            document.getElementById('gameTitle').value = game.title;
+            document.getElementById('gameDesc').value = game.description || '';
+            document.getElementById('gameFullDesc').value = game.fullDescription || '';
+            document.getElementById('gameImage').value = game.image || '';
+            document.getElementById('gameDownload').value = game.downloadUrl || '';
+            document.getElementById('gameFix').value = game.fixOnlineUrl || '';
+            document.getElementById('gameMods').value = game.modsUrl || '';
+
+            // Seleccionar tags
+            selectedTags = [...(game.tags || [])];
+            document.querySelectorAll('.tag-option').forEach(t => {
+                if (selectedTags.includes(t.dataset.tag)) {
+                    t.classList.add('selected');
+                } else {
+                    t.classList.remove('selected');
+                }
+            });
+
+            updatePreview();
+
+            // Cambiar a tab de agregar y marcar modo edición
+            showTab('add');
+            document.getElementById('submitBtn').textContent = '💾 Guardar Cambios';
+            document.getElementById('submitBtn').dataset.editIndex = index;
+        }
+
+        // =====================================================================
+        // ELIMINAR JUEGO
+        // =====================================================================
+
+        async function deleteGame(index) {
+            const game = currentGames[index];
+            if (!game) return;
+
+            if (!confirm(`¿Eliminar "${game.title}"?`)) return;
+
+            try {
+                // Obtener archivo actual para tener el SHA más reciente
+                const fileData = await getFileContent();
+                const content = decodeURIComponent(escape(atob(fileData.content)));
+                const match = content.match(/const gamesData = \[([\s\S]*)\];/);
+                const gamesArray = eval('[' + match[1] + ']');
+
+                // Eliminar por ID
+                const newGames = gamesArray.filter(g => g.id !== game.id);
+
+                // Guardar
+                const newContent = 'const gamesData = ' + JSON.stringify(newGames, null, 4) + ';\n';
+                await updateFile(newContent, fileData.sha, `- ${game.title}`);
+
+                // Actualizar versión
+                await updateVersionFile();
+
+                alert(`"${game.title}" eliminado`);
+                loadGamesList();
+
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        // =====================================================================
+        // MODIFICAR SUBMIT PARA SOPORTAR EDICIÓN
+        // =====================================================================
+
+        const originalSubmit = document.getElementById('gameForm').onsubmit;
+        document.getElementById('gameForm').addEventListener('submit', async (e) => {
+            const editIndex = document.getElementById('submitBtn').dataset.editIndex;
+
+            if (editIndex !== undefined && editIndex !== '') {
+                e.preventDefault();
+                await saveEditedGame(parseInt(editIndex));
+            }
+        }, true);
+
+        async function saveEditedGame(editIndex) {
+            const status = document.getElementById('status');
+            const submitBtn = document.getElementById('submitBtn');
+
+            const editedGame = {
+                id: document.getElementById('gameId').value.trim(),
+                title: document.getElementById('gameTitle').value.trim(),
+                description: document.getElementById('gameDesc').value.trim(),
+                image: document.getElementById('gameImage').value.trim(),
+                tags: [...selectedTags],
+                downloadUrl: document.getElementById('gameDownload').value.trim()
+            };
+
+            const fullDesc = document.getElementById('gameFullDesc').value.trim();
+            const fixUrl = document.getElementById('gameFix').value.trim();
+            const modsUrl = document.getElementById('gameMods').value.trim();
+
+            if (fullDesc) editedGame.fullDescription = fullDesc;
+            if (fixUrl) editedGame.fixOnlineUrl = fixUrl;
+            if (modsUrl) editedGame.modsUrl = modsUrl;
+
+            try {
+                submitBtn.disabled = true;
+                status.className = 'status loading';
+                status.textContent = '⏳ Guardando cambios...';
+
+                const fileData = await getFileContent();
+                const content = decodeURIComponent(escape(atob(fileData.content)));
+                const match = content.match(/const gamesData = \[([\s\S]*)\];/);
+                const gamesArray = eval('[' + match[1] + ']');
+
+                // Reemplazar juego
+                gamesArray[editIndex] = editedGame;
+
+                const newContent = 'const gamesData = ' + JSON.stringify(gamesArray, null, 4) + ';\n';
+                await updateFile(newContent, fileData.sha, `~ ${editedGame.title}`);
+
+                status.className = 'status success';
+                status.textContent = `✅ "${editedGame.title}" actualizado`;
+
+                // Actualizar versión
+                await updateVersionFile();
+
+                // Resetear modo edición
+                clearForm();
+                delete submitBtn.dataset.editIndex;
+                submitBtn.textContent = '🚀 Guardar y Publicar';
+
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `❌ Error: ${error.message}`;
+            } finally {
+                submitBtn.disabled = false;
             }
         }
     </script>

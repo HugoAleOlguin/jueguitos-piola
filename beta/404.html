@@ -1,117 +1,252 @@
 <!DOCTYPE html>
 <html lang="es">
-<!--
-============================================================================
-404.HTML - PÁGINA DE ERROR
-============================================================================
-Se muestra cuando alguien intenta acceder a una página que no existe.
-============================================================================
--->
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Página no encontrada | Jueguitos Piola</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>404 | Jueguitos Piola</title>
     <link rel="icon" href="favicon.png">
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
         rel="stylesheet">
     <style>
-        /* Estilos específicos para la página 404 */
-        .error-container {
-            min-height: calc(100vh - 200px);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0d1117 100%);
+            color: #fff;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
             text-align: center;
             padding: 2rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .error-code {
             font-family: 'Orbitron', sans-serif;
-            font-size: 8rem;
+            font-size: clamp(6rem, 20vw, 12rem);
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, #00f3ff 0%, #ff00ff 50%, #00f3ff 100%);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 0;
+            animation: gradient 3s ease infinite;
             line-height: 1;
-            text-shadow: none;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .error-title {
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
-            color: #888;
-            margin: 1rem 0 2rem;
+            color: #00f3ff;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
         }
 
         .error-message {
             color: #666;
+            font-size: 1rem;
             margin-bottom: 2rem;
             max-width: 400px;
         }
 
-        .glitch {
-            animation: glitch 2s infinite;
+        .btn-home {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #00f3ff, #00a8b3);
+            color: #000;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes glitch {
+        .btn-home:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.3);
+        }
+
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: '404';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00ff;
+            animation: glitch1 2s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: 2px 0 #00f3ff;
+            animation: glitch2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch1 {
 
             0%,
-            90%,
             100% {
-                transform: translate(0);
+                clip-path: inset(0 0 95% 0);
             }
 
-            92% {
-                transform: translate(-2px, 2px);
+            20% {
+                clip-path: inset(20% 0 60% 0);
             }
 
-            94% {
-                transform: translate(2px, -2px);
+            40% {
+                clip-path: inset(60% 0 10% 0);
             }
 
-            96% {
-                transform: translate(-2px, 0);
+            60% {
+                clip-path: inset(40% 0 40% 0);
             }
 
-            98% {
-                transform: translate(2px, 0);
+            80% {
+                clip-path: inset(80% 0 5% 0);
+            }
+        }
+
+        @keyframes glitch2 {
+
+            0%,
+            100% {
+                clip-path: inset(95% 0 0 0);
+            }
+
+            20% {
+                clip-path: inset(10% 0 70% 0);
+            }
+
+            40% {
+                clip-path: inset(50% 0 30% 0);
+            }
+
+            60% {
+                clip-path: inset(30% 0 50% 0);
+            }
+
+            80% {
+                clip-path: inset(5% 0 80% 0);
+            }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 243, 255, 0.3);
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
             }
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <div class="logo">
-            <a href="index.html" style="text-decoration:none; color:inherit;">JUEGUITOS PIOLA</a>
-            <span style="font-size: 0.5em; color: var(--secondary-color); vertical-align: super;">BETA</span>
-        </div>
-        <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
-    </header>
+    <div class="particles" id="particles"></div>
 
-    <main class="error-container">
-        <h1 class="error-code glitch">404</h1>
-        <p class="error-title">Página no encontrada</p>
+    <div class="container">
+        <div class="error-code glitch">404</div>
+        <h1 class="error-title">Página no encontrada</h1>
         <p class="error-message">
-            Algo salió mal.
-            O encontraste algo que no debías...
-            <br>
-            Volvé al inicio, por las dudas.
-            <br>
-            <a href="index.html" class="btn btn-primary">Volver al Hub</a>
+            Hmm algo se rompió...
+            Mejor volvé antes que te re cage a trompadas.
         </p>
-    </main>
+        <a href="index.html" class="btn-home">Volver al Hub</a>
+    </div>
 
-    <footer>
-        <p>© 2026 Jueguitos Piola.</p>
-    </footer>
-
-    <script src="assets/js/theme.js"></script>
+    <script>
+        // Crear partículas flotantes
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (5 + Math.random() * 5) + 's';
+            container.appendChild(particle);
+        }
+    </script>
 </body>
 
 </html>

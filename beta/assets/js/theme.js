@@ -96,17 +96,52 @@
 
 
 // ============================================================================
-// CACHÉ OFFLINE BÁSICO
+// CACHÉ OFFLINE CON VERSIONES AUTOMÁTICAS
 // ============================================================================
 //
-// Guarda los datos de juegos en localStorage para cargar más rápido
-// y tener algo que mostrar si la conexión falla
+// - Guarda los datos de juegos en localStorage
+// - Compara version.json para detectar actualizaciones
+// - Si hay nueva versión, limpia caché y recarga automáticamente
 //
 // ============================================================================
 
 (function () {
     const CACHE_KEY = 'jueguitosGamesCache';
-    const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
+    const VERSION_KEY = 'jueguitosVersion';
+    const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 horas fallback
+
+    // Verificar actualizaciones al cargar
+    async function checkForUpdates() {
+        try {
+            // Agregar timestamp para evitar caché del navegador
+            const response = await fetch(`version.json?t=${Date.now()}`);
+            if (!response.ok) return;
+
+            const data = await response.json();
+            const serverVersion = data.version;
+            const localVersion = localStorage.getItem(VERSION_KEY);
+
+            // Si hay nueva versión, limpiar caché
+            if (localVersion && localVersion !== serverVersion) {
+                console.log(`Nueva versión detectada: ${localVersion} → ${serverVersion}`);
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.setItem(VERSION_KEY, serverVersion);
+
+                // Recargar sin caché
+                location.reload(true);
+                return;
+            }
+
+            // Guardar versión actual si es primera vez
+            if (!localVersion) {
+                localStorage.setItem(VERSION_KEY, serverVersion);
+            }
+
+        } catch (e) {
+            // Si falla la verificación, seguir normal (modo offline)
+            console.log('Modo offline - usando caché local');
+        }
+    }
 
     // Guardar datos en caché
     window.cacheGamesData = (data) => {
@@ -129,7 +164,7 @@
 
             const data = JSON.parse(cached);
 
-            // Verificar si el caché expiró
+            // Verificar si el caché expiró (fallback si no hay versión)
             if (Date.now() - data.timestamp > CACHE_EXPIRY) {
                 localStorage.removeItem(CACHE_KEY);
                 return null;
@@ -140,6 +175,9 @@
             return null;
         }
     };
+
+    // Verificar actualizaciones al cargar
+    checkForUpdates();
 
     // Guardar los datos cuando se cargan
     document.addEventListener('DOMContentLoaded', () => {

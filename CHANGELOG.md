@@ -100,6 +100,8 @@ Historial de cambios estructurales y visuales del proyecto.
 
 **15 de Enero**
 - **🎂 Tema de Aniversario** — efectos especiales para el 1er año
+- **Página 404** — diseño con efecto glitch
+- **Sistema de versiones** — actualización automática de caché
 - Mejoras visuales generales
 
 ---
