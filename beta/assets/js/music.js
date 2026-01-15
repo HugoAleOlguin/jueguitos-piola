@@ -114,6 +114,9 @@
     function createPlayer() {
         if (iframe) return;
 
+        // Empezar en un punto aleatorio del video (0 a ~7000 segundos = 2 horas)
+        const randomStart = Math.floor(Math.random() * 7000);
+
         const container = document.createElement('div');
         container.id = 'musicPlayerContainer';
         container.style.cssText = 'position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none;';
@@ -123,7 +126,7 @@
                 id="musicIframe"
                 width="1" 
                 height="1" 
-                src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&loop=1&playlist=${VIDEO_ID}&controls=0"
+                src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&loop=1&playlist=${VIDEO_ID}&controls=0&start=${randomStart}"
                 allow="autoplay; encrypted-media"
                 frameborder="0"
             ></iframe>
