@@ -443,5 +443,16 @@ const gamesData = [
         "fullDescription": "Contraseña: online-fix.me",
         "fixOnlineUrl": "https://gofile.io/d/EmRuJ2",
         "noRawg": true
+    },
+    {
+        "id": "prueba",
+        "title": "prueba",
+        "description": "solo es una prueba ok?",
+        "image": "https://c10.patreonusercontent.com/4/patreon-media/p/campaign/10801708/7398ceb271f14d148059375bb6253af9/eyJ3Ijo2MjB9/1.png?token-hash=lRVrL5wx14U-M-tqC6r1JPpSv9hGEol1UhB4aF5ULdI%3D&token-time=1769472000",
+        "tags": [
+            "Party",
+            "Puzzle"
+        ],
+        "downloadUrl": "https://uploadrar.com/qiul4uor5bjf"
     }
 ];
