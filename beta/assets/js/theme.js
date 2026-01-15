@@ -1,35 +1,18 @@
 // ============================================================================
-// THEME.JS - MANEJO DE TEMA CLARO/OSCURO + CACHÉ OFFLINE
+// THEME.JS - TEMA CLARO/OSCURO SIMPLE
 // ============================================================================
 //
-// Este script maneja:
-// 1. Toggle entre tema claro y oscuro
-// 2. Persistencia del tema en localStorage
-// 3. Respeta la preferencia del sistema operativo
+// Tema oscuro por defecto, tema claro activable con el botón
 //
 // ============================================================================
 
 (function () {
-    // =========================================================================
-    // SISTEMA DE TEMAS
-    // =========================================================================
-
-    // Clave para guardar la preferencia en localStorage
     const THEME_KEY = 'jueguitosTheme';
 
-    // Obtener el tema guardado o usar la preferencia del sistema
-    const getSavedTheme = () => {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved) return saved;
+    // Obtener tema guardado (oscuro por defecto)
+    const getSavedTheme = () => localStorage.getItem(THEME_KEY) || 'dark';
 
-        // Si no hay tema guardado, usar preferencia del sistema
-        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            return 'light';
-        }
-        return 'dark';
-    };
-
-    // Aplicar el tema al documento
+    // Aplicar tema
     const applyTheme = (theme) => {
         if (theme === 'light') {
             document.documentElement.setAttribute('data-theme', 'light');
@@ -37,10 +20,9 @@
             document.documentElement.removeAttribute('data-theme');
         }
 
-        // Actualizar el ícono del botón si existe
+        // Actualizar ícono del botón
         const toggleBtn = document.getElementById('themeToggle');
         if (toggleBtn) {
-            // SVG iconos de sol y luna
             const sunIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
             const moonIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
             toggleBtn.innerHTML = theme === 'light' ? sunIcon : moonIcon;
@@ -48,47 +30,22 @@
         }
     };
 
-    // Guardar la preferencia
-    const saveTheme = (theme) => {
-        localStorage.setItem(THEME_KEY, theme);
-    };
-
-    // Alternar entre temas
+    // Guardar y alternar tema
     const toggleTheme = () => {
-        const currentTheme = document.documentElement.hasAttribute('data-theme') ? 'light' : 'dark';
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-
+        const current = document.documentElement.hasAttribute('data-theme') ? 'light' : 'dark';
+        const newTheme = current === 'light' ? 'dark' : 'light';
+        localStorage.setItem(THEME_KEY, newTheme);
         applyTheme(newTheme);
-        saveTheme(newTheme);
     };
 
-    // =========================================================================
-    // INICIALIZACIÓN
-    // =========================================================================
-
-    // Aplicar tema inmediatamente (antes de que cargue el DOM completo)
-    // Esto evita el "flash" de cambio de tema
+    // Aplicar tema inmediatamente
     applyTheme(getSavedTheme());
 
-    // Cuando el DOM esté listo, configurar el botón
+    // Configurar botón cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', () => {
         const toggleBtn = document.getElementById('themeToggle');
-
         if (toggleBtn) {
-            // Actualizar ícono inicial
-            const currentTheme = getSavedTheme();
-            toggleBtn.textContent = currentTheme === 'light' ? '☀️' : '🌙';
-
-            // Agregar evento de click
             toggleBtn.addEventListener('click', toggleTheme);
-        }
-    });
-
-    // Escuchar cambios en la preferencia del sistema
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
-        // Solo cambiar automáticamente si el usuario no ha elegido manualmente
-        if (!localStorage.getItem(THEME_KEY)) {
-            applyTheme(e.matches ? 'light' : 'dark');
         }
     });
 
