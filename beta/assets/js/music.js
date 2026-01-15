@@ -1,10 +1,9 @@
 // ============================================================================
-// MUSIC.JS - Música de fondo con YouTube (versión simple)
+// MUSIC.JS - Música de fondo con YouTube
 // ============================================================================
 //
 // - Desactivado por defecto
-// - Usa iframe simple sin API compleja
-// - Guarda estado en localStorage
+// - Persiste entre páginas con prompt de continuar
 //
 // ============================================================================
 
@@ -15,7 +14,7 @@
     let iframe = null;
     let isEnabled = localStorage.getItem(MUSIC_KEY) === 'true';
 
-    // Crear botón de música
+    // Crear botón de música en el header
     function createMusicButton() {
         const header = document.querySelector('header > div:last-child');
         if (!header) return;
@@ -37,6 +36,58 @@
         }
     }
 
+    // Mostrar prompt para continuar música
+    function showResumePrompt() {
+        const prompt = document.createElement('div');
+        prompt.id = 'musicResumePrompt';
+        prompt.innerHTML = '🎵 <span>Continuar música</span>';
+        prompt.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 243, 255, 0.15);
+            border: 1px solid rgba(0, 243, 255, 0.4);
+            color: #00f3ff;
+            padding: 10px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            z-index: 9999;
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideIn 0.3s ease;
+            transition: all 0.2s;
+        `;
+
+        prompt.addEventListener('mouseenter', () => {
+            prompt.style.background = 'rgba(0, 243, 255, 0.25)';
+            prompt.style.transform = 'scale(1.02)';
+        });
+
+        prompt.addEventListener('mouseleave', () => {
+            prompt.style.background = 'rgba(0, 243, 255, 0.15)';
+            prompt.style.transform = 'scale(1)';
+        });
+
+        prompt.addEventListener('click', () => {
+            createPlayer();
+            prompt.style.animation = 'fadeOut 0.2s ease forwards';
+            setTimeout(() => prompt.remove(), 200);
+        });
+
+        // Agregar animaciones
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+            @keyframes fadeOut { to { opacity: 0; transform: scale(0.9); } }
+        `;
+        document.head.appendChild(style);
+
+        document.body.appendChild(prompt);
+    }
+
     // Toggle música
     function toggleMusic() {
         isEnabled = !isEnabled;
@@ -48,6 +99,10 @@
             btn.title = isEnabled ? 'Desactivar música' : 'Activar música';
         }
 
+        // Remover prompt si existe
+        const prompt = document.getElementById('musicResumePrompt');
+        if (prompt) prompt.remove();
+
         if (isEnabled) {
             createPlayer();
         } else {
@@ -55,15 +110,14 @@
         }
     }
 
-    // Crear iframe simple
+    // Crear iframe
     function createPlayer() {
         if (iframe) return;
 
         const container = document.createElement('div');
         container.id = 'musicPlayerContainer';
-        container.style.cssText = 'position: fixed; bottom: 10px; right: 10px; width: 0; height: 0; overflow: hidden; opacity: 0; pointer-events: none;';
+        container.style.cssText = 'position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none;';
 
-        // Iframe simple con autoplay y loop
         container.innerHTML = `
             <iframe 
                 id="musicIframe"
@@ -77,6 +131,13 @@
 
         document.body.appendChild(container);
         iframe = container;
+
+        // Actualizar botón
+        const btn = document.getElementById('musicToggle');
+        if (btn) {
+            btn.innerHTML = '🔊';
+            btn.title = 'Desactivar música';
+        }
     }
 
     // Destruir player
@@ -91,8 +152,9 @@
     document.addEventListener('DOMContentLoaded', () => {
         createMusicButton();
 
+        // Si la música estaba activa, mostrar prompt para continuar
         if (isEnabled) {
-            createPlayer();
+            showResumePrompt();
         }
     });
 
