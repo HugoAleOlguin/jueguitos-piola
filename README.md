@@ -23,7 +23,7 @@
 |:---:|:---:|
 | **Es la que funciona.** | **Es la que estoy codeando ahora.** |
 | [![Sitio Oficial](https://img.shields.io/badge/🌐-Ir_al_Sitio-2ea44f?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/) | [![Sitio Beta](https://img.shields.io/badge/🧪-Ir_a_la_Beta-orange?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/beta/index.html) |
-| <a href="https://hugoaleolguin.github.io/jueguitos-piola/index.html" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=600" alt="Vista previa oficial"></a> | <a href="https://hugoaleolguin.github.io/jueguitos-piola/beta/index.html" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/beta/index.html&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=600" alt="Vista previa beta"></a> |
+| <a href="https://hugoaleolguin.github.io/jueguitos-piola/index.html" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=600" alt="Vista previa oficial"></a> | <a href="https://hugoaleolguin.github.io/jueguitos-piola/beta/index.html" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/beta/index.html&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=600&refresh=true" alt="Vista previa beta"></a> |
 
 *(Nota: Las imágenes de arriba se generan dinámicamente. Si tardan en cargar, refrescá la página).*
 
