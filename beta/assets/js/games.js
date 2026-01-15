@@ -358,15 +358,15 @@ const gamesData = [
     },
     {
         "id": "rain2",
-        "title": "Risk of Rain 2 V1.4.1",
+        "title": "Risk of Rain 2 UPDATE",
         "description": "Este juego me salvó de vanguards.",
-        "fullDescription": "Roguelike de acción con muchas balas y cooperativo.",
-        "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/632360/header.jpg",
+        "image": "https://c.tenor.com/TCEVv-hYpwkAAAAd/tenor.gif",
         "tags": [
             "Roguelike",
             "Coop"
         ],
         "downloadUrl": "https://media.rushuploads.com/Risk.of.Rain.2.v1.4.1.Yuumi.Jungle.rar",
+        "fullDescription": "Este juego me salvó de vanguards.",
         "fixOnlineUrl": "https://gofile.io/d/gKWNN2",
         "modsUrl": "https://github.com/Kesomannen/gale/releases/download/1.5.10/Gale_1.5.10_x64_en-US.msi"
     },
