@@ -16,326 +16,683 @@
     if (!ANNIVERSARY_ENABLED) return;
 
     // =========================================================================
-    // CONFETTI SYSTEM
+    // PARTÍCULAS PREMIUM
     // =========================================================================
 
-    const colors = ['#00f3ff', '#bc13fe', '#ff007f', '#00ff88', '#ffd700', '#ff6b6b'];
-    let confettiInterval = null;
+    const particleColors = [
+        '#00f3ff', '#bc13fe', '#ff007f', '#00ff88',
+        '#ffd700', '#ff6b6b', '#a855f7', '#22d3ee'
+    ];
 
-    function createConfetti() {
-        const confetti = document.createElement('div');
-        confetti.className = 'anniversary-confetti';
-        confetti.style.cssText = `
-            position: fixed;
-            width: ${Math.random() * 10 + 5}px;
-            height: ${Math.random() * 10 + 5}px;
-            background: ${colors[Math.floor(Math.random() * colors.length)]};
-            left: ${Math.random() * 100}vw;
-            top: -20px;
-            opacity: ${Math.random() * 0.7 + 0.3};
-            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-            pointer-events: none;
-            z-index: 9999;
-            animation: confettiFall ${Math.random() * 3 + 2}s linear forwards;
-            transform: rotate(${Math.random() * 360}deg);
-        `;
-        document.body.appendChild(confetti);
+    let particleCanvas = null;
+    let particleCtx = null;
+    let particles = [];
+    let animationId = null;
 
-        setTimeout(() => confetti.remove(), 5000);
-    }
-
-    function startConfetti() {
-        // Ráfaga inicial
-        for (let i = 0; i < 30; i++) {
-            setTimeout(() => createConfetti(), i * 50);
+    class Particle {
+        constructor() {
+            this.reset();
         }
 
-        // Confetti ocasional
-        confettiInterval = setInterval(() => {
-            if (Math.random() > 0.7) {
-                createConfetti();
+        reset() {
+            this.x = Math.random() * window.innerWidth;
+            this.y = -20;
+            this.size = Math.random() * 8 + 3;
+            this.speedY = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 2 - 1;
+            this.rotation = Math.random() * 360;
+            this.rotationSpeed = Math.random() * 10 - 5;
+            this.color = particleColors[Math.floor(Math.random() * particleColors.length)];
+            this.opacity = Math.random() * 0.7 + 0.3;
+            this.shape = Math.random() > 0.5 ? 'circle' : 'square';
+            this.wobble = Math.random() * Math.PI * 2;
+            this.wobbleSpeed = Math.random() * 0.1;
+        }
+
+        update() {
+            this.y += this.speedY;
+            this.wobble += this.wobbleSpeed;
+            this.x += this.speedX + Math.sin(this.wobble) * 0.5;
+            this.rotation += this.rotationSpeed;
+
+            if (this.y > window.innerHeight + 20) {
+                this.reset();
             }
-        }, 500);
+        }
+
+        draw(ctx) {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation * Math.PI / 180);
+            ctx.globalAlpha = this.opacity;
+            ctx.fillStyle = this.color;
+            ctx.shadowColor = this.color;
+            ctx.shadowBlur = 10;
+
+            if (this.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+            }
+
+            ctx.restore();
+        }
     }
 
-    // =========================================================================
-    // BANNER DE ANIVERSARIO
-    // =========================================================================
-
-    function createBanner() {
-        const banner = document.createElement('div');
-        banner.id = 'anniversary-banner';
-        banner.innerHTML = `
-            <div class="anniversary-content">
-                <span class="anniversary-emoji">🎂</span>
-                <span class="anniversary-text">
-                    <strong>¡${YEARS_CELEBRATING} añito!</strong> 
-                    Jueguitos Piola cumple años el 25 de enero
-                </span>
-                <span class="anniversary-emoji">🎉</span>
-            </div>
-            <button class="anniversary-close" title="Cerrar banner">✕</button>
-        `;
-
-        document.body.appendChild(banner);
-
-        // Botón cerrar
-        banner.querySelector('.anniversary-close').addEventListener('click', (e) => {
-            e.stopPropagation();
-            banner.style.animation = 'bannerSlideUp 0.3s ease forwards';
-            setTimeout(() => banner.remove(), 300);
-            sessionStorage.setItem('anniversaryBannerClosed', 'true');
-        });
-    }
-
-    // =========================================================================
-    // DECORACIONES FLOTANTES
-    // =========================================================================
-
-    function createFloatingDecorations() {
-        const decorations = ['🎈', '🎊', '✨', '🎁', '⭐'];
-        const container = document.createElement('div');
-        container.className = 'anniversary-decorations';
-        container.style.cssText = `
+    function initParticleSystem() {
+        particleCanvas = document.createElement('canvas');
+        particleCanvas.id = 'anniversary-particles';
+        particleCanvas.style.cssText = `
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
+            z-index: 9998;
         `;
+        document.body.appendChild(particleCanvas);
+        particleCtx = particleCanvas.getContext('2d');
 
-        // Crear algunas decoraciones flotantes
-        for (let i = 0; i < 8; i++) {
-            const deco = document.createElement('div');
-            deco.className = 'floating-deco';
-            deco.textContent = decorations[Math.floor(Math.random() * decorations.length)];
-            deco.style.cssText = `
-                position: absolute;
-                font-size: ${Math.random() * 20 + 15}px;
-                left: ${Math.random() * 100}%;
-                top: ${Math.random() * 100}%;
-                opacity: 0.15;
-                animation: floatDeco ${Math.random() * 10 + 15}s ease-in-out infinite;
-                animation-delay: ${Math.random() * 5}s;
-            `;
-            container.appendChild(deco);
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Crear partículas iniciales
+        for (let i = 0; i < 50; i++) {
+            const p = new Particle();
+            p.y = Math.random() * window.innerHeight; // Distribuir en pantalla
+            particles.push(p);
         }
 
-        document.body.appendChild(container);
+        animateParticles();
+
+        // Detener después de 15 segundos
+        setTimeout(() => {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                particleCanvas.style.transition = 'opacity 1s ease';
+                particleCanvas.style.opacity = '0';
+                setTimeout(() => particleCanvas.remove(), 1000);
+            }
+        }, 15000);
+    }
+
+    function resizeCanvas() {
+        if (particleCanvas) {
+            particleCanvas.width = window.innerWidth;
+            particleCanvas.height = window.innerHeight;
+        }
+    }
+
+    function animateParticles() {
+        particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+
+        particles.forEach(p => {
+            p.update();
+            p.draw(particleCtx);
+        });
+
+        animationId = requestAnimationFrame(animateParticles);
     }
 
     // =========================================================================
-    // LOGO CON GORRITO DE FIESTA
+    // BANNER PREMIUM DE ANIVERSARIO
     // =========================================================================
 
-    function addPartyHat() {
+    function createBanner() {
+        const banner = document.createElement('div');
+        banner.id = 'anniversary-banner';
+        banner.innerHTML = `
+            <div class="anniversary-glow"></div>
+            <div class="anniversary-inner">
+                <div class="anniversary-badge">
+                    <span class="badge-number">1</span>
+                    <span class="badge-text">AÑO</span>
+                </div>
+                <div class="anniversary-info">
+                    <div class="anniversary-title">
+                        <span class="title-icon">🎉</span>
+                        ¡Feliz Aniversario!
+                        <span class="title-icon">🎉</span>
+                    </div>
+                    <div class="anniversary-subtitle">
+                        Jueguitos Piola cumple <strong>1 añito</strong> el 25 de enero
+                    </div>
+                </div>
+                <button class="anniversary-close" title="Cerrar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="anniversary-shimmer"></div>
+        `;
+
+        document.body.appendChild(banner);
+
+        // Animación de entrada
+        requestAnimationFrame(() => {
+            banner.classList.add('show');
+        });
+
+        // Botón cerrar
+        banner.querySelector('.anniversary-close').addEventListener('click', (e) => {
+            e.stopPropagation();
+            banner.classList.remove('show');
+            banner.classList.add('hide');
+            setTimeout(() => banner.remove(), 500);
+            sessionStorage.setItem('anniversaryBannerClosed', 'true');
+        });
+    }
+
+    // =========================================================================
+    // EFECTO ESPECIAL EN EL LOGO
+    // =========================================================================
+
+    function enhanceLogo() {
         const logo = document.querySelector('.logo');
         if (!logo) return;
 
+        logo.classList.add('anniversary-logo');
+
+        // Corona o gorrito
+        const crown = document.createElement('div');
+        crown.className = 'logo-crown';
+        crown.innerHTML = '👑';
         logo.style.position = 'relative';
+        logo.appendChild(crown);
 
-        const hat = document.createElement('span');
-        hat.className = 'party-hat';
-        hat.textContent = '🎉';
-        hat.style.cssText = `
-            position: absolute;
-            top: -15px;
-            left: -5px;
-            font-size: 1.2rem;
-            transform: rotate(-20deg);
-            animation: hatBounce 2s ease-in-out infinite;
-        `;
-
-        logo.appendChild(hat);
+        // Partículas alrededor del logo
+        const sparkles = document.createElement('div');
+        sparkles.className = 'logo-sparkles';
+        for (let i = 0; i < 5; i++) {
+            const spark = document.createElement('span');
+            spark.textContent = '✨';
+            spark.style.animationDelay = `${i * 0.3}s`;
+            sparkles.appendChild(spark);
+        }
+        logo.appendChild(sparkles);
     }
 
     // =========================================================================
-    // CONTADOR DE DÍAS
+    // CONTADOR PREMIUM
     // =========================================================================
 
     function createCountdown() {
         const today = new Date();
         const thisYearBirthday = new Date(today.getFullYear(), BIRTHDAY.getMonth(), BIRTHDAY.getDate());
 
-        // Si ya pasó este año, es para el próximo
         if (today > thisYearBirthday) {
             thisYearBirthday.setFullYear(thisYearBirthday.getFullYear() + 1);
         }
 
         const daysUntil = Math.ceil((thisYearBirthday - today) / (1000 * 60 * 60 * 24));
 
-        // Crear el contador en el footer
         const footer = document.querySelector('footer');
-        if (footer && daysUntil <= 30) {
-            const countdown = document.createElement('div');
-            countdown.className = 'anniversary-countdown';
+        if (!footer || daysUntil > 30) return;
 
-            if (daysUntil === 0) {
-                countdown.innerHTML = `<span class="countdown-emoji">🎂</span> ¡HOY CUMPLIMOS ${YEARS_CELEBRATING} AÑO! <span class="countdown-emoji">🎂</span>`;
-            } else if (daysUntil === 1) {
-                countdown.innerHTML = `<span class="countdown-emoji">⏰</span> ¡MAÑANA cumplimos ${YEARS_CELEBRATING} añito! <span class="countdown-emoji">🎉</span>`;
-            } else {
-                countdown.innerHTML = `<span class="countdown-emoji">📅</span> Faltan <strong>${daysUntil} días</strong> para el aniversario <span class="countdown-emoji">🎊</span>`;
-            }
+        const countdown = document.createElement('div');
+        countdown.className = 'anniversary-countdown';
 
-            footer.insertBefore(countdown, footer.firstChild);
+        if (daysUntil === 0) {
+            countdown.innerHTML = `
+                <div class="countdown-celebration">
+                    <span class="celebration-emoji">🎂</span>
+                    <span class="celebration-text">¡HOY CUMPLIMOS 1 AÑO!</span>
+                    <span class="celebration-emoji">🎂</span>
+                </div>
+            `;
+            countdown.classList.add('is-today');
+        } else {
+            countdown.innerHTML = `
+                <div class="countdown-content">
+                    <div class="countdown-label">Aniversario en</div>
+                    <div class="countdown-number">${daysUntil}</div>
+                    <div class="countdown-unit">${daysUntil === 1 ? 'día' : 'días'}</div>
+                </div>
+                <div class="countdown-progress">
+                    <div class="progress-bar" style="width: ${((30 - daysUntil) / 30) * 100}%"></div>
+                </div>
+            `;
         }
+
+        footer.insertBefore(countdown, footer.firstChild);
     }
 
     // =========================================================================
-    // ESTILOS
+    // EFECTO DE FONDO ESPECIAL
+    // =========================================================================
+
+    function createAmbientEffect() {
+        const ambient = document.createElement('div');
+        ambient.className = 'anniversary-ambient';
+        ambient.innerHTML = `
+            <div class="ambient-orb orb-1"></div>
+            <div class="ambient-orb orb-2"></div>
+            <div class="ambient-orb orb-3"></div>
+        `;
+        document.body.appendChild(ambient);
+    }
+
+    // =========================================================================
+    // ESTILOS PREMIUM
     // =========================================================================
 
     function injectStyles() {
         const style = document.createElement('style');
         style.id = 'anniversary-styles';
         style.textContent = `
-            /* Banner de aniversario */
+            /* ========== BANNER PREMIUM ========== */
             #anniversary-banner {
                 position: fixed;
-                top: 80px;
+                top: 90px;
                 right: 20px;
-                background: linear-gradient(135deg, rgba(188, 19, 254, 0.15), rgba(0, 243, 255, 0.15));
-                border: 1px solid rgba(188, 19, 254, 0.4);
-                border-radius: 12px;
-                padding: 12px 20px;
+                background: linear-gradient(135deg, 
+                    rgba(15, 15, 20, 0.95) 0%, 
+                    rgba(25, 15, 35, 0.95) 100%);
+                border: 1px solid transparent;
+                border-radius: 16px;
+                padding: 0;
                 z-index: 9990;
-                backdrop-filter: blur(10px);
-                animation: bannerSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(20px);
+                box-shadow: 
+                    0 20px 60px rgba(0, 0, 0, 0.5),
+                    0 0 40px rgba(188, 19, 254, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                opacity: 0;
+                transform: translateX(50px) scale(0.9);
+                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                overflow: hidden;
+                max-width: 320px;
+            }
+            
+            #anniversary-banner.show {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+            
+            #anniversary-banner.hide {
+                opacity: 0;
+                transform: translateX(50px) scale(0.8);
+            }
+            
+            .anniversary-glow {
+                position: absolute;
+                inset: -1px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #00f3ff, #bc13fe, #ff007f, #ffd700);
+                background-size: 300% 300%;
+                animation: glowRotate 4s ease infinite;
+                z-index: -1;
+                opacity: 0.8;
+            }
+            
+            @keyframes glowRotate {
+                0%, 100% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+            }
+            
+            .anniversary-inner {
                 display: flex;
                 align-items: center;
-                gap: 10px;
-                max-width: 350px;
+                gap: 15px;
+                padding: 16px 20px;
+                background: linear-gradient(135deg, 
+                    rgba(15, 15, 20, 0.98) 0%, 
+                    rgba(25, 15, 35, 0.98) 100%);
+                border-radius: 15px;
+                position: relative;
             }
             
-            .anniversary-content {
+            .anniversary-badge {
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, #ffd700, #ffaa00);
+                border-radius: 50%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 
+                    0 4px 15px rgba(255, 215, 0, 0.4),
+                    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+                flex-shrink: 0;
+                animation: badgePulse 2s ease-in-out infinite;
+            }
+            
+            @keyframes badgePulse {
+                0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(255, 215, 0, 0.6); }
+            }
+            
+            .badge-number {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: #1a1a2e;
+                line-height: 1;
+                text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+            }
+            
+            .badge-text {
+                font-size: 0.55rem;
+                font-weight: 700;
+                color: #1a1a2e;
+                letter-spacing: 1px;
+                margin-top: -2px;
+            }
+            
+            .anniversary-info {
+                flex: 1;
+            }
+            
+            .anniversary-title {
+                font-size: 1rem;
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 4px;
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 6px;
             }
             
-            .anniversary-emoji {
-                font-size: 1.3rem;
-                animation: emojiPulse 1.5s ease-in-out infinite;
-            }
-            
-            .anniversary-text {
-                color: #ddd;
+            .title-icon {
                 font-size: 0.9rem;
+                animation: iconBounce 1s ease-in-out infinite;
+            }
+            
+            .title-icon:last-child {
+                animation-delay: 0.5s;
+            }
+            
+            @keyframes iconBounce {
+                0%, 100% { transform: translateY(0) rotate(0deg); }
+                25% { transform: translateY(-3px) rotate(-10deg); }
+                75% { transform: translateY(-3px) rotate(10deg); }
+            }
+            
+            .anniversary-subtitle {
+                font-size: 0.8rem;
+                color: #888;
                 line-height: 1.3;
             }
             
-            .anniversary-text strong {
+            .anniversary-subtitle strong {
                 color: var(--primary-color, #00f3ff);
-                font-size: 1rem;
             }
             
             .anniversary-close {
-                background: none;
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: rgba(255, 255, 255, 0.05);
                 border: none;
                 color: #666;
-                font-size: 1rem;
+                width: 28px;
+                height: 28px;
+                border-radius: 8px;
                 cursor: pointer;
-                padding: 4px 8px;
-                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 transition: all 0.2s ease;
-                margin-left: auto;
             }
             
             .anniversary-close:hover {
                 background: rgba(255, 255, 255, 0.1);
                 color: #fff;
+                transform: scale(1.1);
             }
             
-            /* Contador en footer */
+            .anniversary-shimmer {
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, 
+                    transparent, 
+                    rgba(255, 255, 255, 0.1), 
+                    transparent);
+                animation: shimmer 3s ease-in-out infinite;
+                pointer-events: none;
+            }
+            
+            @keyframes shimmer {
+                0% { left: -100%; }
+                50%, 100% { left: 100%; }
+            }
+            
+            /* ========== LOGO MEJORADO ========== */
+            .anniversary-logo {
+                animation: logoGlow 3s ease-in-out infinite;
+            }
+            
+            @keyframes logoGlow {
+                0%, 100% { 
+                    filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.3));
+                }
+                50% { 
+                    filter: drop-shadow(0 0 20px rgba(188, 19, 254, 0.4));
+                }
+            }
+            
+            .logo-crown {
+                position: absolute;
+                top: -18px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 1.3rem;
+                animation: crownFloat 2s ease-in-out infinite;
+                filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.5));
+            }
+            
+            @keyframes crownFloat {
+                0%, 100% { transform: translateX(-50%) translateY(0) rotate(-5deg); }
+                50% { transform: translateX(-50%) translateY(-5px) rotate(5deg); }
+            }
+            
+            .logo-sparkles {
+                position: absolute;
+                top: -10px;
+                left: -10px;
+                right: -10px;
+                bottom: -10px;
+                pointer-events: none;
+            }
+            
+            .logo-sparkles span {
+                position: absolute;
+                font-size: 0.8rem;
+                animation: sparkle 2s ease-in-out infinite;
+                opacity: 0;
+            }
+            
+            .logo-sparkles span:nth-child(1) { top: 0; left: 10%; }
+            .logo-sparkles span:nth-child(2) { top: 20%; right: 0; }
+            .logo-sparkles span:nth-child(3) { bottom: 0; left: 30%; }
+            .logo-sparkles span:nth-child(4) { top: 50%; left: 0; }
+            .logo-sparkles span:nth-child(5) { bottom: 20%; right: 10%; }
+            
+            @keyframes sparkle {
+                0%, 100% { opacity: 0; transform: scale(0.5); }
+                50% { opacity: 1; transform: scale(1); }
+            }
+            
+            /* ========== COUNTDOWN PREMIUM ========== */
             .anniversary-countdown {
-                padding: 10px 20px;
-                margin-bottom: 10px;
-                background: linear-gradient(90deg, transparent, rgba(188, 19, 254, 0.1), transparent);
-                border-radius: 20px;
-                color: #aaa;
+                margin: 0 auto 15px;
+                padding: 15px 30px;
+                background: linear-gradient(135deg, 
+                    rgba(188, 19, 254, 0.1) 0%, 
+                    rgba(0, 243, 255, 0.1) 100%);
+                border: 1px solid rgba(188, 19, 254, 0.2);
+                border-radius: 50px;
+                display: inline-block;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .countdown-content {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .countdown-label {
+                font-size: 0.75rem;
+                color: #888;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            
+            .countdown-number {
+                font-size: 1.8rem;
+                font-weight: 900;
+                background: linear-gradient(135deg, #00f3ff, #bc13fe);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                line-height: 1;
+            }
+            
+            .countdown-unit {
                 font-size: 0.85rem;
-                animation: countdownGlow 3s ease-in-out infinite;
+                color: #aaa;
+                font-weight: 500;
             }
             
-            .countdown-emoji {
-                font-size: 1rem;
+            .countdown-progress {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: rgba(255, 255, 255, 0.1);
             }
             
-            /* Animaciones */
-            @keyframes bannerSlideIn {
-                from {
-                    opacity: 0;
-                    transform: translateX(50px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
+            .progress-bar {
+                height: 100%;
+                background: linear-gradient(90deg, #00f3ff, #bc13fe);
+                border-radius: 0 3px 3px 0;
+                transition: width 0.5s ease;
             }
             
-            @keyframes bannerSlideUp {
-                to {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
+            .anniversary-countdown.is-today {
+                animation: celebrationPulse 1s ease-in-out infinite;
+                border-color: rgba(255, 215, 0, 0.5);
+                background: linear-gradient(135deg, 
+                    rgba(255, 215, 0, 0.15) 0%, 
+                    rgba(255, 100, 100, 0.15) 100%);
             }
             
-            @keyframes confettiFall {
-                0% {
-                    transform: translateY(0) rotate(0deg);
-                }
-                100% {
-                    transform: translateY(100vh) rotate(720deg);
-                }
-            }
-            
-            @keyframes emojiPulse {
+            @keyframes celebrationPulse {
                 0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.15); }
+                50% { transform: scale(1.02); }
             }
             
-            @keyframes hatBounce {
-                0%, 100% { transform: rotate(-20deg) translateY(0); }
-                50% { transform: rotate(-15deg) translateY(-3px); }
+            .countdown-celebration {
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
             
-            @keyframes floatDeco {
-                0%, 100% { 
-                    transform: translateY(0) rotate(0deg); 
-                }
-                25% { 
-                    transform: translateY(-20px) rotate(5deg); 
-                }
-                50% { 
-                    transform: translateY(-10px) rotate(-5deg); 
-                }
-                75% { 
-                    transform: translateY(-25px) rotate(3deg); 
-                }
+            .celebration-emoji {
+                font-size: 1.5rem;
+                animation: celebrateEmoji 1s ease-in-out infinite;
             }
             
-            @keyframes countdownGlow {
-                0%, 100% { 
-                    box-shadow: 0 0 10px rgba(188, 19, 254, 0); 
-                }
-                50% { 
-                    box-shadow: 0 0 20px rgba(188, 19, 254, 0.2); 
-                }
+            .celebration-text {
+                font-size: 1rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #ffd700, #ff6b6b);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
             }
             
-            /* Responsive */
+            @keyframes celebrateEmoji {
+                0%, 100% { transform: rotate(-10deg) scale(1); }
+                50% { transform: rotate(10deg) scale(1.2); }
+            }
+            
+            /* ========== AMBIENT ORBS ========== */
+            .anniversary-ambient {
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: -1;
+                overflow: hidden;
+            }
+            
+            .ambient-orb {
+                position: absolute;
+                border-radius: 50%;
+                filter: blur(80px);
+                opacity: 0.15;
+                animation: orbFloat 20s ease-in-out infinite;
+            }
+            
+            .orb-1 {
+                width: 400px;
+                height: 400px;
+                background: #bc13fe;
+                top: -100px;
+                right: -100px;
+                animation-delay: 0s;
+            }
+            
+            .orb-2 {
+                width: 300px;
+                height: 300px;
+                background: #00f3ff;
+                bottom: -50px;
+                left: -50px;
+                animation-delay: -7s;
+            }
+            
+            .orb-3 {
+                width: 250px;
+                height: 250px;
+                background: #ffd700;
+                top: 50%;
+                left: 50%;
+                animation-delay: -14s;
+            }
+            
+            @keyframes orbFloat {
+                0%, 100% { transform: translate(0, 0) scale(1); }
+                25% { transform: translate(50px, -30px) scale(1.1); }
+                50% { transform: translate(-30px, 50px) scale(0.9); }
+                75% { transform: translate(-50px, -20px) scale(1.05); }
+            }
+            
+            /* ========== RESPONSIVE ========== */
             @media (max-width: 768px) {
                 #anniversary-banner {
                     right: 10px;
                     left: 10px;
-                    max-width: none;
                     top: auto;
-                    bottom: 70px;
+                    bottom: 80px;
+                    max-width: none;
+                }
+                
+                .anniversary-badge {
+                    width: 45px;
+                    height: 45px;
+                }
+                
+                .badge-number {
+                    font-size: 1.2rem;
+                }
+                
+                .anniversary-countdown {
+                    padding: 12px 20px;
+                }
+                
+                .countdown-number {
+                    font-size: 1.5rem;
                 }
             }
         `;
@@ -348,28 +705,23 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         injectStyles();
+        createAmbientEffect();
 
-        // Mostrar banner si no fue cerrado en esta sesión
+        // Banner con delay
         if (!sessionStorage.getItem('anniversaryBannerClosed')) {
-            setTimeout(createBanner, 1000);
+            setTimeout(createBanner, 800);
         }
 
-        // Decoraciones
-        createFloatingDecorations();
-        addPartyHat();
+        // Efectos del logo
+        setTimeout(enhanceLogo, 500);
+
+        // Countdown
         createCountdown();
 
-        // Confetti al cargar (solo una vez por sesión)
-        if (!sessionStorage.getItem('anniversaryConfettiShown')) {
-            setTimeout(startConfetti, 1500);
-            sessionStorage.setItem('anniversaryConfettiShown', 'true');
-
-            // Detener confetti después de 10 segundos
-            setTimeout(() => {
-                if (confettiInterval) {
-                    clearInterval(confettiInterval);
-                }
-            }, 10000);
+        // Partículas (solo una vez por sesión)
+        if (!sessionStorage.getItem('anniversaryParticlesShown')) {
+            setTimeout(initParticleSystem, 1000);
+            sessionStorage.setItem('anniversaryParticlesShown', 'true');
         }
     });
 

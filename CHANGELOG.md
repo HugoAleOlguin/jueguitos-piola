@@ -98,6 +98,10 @@ Historial de cambios estructurales y visuales del proyecto.
 - Eliminación de archivos innecesarios
 - **Modo Prime mejorado** — más fiel al estilo legacy original
 
+**15 de Enero**
+- **🎂 Tema de Aniversario** — efectos especiales para el 1er año
+- Mejoras visuales generales
+
 ---
 
 ## Versiones Principales

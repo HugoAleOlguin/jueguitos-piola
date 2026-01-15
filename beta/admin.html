@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Jueguitos Piola</title>
+    <link rel="icon" href="favicon.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 320px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: #00f3ff;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #00f3ff;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00f3ff, #00a8b3);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-box button:hover {
+            transform: scale(1.02);
+        }
+
+        .login-error {
+            color: #ff4757;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        /* Main Admin */
+        .admin-container {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #00f3ff;
+            font-size: 1.5rem;
+        }
+
+        .logout-btn {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid #ff4757;
+            color: #ff4757;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 71, 87, 0.3);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tab.active {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: #00f3ff;
+            color: #00f3ff;
+        }
+
+        /* Form */
+        .form-section {
+            background: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section h3 {
+            color: #00f3ff;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #888;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00f3ff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group small {
+            color: #555;
+            font-size: 0.75rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Tags */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag-option {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tag-option.selected {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: #00f3ff;
+            color: #00f3ff;
+        }
+
+        /* Preview */
+        .preview-card {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .preview-image {
+            width: 150px;
+            height: 100px;
+            background: #111;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .preview-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-info h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-info p {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #00f3ff, #00a8b3);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #888;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Status */
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .status.success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            display: block;
+        }
+
+        .status.error {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid #ff4757;
+            color: #ff4757;
+            display: block;
+        }
+
+        .status.loading {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid #00f3ff;
+            color: #00f3ff;
+            display: block;
+        }
+
+        /* Token Setup */
+        .token-setup {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .token-setup h3 {
+            color: #00f3ff;
+            margin-bottom: 1rem;
+        }
+
+        .token-setup p {
+            color: #888;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .token-setup input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        /* Games List */
+        .games-list {
+            display: none;
+        }
+
+        .game-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-item img {
+            width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .game-item-info {
+            flex: 1;
+        }
+
+        .game-item-info h4 {
+            font-size: 0.95rem;
+        }
+
+        .game-item-info p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .game-item-actions button {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid #ff4757;
+            color: #ff4757;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h2>🔒 ADMIN</h2>
+            <input type="password" id="passwordInput" placeholder="Contraseña" autofocus>
+            <button onclick="checkPassword()">Entrar</button>
+            <p class="login-error" id="loginError">Contraseña incorrecta</p>
+        </div>
+    </div>
+
+    <!-- Main Admin Container -->
+    <div class="admin-container" id="adminContainer">
+        <div class="admin-header">
+            <h1>🎮 Panel Admin</h1>
+            <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+        </div>
+
+        <!-- Token Setup (shown if no token) -->
+        <div class="token-setup" id="tokenSetup">
+            <h3>🔑 Configurar Token de GitHub</h3>
+            <p>Necesitás un Personal Access Token para poder guardar juegos.</p>
+            <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxx">
+            <br>
+            <button class="btn-primary" onclick="saveToken()">Guardar Token</button>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('add')">➕ Agregar Juego</div>
+                <div class="tab" onclick="showTab('list')">📋 Ver Juegos</div>
+            </div>
+
+            <!-- Add Game Form -->
+            <div id="addGameTab">
+                <form id="gameForm">
+                    <div class="form-section">
+                        <h3>📝 Datos del Juego</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>ID (slug)</label>
+                                <input type="text" id="gameId" placeholder="lethal-company" required>
+                                <small>Sin espacios, usar guiones</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Título</label>
+                                <input type="text" id="gameTitle" placeholder="Lethal Company" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descripción corta</label>
+                            <input type="text" id="gameDesc" placeholder="Con mods es un juegazo." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descripción completa (opcional)</label>
+                            <textarea id="gameFullDesc" placeholder="Descripción más detallada del juego..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>URL de imagen</label>
+                            <input type="url" id="gameImage" placeholder="https://..." required>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>🏷️ Tags</h3>
+                        <div class="tags-container" id="tagsContainer">
+                            <span class="tag-option" data-tag="Coop">Coop</span>
+                            <span class="tag-option" data-tag="Terror">Terror</span>
+                            <span class="tag-option" data-tag="Party">Party</span>
+                            <span class="tag-option" data-tag="Accion">Acción</span>
+                            <span class="tag-option" data-tag="Roguelike">Roguelike</span>
+                            <span class="tag-option" data-tag="Supervivencia">Supervivencia</span>
+                            <span class="tag-option" data-tag="Simulacion">Simulación</span>
+                            <span class="tag-option" data-tag="Estrategia">Estrategia</span>
+                            <span class="tag-option" data-tag="Puzzle">Puzzle</span>
+                            <span class="tag-option" data-tag="Carreras">Carreras</span>
+                            <span class="tag-option" data-tag="Crafteo">Crafteo</span>
+                            <span class="tag-option" data-tag="Sandbox">Sandbox</span>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>🔗 URLs</h3>
+
+                        <div class="form-group">
+                            <label>URL de Descarga *</label>
+                            <input type="url" id="gameDownload" placeholder="https://mediafire.com/..." required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Fix Online (opcional)</label>
+                                <input type="url" id="gameFix" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Mods (opcional)</label>
+                                <input type="url" id="gameMods" placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>👁️ Preview</h3>
+                        <div class="preview-card">
+                            <div class="preview-image">
+                                <img id="previewImg" src="" alt="Preview">
+                            </div>
+                            <div class="preview-info">
+                                <h4 id="previewTitle">Título del juego</h4>
+                                <p id="previewDesc">Descripción del juego</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn-primary" id="submitBtn">
+                            🚀 Guardar y Publicar
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="clearForm()">
+                            Limpiar
+                        </button>
+                    </div>
+
+                    <div class="status" id="status"></div>
+                </form>
+            </div>
+
+            <!-- Games List -->
+            <div class="games-list" id="listTab">
+                <div id="gamesListContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // CONFIGURACIÓN
+        // =====================================================================
+        const ADMIN_PASSWORD_HASH = '8f03db6b63d7319da347b6feebe9999cbab2d234b997dfdc39998482018153ba';
+        const REPO_OWNER = 'HugoAleOlguin';
+        const REPO_NAME = 'jueguitos-piola';
+        const FILE_PATH = 'beta/assets/js/games.js';
+        const BRANCH = 'main';
+
+        // Función para hashear con SHA-256
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // =====================================================================
+        // AUTENTICACIÓN
+        // =====================================================================
+
+        async function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const hash = await hashPassword(password);
+
+            // Hash de "159 159" = el hash guardado arriba
+            if (hash === ADMIN_PASSWORD_HASH) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminContainer').style.display = 'block';
+                sessionStorage.setItem('adminAuth', 'true');
+                checkToken();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminAuth');
+            location.reload();
+        }
+
+        // Enter para login
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // Check si ya está autenticado
+        if (sessionStorage.getItem('adminAuth') === 'true') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminContainer').style.display = 'block';
+            checkToken();
+        }
+
+        // =====================================================================
+        // TOKEN MANAGEMENT
+        // =====================================================================
+
+        function checkToken() {
+            const token = localStorage.getItem('githubToken');
+            if (token) {
+                document.getElementById('tokenSetup').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            } else {
+                document.getElementById('tokenSetup').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
+            }
+        }
+
+        function saveToken() {
+            const token = document.getElementById('tokenInput').value.trim();
+            if (token) {
+                localStorage.setItem('githubToken', token);
+                checkToken();
+            }
+        }
+
+        // =====================================================================
+        // TABS
+        // =====================================================================
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[onclick="showTab('${tab}')"]`).classList.add('active');
+
+            document.getElementById('addGameTab').style.display = tab === 'add' ? 'block' : 'none';
+            document.getElementById('listTab').style.display = tab === 'list' ? 'block' : 'none';
+
+            if (tab === 'list') loadGamesList();
+        }
+
+        // =====================================================================
+        // TAGS
+        // =====================================================================
+
+        let selectedTags = [];
+
+        document.querySelectorAll('.tag-option').forEach(tag => {
+            tag.addEventListener('click', () => {
+                tag.classList.toggle('selected');
+                const tagName = tag.dataset.tag;
+                if (selectedTags.includes(tagName)) {
+                    selectedTags = selectedTags.filter(t => t !== tagName);
+                } else {
+                    selectedTags.push(tagName);
+                }
+            });
+        });
+
+        // =====================================================================
+        // PREVIEW
+        // =====================================================================
+
+        document.getElementById('gameTitle').addEventListener('input', updatePreview);
+        document.getElementById('gameDesc').addEventListener('input', updatePreview);
+        document.getElementById('gameImage').addEventListener('input', updatePreview);
+
+        function updatePreview() {
+            document.getElementById('previewTitle').textContent =
+                document.getElementById('gameTitle').value || 'Título del juego';
+            document.getElementById('previewDesc').textContent =
+                document.getElementById('gameDesc').value || 'Descripción del juego';
+            document.getElementById('previewImg').src =
+                document.getElementById('gameImage').value || '';
+        }
+
+        // =====================================================================
+        // GITHUB API
+        // =====================================================================
+
+        async function getFileContent() {
+            const token = localStorage.getItem('githubToken');
+            const response = await fetch(
+                `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`,
+                {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                }
+            );
+
+            if (!response.ok) throw new Error('Error obteniendo archivo');
+            return await response.json();
+        }
+
+        async function updateFile(content, sha, message) {
+            const token = localStorage.getItem('githubToken');
+            const response = await fetch(
+                `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        content: btoa(unescape(encodeURIComponent(content))),
+                        sha: sha,
+                        branch: BRANCH
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Error actualizando archivo');
+            }
+            return await response.json();
+        }
+
+        // =====================================================================
+        // FORM SUBMISSION
+        // =====================================================================
+
+        document.getElementById('gameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const status = document.getElementById('status');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Crear objeto del juego
+            const newGame = {
+                id: document.getElementById('gameId').value.trim(),
+                title: document.getElementById('gameTitle').value.trim(),
+                description: document.getElementById('gameDesc').value.trim(),
+                image: document.getElementById('gameImage').value.trim(),
+                tags: [...selectedTags],
+                downloadUrl: document.getElementById('gameDownload').value.trim()
+            };
+
+            // Campos opcionales
+            const fullDesc = document.getElementById('gameFullDesc').value.trim();
+            const fixUrl = document.getElementById('gameFix').value.trim();
+            const modsUrl = document.getElementById('gameMods').value.trim();
+
+            if (fullDesc) newGame.fullDescription = fullDesc;
+            if (fixUrl) newGame.fixOnlineUrl = fixUrl;
+            if (modsUrl) newGame.modsUrl = modsUrl;
+
+            // Validación
+            if (selectedTags.length === 0) {
+                status.className = 'status error';
+                status.textContent = '❌ Seleccioná al menos un tag';
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                status.className = 'status loading';
+                status.textContent = '⏳ Obteniendo archivo actual...';
+
+                // Obtener archivo actual
+                const fileData = await getFileContent();
+                const currentContent = decodeURIComponent(escape(atob(fileData.content)));
+
+                // Parsear el array de juegos
+                const match = currentContent.match(/const gamesData = \[([\s\S]*)\];/);
+                if (!match) throw new Error('No se pudo parsear games.js');
+
+                // Agregar nuevo juego
+                const gamesArray = eval('[' + match[1] + ']');
+
+                // Verificar que no exista
+                if (gamesArray.some(g => g.id === newGame.id)) {
+                    throw new Error(`Ya existe un juego con ID "${newGame.id}"`);
+                }
+
+                gamesArray.push(newGame);
+
+                // Generar nuevo contenido
+                const newContent = 'const gamesData = ' + JSON.stringify(gamesArray, null, 4) + ';\n';
+
+                status.textContent = '⏳ Guardando en GitHub...';
+
+                // Commit y push
+                await updateFile(
+                    newContent,
+                    fileData.sha,
+                    `➕ Agregar juego: ${newGame.title}`
+                );
+
+                status.className = 'status success';
+                status.textContent = `✅ ¡"${newGame.title}" agregado y publicado!`;
+
+                // Limpiar formulario
+                clearForm();
+
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `❌ Error: ${error.message}`;
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        function clearForm() {
+            document.getElementById('gameForm').reset();
+            selectedTags = [];
+            document.querySelectorAll('.tag-option').forEach(t => t.classList.remove('selected'));
+            updatePreview();
+            document.getElementById('status').className = 'status';
+        }
+
+        // =====================================================================
+        // GAMES LIST
+        // =====================================================================
+
+        async function loadGamesList() {
+            const container = document.getElementById('gamesListContainer');
+            container.innerHTML = '<p style="color: #888;">Cargando...</p>';
+
+            try {
+                const fileData = await getFileContent();
+                const content = decodeURIComponent(escape(atob(fileData.content)));
+                const match = content.match(/const gamesData = \[([\s\S]*)\];/);
+                const games = eval('[' + match[1] + ']');
+
+                container.innerHTML = games.map(game => `
+                    <div class="game-item">
+                        <img src="${game.image}" alt="${game.title}" onerror="this.src='favicon.png'">
+                        <div class="game-item-info">
+                            <h4>${game.title}</h4>
+                            <p>${game.id} • ${(game.tags || []).join(', ')}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                container.innerHTML = `<p style="color: #ff4757;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+
+</html>

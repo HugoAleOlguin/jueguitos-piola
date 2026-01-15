@@ -324,7 +324,8 @@ const gamesData = [
         ],
         "downloadUrl": "https://www.mediafire.com/file/peak",
         "fixOnlineUrl": "",
-        "modsUrl": ""
+        "modsUrl": "",
+        "noRawg": true
     },
     {
         "id": "border2",
@@ -425,7 +426,8 @@ const gamesData = [
         ],
         "downloadUrl": "https://www.mediafire.com/file/sworn",
         "fixOnlineUrl": "",
-        "modsUrl": ""
+        "modsUrl": "",
+        "noRawg": true
     },
     {
         "id": "hytale",
@@ -439,6 +441,7 @@ const gamesData = [
         ],
         "downloadUrl": "https://gofile.io/d/CXjQn7",
         "fullDescription": "Contraseña: online-fix.me",
-        "fixOnlineUrl": "https://gofile.io/d/EmRuJ2"
+        "fixOnlineUrl": "https://gofile.io/d/EmRuJ2",
+        "noRawg": true
     }
 ];
