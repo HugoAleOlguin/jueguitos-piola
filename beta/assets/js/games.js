@@ -454,5 +454,16 @@ const gamesData = [
             "Puzzle"
         ],
         "downloadUrl": "https://uploadrar.com/qiul4uor5bjf"
+    },
+    {
+        "id": "prueba2",
+        "title": "otra prueba",
+        "description": "solo es otra purebaa ok??",
+        "image": "https://static.stmstat.com/uploads/header_images/b06/d41/7c5/8a4/a2e/6b3/1334590.jpg",
+        "tags": [
+            "Puzzle",
+            "Party"
+        ],
+        "downloadUrl": "https://uploadrar.com/uwi8vmyp31d9"
     }
 ];
