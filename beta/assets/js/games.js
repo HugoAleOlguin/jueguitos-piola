@@ -459,7 +459,7 @@ const gamesData = [
         "id": "prueba2",
         "title": "otra prueba",
         "description": "solo es otra purebaa ok??",
-        "image": "https://static.stmstat.com/uploads/header_images/b06/d41/7c5/8a4/a2e/6b3/1334590.jpg",
+        "image": "https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUyZ3Fub3RmbHI2ZmJsNGx3amoyOThyanBybGR4dmk3czh2emFiMmJ1MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/OahphIy7RjNhJQcikp/200w.gif",
         "tags": [
             "Puzzle",
             "Party"
