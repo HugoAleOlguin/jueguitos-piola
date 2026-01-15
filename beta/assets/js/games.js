@@ -316,16 +316,13 @@ const gamesData = [
         "id": "peak",
         "title": "Peak",
         "description": "otro juego de parkour alm.",
-        "fullDescription": "Juego de parkour cooperativo.",
-        "image": "https://pivigames.blog/wp-content/uploads/2025/06/PEAK-Pivigames.webp",
+        "image": "https://media.tenor.com/KxOUcHoEz5kAAAAM/peak-vinny.gif",
         "tags": [
             "Coop",
             "Parkour"
         ],
         "downloadUrl": "https://www.mediafire.com/file/peak",
-        "fixOnlineUrl": "",
-        "modsUrl": "",
-        "noRawg": true
+        "fullDescription": "Juego de parkour ni ahi."
     },
     {
         "id": "border2",
@@ -358,15 +355,15 @@ const gamesData = [
     },
     {
         "id": "rain2",
-        "title": "Risk of Rain 2 V1.4.1",
+        "title": "Risk of Rain 2 UPDATE",
         "description": "Este juego me salvó de vanguards.",
-        "fullDescription": "Roguelike de acción con muchas balas y cooperativo.",
-        "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/632360/header.jpg",
+        "image": "https://c.tenor.com/TCEVv-hYpwkAAAAd/tenor.gif",
         "tags": [
             "Roguelike",
             "Coop"
         ],
         "downloadUrl": "https://media.rushuploads.com/Risk.of.Rain.2.v1.4.1.Yuumi.Jungle.rar",
+        "fullDescription": "Este juego me salvó de vanguards.",
         "fixOnlineUrl": "https://gofile.io/d/gKWNN2",
         "modsUrl": "https://github.com/Kesomannen/gale/releases/download/1.5.10/Gale_1.5.10_x64_en-US.msi"
     },
