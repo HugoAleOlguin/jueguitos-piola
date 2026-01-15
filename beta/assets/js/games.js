@@ -316,16 +316,13 @@ const gamesData = [
         "id": "peak",
         "title": "Peak",
         "description": "otro juego de parkour alm.",
-        "fullDescription": "Juego de parkour cooperativo.",
-        "image": "https://pivigames.blog/wp-content/uploads/2025/06/PEAK-Pivigames.webp",
+        "image": "https://media.tenor.com/KxOUcHoEz5kAAAAM/peak-vinny.gif",
         "tags": [
             "Coop",
             "Parkour"
         ],
         "downloadUrl": "https://www.mediafire.com/file/peak",
-        "fixOnlineUrl": "",
-        "modsUrl": "",
-        "noRawg": true
+        "fullDescription": "Juego de parkour ni ahi."
     },
     {
         "id": "border2",
