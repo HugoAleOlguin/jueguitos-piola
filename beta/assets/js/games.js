@@ -341,17 +341,15 @@ const gamesData = [
     {
         "id": "raft",
         "title": "Raft",
-        "description": "Aventura y supervivencia en el mar.",
-        "fullDescription": "Sobrevive en una balsa en medio del océano con tus amigos.",
-        "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/648800/header.jpg",
+        "description": "Eleven anclas.",
+        "image": "https://i.ibb.co/kgcdvGvX/raft-prime.gif",
         "tags": [
             "Supervivencia",
             "Crafteo",
             "Coop"
         ],
         "downloadUrl": "https://www.mediafire.com/file/raft",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "fullDescription": "la casita del Agus parece una cucha de perro."
     },
     {
         "id": "rain2",
