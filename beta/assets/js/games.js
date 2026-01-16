@@ -35,8 +35,8 @@ const gamesData = [
             "Terror",
             "Party"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/5uv0qcp1fopibgn/Content_Warning_-_ElEnemigos.rar/file",
-        "fullDescription": "Contraseña: elenemigos.com",
+        "downloadUrl": "https://apophis.dlproxy.uk/download/E_frPOiAuu2SDbWt8LeM4H50poshDKuB-DPA3BQY_scEwortxp6gDHblecUg2-oKc8WS6t3P69Lo7OpoJWCjxjmr6AM1DKhTbR7gOyS5nC1HmIdATkPOpX1PfbbwpOvR4Ippc_1bBapZn-Ti5t-gwrRLUSdrpMNrHR79U6sQKBnlRdl1-7D4RFZ9XBhODb1eENSOgDy5g3ZXZKbAUvuY3RHLFanpzzai0OwCavoqhsRjPcVbceqLAChiquqN17a39lDdPFSuotCiru4beTFcwyUVa6xiRA_wg9XYJgj4KHw6hXVfWlti7klmtsIknTH8xP4Ys-1l4jBjWheTWgp_Wvm00fnGkj3TNKobH8FceneumvyAEKrQ1OC_pZTJdtLaF88ubr_7WA5zck5JgRrvaGQW3PprBpTbeeYELnkj2kzpMfegPrAJwSQPVck41dcJ-sXUVrr1brsnXVf1-6jOoRhdko_coPROXNrvNX8LLUB5vP0pPRRjE1LASL45wEHDh98q0qdEB0A-z-FYmd_j2LJPiWCaRrslFvcI7IVd_nlfGNX5qlXiDhWo53V9B9OQnQpFJwh604jOkfgUzBSe5HZbHynY2Lh9xQDLU-m672oSw4iAkkZGUG_gfY3ZJ1Zb?sig=LtZAnRyeV6sFLo-eIiJKZCX5BAvyqd5nSBrMjhH4YSs",
+        "fullDescription": "clave",
         "modsUrl": "https://github.com/Kesomannen/gale/releases/download/1.5.10/Gale_1.5.10_x64_en-US.msi"
     },
     {
