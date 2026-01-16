@@ -424,18 +424,17 @@ const gamesData = [
     },
     {
         "id": "hytale",
-        "title": "Hytale (OFFLINE)",
-        "description": "Recien salió (NO TIENE ONLINE AÚN)",
-        "image": "https://hytale.com/static/images/logo.png",
+        "title": "Hytale online (EXPERIMETAL)",
+        "description": "Recien salió (EL ONLINE ES MALO CREO)",
+        "image": "https://pivigames.blog/wp-content/uploads/2026/01/Hytale-Juego-para-pc.jpg",
         "tags": [
             "Coop",
             "Craft",
-            "Sandbox"
+            "Sandbox",
+            "Crafteo"
         ],
-        "downloadUrl": "https://gofile.io/d/CXjQn7",
-        "fullDescription": "Contraseña: online-fix.me",
-        "fixOnlineUrl": "https://gofile.io/d/EmRuJ2",
-        "noRawg": true
+        "downloadUrl": "https://rapidshare.co/en/d/2QkDJqneRwst74",
+        "modsUrl": "https://www.mediafire.com/file/yf21mkrp6xwyyi2/Hytale_Spanish_v1.1.zip/file"
     },
     {
         "id": "prueba",
