@@ -434,7 +434,8 @@ const gamesData = [
             "Crafteo"
         ],
         "downloadUrl": "https://rapidshare.co/en/d/2QkDJqneRwst74",
-        "modsUrl": "https://www.mediafire.com/file/yf21mkrp6xwyyi2/Hytale_Spanish_v1.1.zip/file"
+        "fullDescription": "para poner en español con el mod, pegar los archivos que estan la la carpeta install en esta ruta:\n\n...\\Hytale-P2P\\package\\game\\latest\\Client\\Data\\Shared\\Language\\es-ES",
+        "modsUrl": "https://mediafilez.forgecdn.net/files/7464/552/Hytale_Proyecto_LATAM.zip"
     },
     {
         "id": "prueba",
