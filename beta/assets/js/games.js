@@ -328,15 +328,13 @@ const gamesData = [
         "id": "border2",
         "title": "Borderlands 2",
         "description": "GOTY.",
-        "fullDescription": "Looter shooter cooperativo con millones de armas.",
-        "image": "https://pivigames.blog/wp-content/uploads/2017/05/borderlands-2-big.jpeg",
+        "image": "https://gifdb.com/images/thumbnail/borderlands-handsome-jack-waving-k09kx95r10mo1izw.gif",
         "tags": [
             "Accion",
             "Coop"
         ],
         "downloadUrl": "https://www.mediafire.com/file/border2",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "fullDescription": "Looter shooter cooperativo con millones de armas."
     },
     {
         "id": "raft",
