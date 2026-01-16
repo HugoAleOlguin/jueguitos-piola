@@ -473,28 +473,32 @@
 
         .game-item-actions button {
             background: transparent;
-            border: none;
-            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.8rem;
             transition: all 0.2s;
         }
 
         .game-item-actions button:first-child {
             color: #00f3ff;
+            border-color: rgba(0, 243, 255, 0.3);
         }
 
         .game-item-actions button:first-child:hover {
-            background: rgba(0, 243, 255, 0.2);
+            background: rgba(0, 243, 255, 0.15);
+            border-color: rgba(0, 243, 255, 0.5);
         }
 
         .game-item-actions button:last-child {
             color: #ff4757;
+            border-color: rgba(255, 71, 87, 0.3);
         }
 
         .game-item-actions button:last-child:hover {
-            background: rgba(255, 71, 87, 0.2);
+            background: rgba(255, 71, 87, 0.15);
+            border-color: rgba(255, 71, 87, 0.5);
         }
     </style>
 </head>
@@ -503,7 +507,7 @@
     <!-- Login Screen -->
     <div class="login-screen" id="loginScreen">
         <div class="login-box">
-            <h2>🔒 ADMIN</h2>
+            <h2>ADMIN</h2>
             <input type="password" id="passwordInput" placeholder="Contraseña" autofocus>
             <button onclick="checkPassword()">Entrar</button>
             <p class="login-error" id="loginError">Contraseña incorrecta</p>
@@ -513,13 +517,13 @@
     <!-- Main Admin Container -->
     <div class="admin-container" id="adminContainer">
         <div class="admin-header">
-            <h1>🎮 Panel Admin</h1>
+            <h1>Panel de Administración</h1>
             <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
         </div>
 
         <!-- Token Setup (shown if no token) -->
         <div class="token-setup" id="tokenSetup">
-            <h3>🔑 Configurar Token de GitHub</h3>
+            <h3>Configurar Token de GitHub</h3>
             <p>Necesitás un Personal Access Token para poder guardar juegos.</p>
             <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxx">
             <br>
@@ -530,15 +534,30 @@
         <div id="mainContent" style="display: none;">
             <!-- Tabs -->
             <div class="tabs">
-                <div class="tab active" onclick="showTab('add')">➕ Agregar Juego</div>
-                <div class="tab" onclick="showTab('list')">📋 Ver Juegos</div>
+                <div class="tab active" onclick="showTab('add')">Agregar</div>
+                <div class="tab" onclick="showTab('list')">Lista de Juegos</div>
+            </div>
+
+            <!-- Barra de cambios pendientes -->
+            <div id="pendingBar"
+                style="display: none; background: rgba(255, 149, 0, 0.1); border: 1px solid rgba(255, 149, 0, 0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #ff9500;">
+                    <strong id="pendingCount">0</strong> cambios pendientes
+                </span>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="discardChanges()"
+                        style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">Descartar</button>
+                    <button onclick="publishChanges()"
+                        style="background: linear-gradient(135deg, #00f3ff, #00a8b3); color: #000; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Publicar
+                        todo</button>
+                </div>
             </div>
 
             <!-- Add Game Form -->
             <div id="addGameTab">
                 <form id="gameForm">
                     <div class="form-section">
-                        <h3>📝 Datos del Juego</h3>
+                        <h3>Datos del Juego</h3>
 
                         <div class="form-row">
                             <div class="form-group">
@@ -569,7 +588,7 @@
                     </div>
 
                     <div class="form-section">
-                        <h3>🏷️ Tags</h3>
+                        <h3>Tags</h3>
                         <div class="tags-container" id="tagsContainer">
                             <span class="tag-option" data-tag="Coop">Coop</span>
                             <span class="tag-option" data-tag="Terror">Terror</span>
@@ -587,7 +606,7 @@
                     </div>
 
                     <div class="form-section">
-                        <h3>🔗 URLs</h3>
+                        <h3>URLs</h3>
 
                         <div class="form-group">
                             <label>URL de Descarga *</label>
@@ -607,7 +626,7 @@
                     </div>
 
                     <div class="form-section">
-                        <h3>👁️ Preview</h3>
+                        <h3>Vista previa</h3>
                         <div class="preview-card">
                             <div class="preview-image">
                                 <img id="previewImg" src="" alt="Preview">
@@ -621,7 +640,7 @@
 
                     <div class="actions">
                         <button type="submit" class="btn-primary" id="submitBtn">
-                            🚀 Guardar y Publicar
+                            Guardar
                         </button>
                         <button type="button" class="btn-secondary" onclick="clearForm()">
                             Limpiar
@@ -649,6 +668,69 @@
         const FILE_PATH = 'beta/assets/js/games.js';
         const VERSION_PATH = 'beta/version.json';
         const BRANCH = 'gh-pages';
+
+        // Estado local de cambios pendientes
+        let pendingGamesData = null; // Copia local de los juegos
+        let pendingChanges = []; // Array de descripciones de cambios
+
+        // Actualizar barra de cambios pendientes
+        function updatePendingBar() {
+            const bar = document.getElementById('pendingBar');
+            const count = document.getElementById('pendingCount');
+            if (pendingChanges.length > 0) {
+                bar.style.display = 'flex';
+                count.textContent = pendingChanges.length;
+            } else {
+                bar.style.display = 'none';
+            }
+        }
+
+        // Descartar cambios
+        function discardChanges() {
+            if (!confirm('¿Descartar todos los cambios pendientes?')) return;
+            pendingGamesData = null;
+            pendingChanges = [];
+            updatePendingBar();
+            loadGamesList();
+            document.getElementById('status').textContent = 'Cambios descartados';
+            document.getElementById('status').className = 'status';
+        }
+
+        // Publicar todos los cambios
+        async function publishChanges() {
+            if (pendingChanges.length === 0) return;
+
+            const status = document.getElementById('status');
+            try {
+                status.className = 'status loading';
+                status.textContent = 'Publicando cambios...';
+
+                // Obtener SHA actual
+                const fileData = await getFileContent();
+
+                // Generar contenido
+                const newContent = 'const gamesData = ' + JSON.stringify(pendingGamesData, null, 4) + ';\n';
+
+                // Commit con resumen de cambios
+                const commitMsg = pendingChanges.join(', ');
+                await updateFile(newContent, fileData.sha, commitMsg);
+
+                // Actualizar versión
+                await updateVersionFile();
+
+                status.className = 'status success';
+                status.textContent = `${pendingChanges.length} cambio(s) publicado(s)`;
+
+                // Limpiar pendientes
+                pendingGamesData = null;
+                pendingChanges = [];
+                updatePendingBar();
+
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `Error: ${error.message}`;
+            }
+        }
 
         // Generar versión automática (año.mes.dia.hora)
         function generateVersion() {
@@ -895,25 +977,26 @@
             // Validación
             if (selectedTags.length === 0) {
                 status.className = 'status error';
-                status.textContent = '❌ Seleccioná al menos un tag';
+                status.textContent = 'Seleccioná al menos un tag';
                 return;
             }
 
             try {
                 submitBtn.disabled = true;
                 status.className = 'status loading';
-                status.textContent = '⏳ Obteniendo archivo actual...';
+                status.textContent = 'Procesando...';
 
-                // Obtener archivo actual
-                const fileData = await getFileContent();
-                const currentContent = decodeURIComponent(escape(atob(fileData.content)));
-
-                // Parsear el array de juegos
-                const match = currentContent.match(/const gamesData = \[([\s\S]*)\];/);
-                if (!match) throw new Error('No se pudo parsear games.js');
-
-                // Agregar nuevo juego
-                const gamesArray = eval('[' + match[1] + ']');
+                // Obtener datos actuales (local o remoto)
+                let gamesArray;
+                if (pendingGamesData) {
+                    gamesArray = [...pendingGamesData];
+                } else {
+                    const fileData = await getFileContent();
+                    const currentContent = decodeURIComponent(escape(atob(fileData.content)));
+                    const match = currentContent.match(/const gamesData = \[([\s\S]*)\];/);
+                    if (!match) throw new Error('No se pudo parsear games.js');
+                    gamesArray = eval('[' + match[1] + ']');
+                }
 
                 // Verificar que no exista
                 if (gamesArray.some(g => g.id === newGame.id)) {
@@ -922,30 +1005,21 @@
 
                 gamesArray.push(newGame);
 
-                // Generar nuevo contenido
-                const newContent = 'const gamesData = ' + JSON.stringify(gamesArray, null, 4) + ';\n';
-
-                status.textContent = '⏳ Guardando en GitHub...';
-
-                // Commit y push
-                await updateFile(
-                    newContent,
-                    fileData.sha,
-                    `+ ${newGame.title}`
-                );
+                // Guardar localmente
+                pendingGamesData = gamesArray;
+                pendingChanges.push(`+ ${newGame.title}`);
+                updatePendingBar();
 
                 status.className = 'status success';
-                status.textContent = `✅ ¡"${newGame.title}" agregado y publicado!`;
-
-                // Actualizar versión para forzar recarga en clientes
-                await updateVersionFile();
+                status.textContent = `"${newGame.title}" agregado (pendiente)`;
 
                 // Limpiar formulario
                 clearForm();
+                loadGamesList();
 
             } catch (error) {
                 status.className = 'status error';
-                status.textContent = `❌ Error: ${error.message}`;
+                status.textContent = `Error: ${error.message}`;
                 console.error(error);
             } finally {
                 submitBtn.disabled = false;
@@ -972,11 +1046,16 @@
             container.innerHTML = '<p style="color: #888;">Cargando...</p>';
 
             try {
-                const fileData = await getFileContent();
-                currentSha = fileData.sha;
-                const content = decodeURIComponent(escape(atob(fileData.content)));
-                const match = content.match(/const gamesData = \[([\s\S]*)\];/);
-                currentGames = eval('[' + match[1] + ']');
+                // Usar datos pendientes si existen
+                if (pendingGamesData) {
+                    currentGames = pendingGamesData;
+                } else {
+                    const fileData = await getFileContent();
+                    currentSha = fileData.sha;
+                    const content = decodeURIComponent(escape(atob(fileData.content)));
+                    const match = content.match(/const gamesData = \[([\s\S]*)\];/);
+                    currentGames = eval('[' + match[1] + ']');
+                }
 
                 container.innerHTML = currentGames.map((game, index) => `
     <div class="game-item">
@@ -986,8 +1065,8 @@
             <p>${game.id} • ${(game.tags || []).join(', ')}</p>
         </div>
         <div class="game-item-actions">
-            <button onclick="editGame(${index})" title="Editar">✏️</button>
-            <button onclick="deleteGame(${index})" title="Eliminar">🗑️</button>
+            <button onclick="editGame(${index})" title="Editar">Editar</button>
+            <button onclick="deleteGame(${index})" title="Eliminar" class="delete-btn">Eliminar</button>
         </div>
     </div>
     `).join('');
@@ -1029,7 +1108,7 @@
 
             // Cambiar a tab de agregar y marcar modo edición
             showTab('add');
-            document.getElementById('submitBtn').textContent = '💾 Guardar Cambios';
+            document.getElementById('submitBtn').textContent = 'Guardar Cambios';
             document.getElementById('submitBtn').dataset.editIndex = index;
         }
 
@@ -1044,23 +1123,26 @@
             if (!confirm(`¿Eliminar "${game.title}"?`)) return;
 
             try {
-                // Obtener archivo actual para tener el SHA más reciente
-                const fileData = await getFileContent();
-                const content = decodeURIComponent(escape(atob(fileData.content)));
-                const match = content.match(/const gamesData = \[([\s\S]*)\];/);
-                const gamesArray = eval('[' + match[1] + ']');
+                // Obtener datos actuales (local o remoto)
+                let gamesArray;
+                if (pendingGamesData) {
+                    gamesArray = [...pendingGamesData];
+                } else {
+                    const fileData = await getFileContent();
+                    const content = decodeURIComponent(escape(atob(fileData.content)));
+                    const match = content.match(/const gamesData = \[([\s\S]*)\];/);
+                    gamesArray = eval('[' + match[1] + ']');
+                }
 
                 // Eliminar por ID
                 const newGames = gamesArray.filter(g => g.id !== game.id);
 
-                // Guardar
-                const newContent = 'const gamesData = ' + JSON.stringify(newGames, null, 4) + ';\n';
-                await updateFile(newContent, fileData.sha, `- ${game.title}`);
+                // Guardar localmente
+                pendingGamesData = newGames;
+                pendingChanges.push(`- ${game.title}`);
+                updatePendingBar();
 
-                // Actualizar versión
-                await updateVersionFile();
-
-                alert(`"${game.title}" eliminado`);
+                document.getElementById('status').textContent = `"${game.title}" eliminado (pendiente)`;
                 loadGamesList();
 
             } catch (error) {
@@ -1106,29 +1188,35 @@
             try {
                 submitBtn.disabled = true;
                 status.className = 'status loading';
-                status.textContent = '⏳ Guardando cambios...';
+                status.textContent = 'Guardando cambios...';
 
-                const fileData = await getFileContent();
-                const content = decodeURIComponent(escape(atob(fileData.content)));
-                const match = content.match(/const gamesData = \[([\s\S]*)\];/);
-                const gamesArray = eval('[' + match[1] + ']');
+                // Obtener datos actuales (local o remoto)
+                let gamesArray;
+                if (pendingGamesData) {
+                    gamesArray = [...pendingGamesData];
+                } else {
+                    const fileData = await getFileContent();
+                    const content = decodeURIComponent(escape(atob(fileData.content)));
+                    const match = content.match(/const gamesData = \[([\s\S]*)\];/);
+                    gamesArray = eval('[' + match[1] + ']');
+                }
 
                 // Reemplazar juego
                 gamesArray[editIndex] = editedGame;
 
-                const newContent = 'const gamesData = ' + JSON.stringify(gamesArray, null, 4) + ';\n';
-                await updateFile(newContent, fileData.sha, `~ ${editedGame.title}`);
+                // Guardar localmente
+                pendingGamesData = gamesArray;
+                pendingChanges.push(`~ ${editedGame.title}`);
+                updatePendingBar();
 
                 status.className = 'status success';
-                status.textContent = `✅ "${editedGame.title}" actualizado`;
-
-                // Actualizar versión
-                await updateVersionFile();
+                status.textContent = `"${editedGame.title}" editado (pendiente)`;
 
                 // Resetear modo edición
                 clearForm();
                 delete submitBtn.dataset.editIndex;
-                submitBtn.textContent = '🚀 Guardar y Publicar';
+                submitBtn.textContent = 'Guardar';
+                loadGamesList();
 
             } catch (error) {
                 status.className = 'status error';
