@@ -56,43 +56,38 @@ const gamesData = [
         "id": "halo",
         "title": "Halo 1 Online",
         "description": "7 palabras.",
-        "fullDescription": "El clásico Halo Combat Evolved con multiplayer online.",
         "image": "https://cdn.displate.com/artwork/380x270/2022-12-02/fca2ccd2d33b1e9b72c1aec020195f89_e95a5af6ed022868b7ebc046db7e2a3a.jpg",
         "tags": [
             "Accion",
             "Coop"
         ],
         "downloadUrl": "https://www.mediafire.com/file/mx83lirxptvfzw6/HALO_CE_v.1.10_%5BDarkMaster%5D.rar/file",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "fullDescription": "El clásico Halo Combat Evolved con multiplayer online."
     },
     {
         "id": "satisfactory",
         "title": "Satisfactory",
         "description": "buen juego, supongo.",
-        "fullDescription": "Construye fábricas masivas en un planeta alienígena con tus amigos.",
         "image": "https://cdn1.epicgames.com/offer/crab/EGS_Satisfactory_CoffeeStainStudios_S1_2560x1440-4d68c4229e649463c317109338a53a15",
         "tags": [
             "Supervivencia",
             "Simulacion",
             "Crafteo"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/satisfactory",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://playpaste.net/?v=jsRz",
+        "fullDescription": "UPDATE: https://www.mediafire.com/file/1ao3l9m4jrmdyat/Sati1sfac8tor-Update463028-elamigos.rar/file",
+        "fixOnlineUrl": "https://gofile.io/d/k8ABep"
     },
     {
         "id": "AoE",
         "title": "Age Of Empires 2",
         "description": "No lo se jugar.",
-        "fullDescription": "El clásico juego de estrategia en tiempo real.",
         "image": "https://i.ytimg.com/vi/vkhNdN0Az9Y/maxresdefault.jpg",
         "tags": [
             "Estrategia"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/aoe2",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://mega.nz/file/oX5UgZbB#jMHD_HCEyd17iOstdj5VP-bNMBE6F-21cbcK_FEvWlM",
+        "fullDescription": "El clásico juego de estrategia en tiempo real."
     },
     {
         "id": "isaac",
@@ -111,88 +106,77 @@ const gamesData = [
         "id": "forest",
         "title": "The Forest",
         "description": "El agus deforesta medio mapa en 3 minutos.",
-        "fullDescription": "Sobrevive en una isla habitada por caníbales mutantes. Solo o con amigos.",
         "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/242760/header.jpg?t=1699381053",
         "tags": [
             "Supervivencia",
             "Terror",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/forest",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/p157sn734088ktp/The.F0re3st.v1.12.rar/file",
+        "fullDescription": "Sobrevive en una isla habitada por caníbales mutantes. Solo o con amigos.",
+        "fixOnlineUrl": "https://gofile.io/d/AS6A1T"
     },
     {
         "id": "gang-beast",
         "title": "Gang Beast",
         "description": "Juego piola.",
-        "fullDescription": "Pelea de gelatinas multijugador. Muy divertido con amigos.",
         "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/285900/header.jpg?t=1732109683",
         "tags": [
             "Coop",
             "Party"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/gangbeast",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://lolaup.com/en/fgkuyplLKpJPyZl/file",
+        "fullDescription": "Pelea de gelatinas multijugador. Muy divertido con amigos."
     },
     {
         "id": "initial",
         "title": "Initial Unity",
         "description": "Gas Gas Gas.",
-        "fullDescription": "Juego de carreras estilo Initial D con drift.",
         "image": "https://media.tenor.com/ceRw7O2NH90AAAAM/022106-tofushop.gif",
         "tags": [
             "Carreras",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/initial",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/k7r74orfqxt44ut/Initial+Unity+Reborn+V311.zip/file",
+        "fullDescription": "Juego de carreras estilo Initial D con drift."
     },
     {
         "id": "repo",
         "title": "R.E.P.O",
         "description": "bruh.",
-        "fullDescription": "Juego cooperativo de simulación y terror.",
         "image": "https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/3241660/fda868129a96b58493b4935c7e2c3390b4ebb108/capsule_616x353.jpg?t=1740578354",
         "tags": [
             "Simulacion",
             "Terror",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/repo",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/yujsrmdfgi5vpia",
+        "fullDescription": "Juego cooperativo de simulación y terror."
     },
     {
         "id": "deadisland",
         "title": "Dead Island",
         "description": "goty.",
-        "fullDescription": "Mata zombies en una isla tropical con tus amigos.",
         "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjPFIaDRflSYj5EOHkOft5MswoVOoEV2O0IWDf8O5VnVemYyOsIzDRbQTnpjf-_qOZRmQ&usqp=CAU",
         "tags": [
             "Accion",
             "Terror",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/deadisland",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://drive.google.com/drive/folders/1wuLgxbazHvSknRR_4I2Aas0AgE8ytdOX",
+        "fullDescription": "Mata zombies en una isla tropical con tus amigos."
     },
     {
         "id": "liars",
         "title": "Liars Bar",
         "description": "siuu.",
-        "fullDescription": "Juego de mentiras y engaños con amigos.",
         "image": "https://media.tenor.com/GJBocHhyMIkAAAAM/pig-liar%27s-bar.gif",
         "tags": [
             "Coop",
             "Party"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/liars",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/w7bzjhfs0abzirv/Liars.Bar.v0.956-0xdeadcode.zip/file",
+        "fullDescription": "Juego de mentiras y engaños con amigos."
     },
     {
         "id": "underplus",
@@ -228,30 +212,27 @@ const gamesData = [
         "id": "fastfood",
         "title": "Fast food Simulator",
         "description": "A cocinar pibes.",
-        "fullDescription": "Simulador de comida rápida cooperativo.",
         "image": "https://pivigames.blog/wp-content/uploads/2024/12/Fast-Food-Simulator-Pivigames.jpg",
         "tags": [
             "Simulacion",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/fastfood",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/vkq2y8a5oe1szwz/Fast.Food.Simulator.v0.5.0-0xdeadcode.zip/file",
+        "fullDescription": "Simulador de comida rápida cooperativo."
     },
     {
         "id": "lfd",
         "title": "Left 4 Dead",
         "description": "uy.",
-        "fullDescription": "El clásico shooter cooperativo de zombies.",
         "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQe6TrxL9Yh_CBDSv91IiywZRLYk5CR8sBdrg&s",
         "tags": [
             "Accion",
             "Terror",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/lfd",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://playpaste.net/?v=jsrN",
+        "fullDescription": "El clásico shooter cooperativo de zombies.",
+        "fixOnlineUrl": "https://mega.nz/file/cN1khTgQ#g_wr1WT2pKMp0vwMaY2yK52G5ond5RfrmWwLtxbNObo"
     },
     {
         "id": "agus",
@@ -270,16 +251,15 @@ const gamesData = [
         "id": "lfd2",
         "title": "Left 4 Dead 2",
         "description": "ojo al piojo.",
-        "fullDescription": "Secuela del clásico shooter cooperativo de zombies.",
         "image": "https://pivigames.blog/wp-content/uploads/2020/09/Left-4-Dead-2-The-last-Stand-2020-PiviGames.jpg",
         "tags": [
             "Accion",
             "Terror",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/lfd2",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://gofile.io/d/XA25VH",
+        "fullDescription": "UPDATE: https://mega.nz/file/IdETHA7S#bBTCUxzzpHo2rPmMoxpyl4cvqml5D45HCFr3qluWY78",
+        "fixOnlineUrl": "https://www.mediafire.com/file/x4lp7c8plirs9vx/L4D2SP_3.2.exe/file"
     },
     {
         "id": "minecraft",
@@ -300,29 +280,25 @@ const gamesData = [
         "id": "chained",
         "title": "Chained Together",
         "description": "te voy a cagar a trompadas agus.",
-        "fullDescription": "Juego de parkour cooperativo donde estás encadenado a tus amigos.",
         "image": "https://pivigames.blog/wp-content/uploads/2024/07/Chained-Together-Pivigames.jpg",
         "tags": [
             "Coop",
             "Party"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/chained",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/38tthqlcz6geaza/Chained.Together.v1.8.2-0xdeadcode.zip/file",
+        "fullDescription": "Juego de parkour cooperativo donde estás encadenado a tus amigos."
     },
     {
         "id": "cc",
         "title": "Castle Crashers",
         "description": "uff.",
-        "fullDescription": "Beat 'em up cooperativo con estilo cartoon.",
         "image": "https://pivigames.blog/wp-content/uploads/2019/01/Descargar-Castle-Crashers-Ultima-Version-PC-Gratis.jpg",
         "tags": [
             "Coop",
             "Accion"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/cc",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/3axcpazo8epbd0u",
+        "fullDescription": "Beat 'em up cooperativo con estilo cartoon."
     },
     {
         "id": "peak",
@@ -333,7 +309,7 @@ const gamesData = [
             "Coop",
             "Parkour"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/peak",
+        "downloadUrl": "https://rapidshare.co/en/d/25OCodlmzg4nsh",
         "fullDescription": "Juego de parkour ni ahi."
     },
     {
@@ -345,20 +321,20 @@ const gamesData = [
             "Accion",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/border2",
+        "downloadUrl": "https://playpaste.net/pivi/?v=ca",
         "fullDescription": "Looter shooter cooperativo con millones de armas."
     },
     {
         "id": "raft",
         "title": "Raft",
-        "description": "Eleven anclas.",
+        "description": "Eleven anclas chavales.",
         "image": "https://i.ibb.co/kgcdvGvX/raft-prime.gif",
         "tags": [
             "Supervivencia",
             "Crafteo",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/raft",
+        "downloadUrl": "https://www.mediafire.com/file/zaupng2lmrhbnvd/Raft.v1.1.07-0xdeadcode.zip/file",
         "fullDescription": "la casita del Agus parece una cucha de perro."
     },
     {
@@ -379,15 +355,14 @@ const gamesData = [
         "id": "rain2d",
         "title": "Risk of Rain Returns",
         "description": "Risk of Rain pero 2D.",
-        "fullDescription": "El Risk of Rain original remasterizado.",
         "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1337520/header.jpg?t=1759857583",
         "tags": [
             "Roguelike",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/rain2d",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/d7pk5c4f4yk028s",
+        "fullDescription": "El Risk of Rain original remasterizado.",
+        "fixOnlineUrl": "https://pixeldrain.com/u/4DbvwPFo"
     },
     {
         "id": "forever",
@@ -422,17 +397,14 @@ const gamesData = [
         "id": "sworn",
         "title": "Sworn",
         "description": "ta weno.",
-        "fullDescription": "Roguelike cooperativo de acción.",
         "image": "https://assets.nintendo.com/image/upload/ar_16:9,c_lpad,w_1240/b_white/f_auto/q_auto/store/software/switch/70010000078501/3394878a0b7ff522fe98cf73415727b641e278bc79782aeb7d35753cd4e3d9be",
         "tags": [
             "Coop",
             "Rogue Like",
             "Rogue Lite"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/sworn",
-        "fixOnlineUrl": "",
-        "modsUrl": "",
-        "noRawg": true
+        "downloadUrl": "https://megadb.net/download",
+        "fullDescription": "Roguelike cooperativo de acción."
     },
     {
         "id": "hytale",
