@@ -17,15 +17,15 @@ const gamesData = [
         "id": "content-warning",
         "title": "Content Warning",
         "description": "quien graba?.",
-        "fullDescription": "Juego cooperativo de terror donde grabas contenido paranormal con tus amigos.",
-        "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2881650/header.jpg?t=1736717925",
+        "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2881650/extras/Spook_smaller.gif?t=1736717925",
         "tags": [
             "Coop",
-            "Terror"
+            "Terror",
+            "Party"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/2p7gz7bzxs1o48k",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/5uv0qcp1fopibgn/Content_Warning_-_ElEnemigos.rar/file",
+        "fullDescription": "Contraseña: elenemigos.com",
+        "modsUrl": "https://github.com/Kesomannen/gale/releases/download/1.5.10/Gale_1.5.10_x64_en-US.msi"
     },
     {
         "id": "lethal-company",
