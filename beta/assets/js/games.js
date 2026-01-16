@@ -14,6 +14,18 @@ const gamesData = [
         "externalLink": true
     },
     {
+        "id": "tutorial-mods",
+        "title": "Tutorial Mods",
+        "description": "Instalar mods en 3 pasos",
+        "fullDescription": "Instalar mods usando Gale Manager.",
+        "image": "https://galemodmanager.com/wp-content/uploads/2025/04/banner.png",
+        "tags": [
+            "Utilidad"
+        ],
+        "downloadUrl": "tuto.html",
+        "internalLink": true
+    },
+    {
         "id": "content-warning",
         "title": "Content Warning",
         "description": "quien graba?.",

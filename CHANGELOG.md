@@ -99,10 +99,16 @@ Historial de cambios estructurales y visuales del proyecto.
 - **Modo Prime mejorado** — más fiel al estilo legacy original
 
 **15 de Enero**
-- **🎂 Tema de Aniversario** — efectos especiales para el 1er año
+- **Tema de Aniversario** — efectos especiales para el 1er año
 - **Página 404** — diseño con efecto glitch
 - **Sistema de versiones** — actualización automática de caché
 - Mejoras visuales generales
+
+**16 de Enero**
+- **Tutorial de Mods** — guía para instalar mods con Gale
+- **Música de fondo** — opcional, con YouTube
+- **Cinta de Utilidad** — distintivo para herramientas
+- Mejoras de interfaz y rendimiento
 
 ---
 

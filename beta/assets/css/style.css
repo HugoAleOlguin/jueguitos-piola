@@ -405,6 +405,23 @@ main {
     overflow: hidden;
 }
 
+/* Cinta diagonal para utilidades */
+.utility-ribbon {
+    position: absolute;
+    top: 12px;
+    left: -35px;
+    background: linear-gradient(135deg, #ff9500, #ff6b00);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 4px 40px;
+    transform: rotate(-45deg);
+    z-index: 5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(255, 149, 0, 0.4);
+}
+
 .card-image::before {
     content: '';
     position: absolute;

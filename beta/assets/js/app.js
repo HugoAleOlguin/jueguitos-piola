@@ -117,11 +117,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return 'tag';
             };
 
+            // Verificar si es utilidad
+            const isUtility = game.tags.some(tag => tag.toLowerCase() === 'utilidad');
+            const utilityRibbon = isUtility ? '<div class="utility-ribbon">Utilidad</div>' : '';
+
             card.innerHTML = `
                 <button class="favorite-btn${gameIsFavorite ? ' active' : ''}" data-game-id="${game.id}" title="${gameIsFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
                     ★
                 </button>
-                <div class="card-image" style="background-image: ${bgImage}"></div>
+                <div class="card-image" style="background-image: ${bgImage}">
+                    ${utilityRibbon}
+                </div>
                 <div class="card-content">
                     <h3 class="card-title">${game.title}</h3>
                     <p class="card-desc">${game.description}</p>
@@ -180,11 +186,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (game.externalLink && game.downloadUrl) {
                     // Caso 1: Link externo (ej: RadminVPN)
                     targetUrl = game.downloadUrl;
+                } else if (game.internalLink && game.downloadUrl) {
+                    // Caso 2: Link interno a otra página (ej: tuto.html)
+                    targetUrl = game.downloadUrl;
                 } else if (game.customPage && game.customUrl) {
-                    // Caso 2: Página personalizada (ej: schedule con tabla de mods)
+                    // Caso 3: Página personalizada (ej: schedule con tabla de mods)
                     targetUrl = game.customUrl;
                 } else {
-                    // Caso 3: Usar plantilla dinámica (la mayoría de juegos)
+                    // Caso 4: Usar plantilla dinámica (la mayoría de juegos)
                     targetUrl = `games/game.html?id=${game.id}`;
                 }
 
