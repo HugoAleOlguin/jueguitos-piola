@@ -31,3 +31,15 @@ build/
 # Archivos de caché del navegador y herramientas
 .cache/
 .parcel-cache/
+
+# Backups locales (no subir a git)
+*-backup.json
+links-backup.json
+
+# Panel admin (seguridad)
+# beta/admin.html
+
+# Archivos sensibles
+*.env
+.env*
+secrets/
