@@ -2,6 +2,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const gamesGrid = document.getElementById('gamesGrid');
     const searchInput = document.getElementById('searchInput');
 
+    // === UTILIDADES DE RENDIMIENTO ===
+    // Debounce para reducir llamadas durante escritura rápida
+    const debounce = (fn, delay) => {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => fn(...args), delay);
+        };
+    };
+
+    // Lazy loading de imágenes con IntersectionObserver
+    const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const cardImage = entry.target;
+                const bgUrl = cardImage.dataset.bg;
+                if (bgUrl) {
+                    cardImage.style.backgroundImage = bgUrl;
+                    cardImage.classList.add('loaded');
+                }
+                imageObserver.unobserve(cardImage);
+            }
+        });
+    }, { rootMargin: '50px' });
+
+
     // === SISTEMA DE FAVORITOS ===
     // Obtener favoritos del localStorage
     const getFavorites = () => {
@@ -125,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="favorite-btn${gameIsFavorite ? ' active' : ''}" data-game-id="${game.id}" title="${gameIsFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
                     ★
                 </button>
-                <div class="card-image" style="background-image: ${bgImage}">
+                <div class="card-image" data-bg="${bgImage}">
                     ${utilityRibbon}
                 </div>
                 <div class="card-content">
@@ -136,6 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
+
+            // Observar imagen para lazy loading
+            const cardImage = card.querySelector('.card-image');
+            if (cardImage) imageObserver.observe(cardImage);
 
             // Click en el botón de favorito
             const favBtn = card.querySelector('.favorite-btn');
@@ -204,15 +234,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Filtrado en tiempo real
-    searchInput.addEventListener('input', (e) => {
+    // Filtrado en tiempo real con debounce (150ms)
+    const handleSearch = debounce((term) => {
         if (typeof gamesData === 'undefined') return;
 
-        const term = e.target.value.toLowerCase();
         const filtered = gamesData.filter(game =>
             game.title.toLowerCase().includes(term) ||
             game.tags.some(tag => tag.toLowerCase().includes(term))
         );
         renderGames(sortGamesWithFavorites(filtered), true);
+    }, 150);
+
+    searchInput.addEventListener('input', (e) => {
+        handleSearch(e.target.value.toLowerCase());
     });
 });

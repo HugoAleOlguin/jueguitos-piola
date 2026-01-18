@@ -47,11 +47,12 @@
         <p>&copy; 2026 Jueguitos Piola.</p>
     </footer>
 
-    <script src="assets/js/anniversary.js"></script>
-    <script src="assets/js/theme.js"></script>
-    <script src="assets/js/music.js"></script>
+    <!-- Scripts con defer para no bloquear el renderizado inicial -->
     <script src="assets/js/games.js"></script>
-    <script src="assets/js/app.js"></script>
+    <script src="assets/js/app.js" defer></script>
+    <script src="assets/js/theme.js" defer></script>
+    <script src="assets/js/music.js" defer></script>
+    <script src="assets/js/anniversary.js" defer></script>
 </body>
 
 </html>

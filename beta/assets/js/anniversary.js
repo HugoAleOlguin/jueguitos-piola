@@ -137,6 +137,16 @@
         animationId = requestAnimationFrame(animateParticles);
     }
 
+    // Pausar animación cuando la tab no está visible (ahorra CPU)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        } else if (!document.hidden && particleCanvas && !animationId) {
+            animateParticles();
+        }
+    });
+
     // =========================================================================
     // BANNER PREMIUM DE ANIVERSARIO
     // =========================================================================

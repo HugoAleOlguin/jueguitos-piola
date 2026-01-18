@@ -36,9 +36,6 @@ build/
 *-backup.json
 links-backup.json
 
-# Panel admin (seguridad)
-# beta/admin.html
-
 # Archivos sensibles
 *.env
 .env*

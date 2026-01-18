@@ -72,7 +72,7 @@ Historial de cambios estructurales y visuales del proyecto.
 ## Diciembre 2025
 
 **15-16 de Diciembre**
-- **🚀 Versión Beta lanzada**
+- **Versión Beta lanzada**
   - Nueva arquitectura de páginas
   - Estilos globales y específicos
   - Efectos JavaScript
