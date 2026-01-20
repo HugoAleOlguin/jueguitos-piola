@@ -366,31 +366,25 @@ const gamesData = [
     {
         "id": "forever",
         "title": "Forever Skies",
-        "description": "Supervivencia en un mundo post-apocalíptico. Tiene unos re graficos, no me anda :(",
-        "fullDescription": "Juego de supervivencia en un dirigible sobre un mundo devastado.",
+        "description": "Tiene unos re graficos que onda",
         "image": "https://pivigames.blog/wp-content/uploads/2025/04/Forever-Skies-PC-Pivigames-Juego.jpg",
         "tags": [
             "Supervivencia",
             "Coop"
         ],
-        "downloadUrl": "https://www.mediafire.com/file/forever",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://www.mediafire.com/file/forever"
     },
     {
         "id": "mudrunner",
         "title": "MudRunner",
-        "description": "a manejar.",
-        "fullDescription": "Simulador de vehículos todoterreno.",
+        "description": "no me gustó la verdad",
         "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/675010/header.jpg?t=1729687266",
         "tags": [
             "Coop",
             "Simulador",
             "Autos"
         ],
-        "downloadUrl": "https://uploads.online-fix.me:2053/torrents/MudRunner/MudRunner.Build.07042021-OFME.torrent",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        "downloadUrl": "https://uploads.online-fix.me:2053/torrents/MudRunner/MudRunner.Build.07042021-OFME.torrent"
     },
     {
         "id": "sworn",
