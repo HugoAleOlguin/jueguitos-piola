@@ -239,12 +239,10 @@ const gamesData = [
         "description": "siuu.",
         "fullDescription": "Un jueguito.",
         "image": "https://www.guvi.in/blog/wp-content/uploads/2024/03/Puzzle-Game.webp",
+        "downloadUrl": "https://github.com/HugoAleOlguin/Agus-Simulator-2025/releases/download/v4.0/AgusSimulator_v4.0.zip",
         "tags": [
             "Puzzle"
-        ],
-        "downloadUrl": "https://www.mediafire.com/file/agus",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        ]
     },
     {
         "id": "lfd2",
@@ -443,11 +441,12 @@ const gamesData = [
         "id": "prueba2",
         "title": "otra prueba",
         "description": "solo es otra purebaa ok??",
+        "fullDescription": "Contraseña: elenemigos.com",
         "image": "https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUyZ3Fub3RmbHI2ZmJsNGx3amoyOThyanBybGR4dmk3czh2emFiMmJ1MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/OahphIy7RjNhJQcikp/200w.gif",
+        "downloadUrl": "https://www.mediafire.com/file/wdeb2ste29s88kf/Furry+Love_b13554090_ElEnemigos.rar/file",
         "tags": [
-            "Puzzle",
-            "Party"
-        ],
-        "downloadUrl": "https://uploadrar.com/uwi8vmyp31d9"
+            "Party",
+            "Puzzle"
+        ]
     }
 ];
