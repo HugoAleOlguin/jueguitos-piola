@@ -432,11 +432,11 @@ const gamesData = [
         "title": "prueba",
         "description": "solo es una prueba ok?",
         "image": "https://c.tenor.com/VBDo4XlIMCUAAAAC/tenor.gif",
+        "downloadUrl": "https://gofile.io/d/ioXolr",
         "tags": [
             "Party",
             "Puzzle"
-        ],
-        "downloadUrl": "https://uploadrar.com/qiul4uor5bjf"
+        ]
     },
     {
         "id": "prueba2",
