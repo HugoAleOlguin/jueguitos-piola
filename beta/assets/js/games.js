@@ -327,14 +327,15 @@ const gamesData = [
         "id": "raft",
         "title": "Raft",
         "description": "Eleven anclas chavales.",
+        "fullDescription": "la casita del Agus parece una cucha de perro.",
         "image": "https://i.ibb.co/kgcdvGvX/raft-prime.gif",
-        "tags": [
-            "Supervivencia",
-            "Crafteo",
-            "Coop"
-        ],
         "downloadUrl": "https://www.mediafire.com/file/zaupng2lmrhbnvd/Raft.v1.1.07-0xdeadcode.zip/file",
-        "fullDescription": "la casita del Agus parece una cucha de perro."
+        "modsUrl": "https://www.mediafire.com/file/zy9t3zdsg3kqwnf/agus.7z/file",
+        "tags": [
+            "Coop",
+            "Supervivencia",
+            "Crafteo"
+        ]
     },
     {
         "id": "rain2",
@@ -432,11 +433,11 @@ const gamesData = [
         "title": "prueba",
         "description": "solo es una prueba ok?",
         "image": "https://c.tenor.com/VBDo4XlIMCUAAAAC/tenor.gif",
-        "downloadUrl": "https://gofile.io/d/ioXolr",
         "tags": [
             "Party",
             "Puzzle"
-        ]
+        ],
+        "downloadUrl": "https://uploadrar.com/qiul4uor5bjf"
     },
     {
         "id": "prueba2",
