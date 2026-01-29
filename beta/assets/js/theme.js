@@ -620,28 +620,27 @@
 (function () {
     // ========== MENSAJES HORROR (editar aca) ==========
     const VOID_MESSAGES = [
-        "no deberias estar despierto",
-        "algo te observa",
-        "escuchaste eso?",
-        "detras de ti",
-        "no mires",
-        "la senal se pierde...",
+        "NO DEBERIAS ESTAR DESPIERTO",
+        "ALGO TE OBSERVA",
+        "ESCUCHASTE ESO?",
+        "DETRAS DE TI",
+        "NO MIRES",
+        "LA SEÑAL SE PIERDE...",
         "ERROR DE TRANSMISION",
-        "h̷͈̾o̶̼͑l̵̰̔a̸̱̿",
-        "...",
-        "no hay nadie aqui",
-        "por que seguis aca?",
-        "la cinta se rebobina",
-        "Ya me dió miedito la verdad",
+        "NO HAY NADIE AQUI",
+        "POR QUE SEGUIS ACA?",
+        "LA CINTA SE REBOBINA",
+        "YA ME DIO MIEDITO",
         "3:33",
         "...",
-        "Anda a dormir",
-        "Vaya Vaya",
-        "hmm..."
+        "ANDA A DORMIR",
+        "VAYA VAYA",
+        "HMM..."
     ];
     // ================================================
 
     function isVoidHour() {
+        // PERMITIR PROBAR CAMBIANDO ESTO (Dejar en 3 para producción)
         const hour = new Date().getHours();
         return hour === 3; // 3:00 - 3:59 AM
     }
@@ -662,199 +661,284 @@
 
     // === ACTIVAR MODO VOID ===
     document.addEventListener('DOMContentLoaded', () => {
-        // Aplicar estilos void
+        console.log('🌑 VOID MODE ACTIVATED 🌑');
+
+        // Aplicar clase al HTML
         document.documentElement.setAttribute('data-void', 'true');
 
-        // Crear overlay de efectos
+        // 1. OVERLAY (Scanlines + Vignette)
         const overlay = document.createElement('div');
         overlay.className = 'void-overlay';
         document.body.appendChild(overlay);
 
-        // Crear reloj dentro del header
-        const header = document.querySelector('header');
+        // 2. RELOJ TIPO VCR (Top Right, Fixed)
         const clock = document.createElement('div');
-        clock.className = 'void-clock';
+        clock.className = 'void-clock-ui';
         clock.innerHTML = `
-            <span class="void-rec">REC</span>
-            <span class="void-time">${formatTime()}</span>
+            <div class="void-rec-indicator">
+                <span class="void-dot">●</span> REC
+            </div>
+            <div class="void-time-display">${formatTime()}</div>
         `;
-        if (header) {
-            header.appendChild(clock);
-        } else {
-            document.body.appendChild(clock);
-        }
+        document.body.appendChild(clock);
 
-        // Actualizar reloj cada segundo
+        // Actualizar reloj
         setInterval(() => {
-            clock.querySelector('.void-time').textContent = formatTime();
+            clock.querySelector('.void-time-display').textContent = formatTime();
         }, 1000);
 
-        // Crear mensajes dentro del footer
-        const footer = document.querySelector('footer');
-        const msgBox = document.createElement('div');
-        msgBox.className = 'void-message';
-        if (footer) {
-            footer.style.position = 'relative';
-            footer.appendChild(msgBox);
-        } else {
-            document.body.appendChild(msgBox);
+        // 3. MENSAJES FLOTANTES (Subtitulos)
+        const msgContainer = document.createElement('div');
+        msgContainer.className = 'void-message-container';
+        document.body.appendChild(msgContainer);
+
+        function showNextMessage() {
+            // Ocultar
+            msgContainer.classList.remove('visible');
+
+            // Esperar fx de salida y cambiar texto
+            setTimeout(() => {
+                if (Math.random() > 0.3) { // 70% chance de mostrar mensaje
+                    msgContainer.textContent = getRandomMessage();
+                    msgContainer.classList.add('visible');
+                }
+            }, 1000);
+
+            // Programar siguiente
+            const nextTime = 5000 + Math.random() * 8000;
+            setTimeout(showNextMessage, nextTime);
         }
 
+        // Iniciar ciclo de mensajes
+        setTimeout(showNextMessage, 3000);
 
-        // Mostrar mensaje inicial
-        setTimeout(() => {
-            msgBox.textContent = getRandomMessage();
-            msgBox.classList.add('show');
-        }, 2000);
+        // 5. CAOS VISUAL (Hallucinations & Glitches)
+        const TROLLFACE_URL = 'https://i.imgur.com/VkRGVIu.png';
 
-        // Cambiar mensaje cada 8-15 segundos
-        setInterval(() => {
-            msgBox.classList.remove('show');
+        // PRELOAD IMAGE
+        const voidImagePreloader = new Image();
+        voidImagePreloader.src = TROLLFACE_URL;
+
+        function glitchElement(el) {
+            if (!el) return;
+            el.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px) scale(${1 + Math.random() * 0.05})`;
+            el.style.filter = `hue-rotate(${Math.random() * 360}deg) invert(${Math.random() > 0.8 ? 1 : 0})`;
             setTimeout(() => {
-                msgBox.textContent = getRandomMessage();
-                msgBox.classList.add('show');
-            }, 500);
-        }, 8000 + Math.random() * 7000);
+                el.style.transform = '';
+                el.style.filter = '';
+            }, 200 + Math.random() * 300);
+        }
 
-        // Efecto de glitch ocasional
-        setInterval(() => {
-            if (Math.random() > 0.7) {
-                document.body.classList.add('void-glitch');
-                setTimeout(() => document.body.classList.remove('void-glitch'), 150);
+        function triggerHallucination() {
+            // PARAMETROS DE RENDIMIENTO
+            const MAX_CONCURRENT = 12; // Máximo de cartas afectadas al mismo tiempo
+            const BATCH_SIZE_MIN = 3;  // Mínimo de cartas por tanda
+            const BATCH_SIZE_MAX = 6;  // Máximo de cartas por tanda
+
+            const images = Array.from(document.querySelectorAll('.card-image'));
+            const activeCount = document.querySelectorAll('[data-void-active="true"]').length;
+
+            // Si ya hay muchas activas, saltear esta ronda para evitar lag
+            if (activeCount >= MAX_CONCURRENT) {
+                console.log('⚠️ Max hallucinations reached, skipping round...');
+                setTimeout(triggerHallucination, 2000);
+                return;
             }
-        }, 5000);
+
+            if (images.length > 0) {
+                // Calcular cuántas cambiar en esta tanda
+                const batchSize = Math.floor(Math.random() * (BATCH_SIZE_MAX - BATCH_SIZE_MIN + 1)) + BATCH_SIZE_MIN;
+
+                // Filtrar solo las que NO están activas
+                const available = images.filter(img => !img.dataset.voidActive);
+
+                // Mezclar y tomar los primeros N
+                const targets = available.sort(() => 0.5 - Math.random()).slice(0, batchSize);
+
+                targets.forEach(target => {
+                    target.dataset.voidActive = "true";
+
+                    // 1. Guardar estado
+                    const originalBg = target.style.backgroundImage;
+
+                    // 2. Aplicar Trollface
+                    target.style.backgroundImage = `url('${TROLLFACE_URL}')`;
+                    target.style.backgroundSize = 'cover';
+                    target.style.backgroundPosition = 'center';
+                    target.style.filter = 'contrast(1.5) grayscale(1)';
+
+                    // 3. Duración variable (4-7 segundos)
+                    const duration = 4000 + Math.random() * 3000;
+
+                    setTimeout(() => {
+                        // Verificar que siga existiendo (por si cambió la página/filtro)
+                        if (target && target.dataset.voidActive) {
+                            target.style.backgroundImage = originalBg;
+                            // Limpieza
+                            target.style.backgroundSize = '';
+                            target.style.backgroundPosition = '';
+                            target.style.filter = '';
+
+                            delete target.dataset.voidActive;
+                        }
+                    }, duration);
+                });
+
+                console.log(`👻 Triggered batch of ${targets.length} hallucinations`);
+            }
+
+            // B. Glitch en titulos (Simple) - Limitado para no molestar tanto
+            if (Math.random() > 0.6) {
+                const titles = document.querySelectorAll('.card-title');
+                if (titles.length > 0) {
+                    const t = titles[Math.floor(Math.random() * titles.length)];
+                    const originalText = t.textContent;
+                    t.style.color = '#ff0000';
+                    t.textContent = Math.random() > 0.5 ? "H E L P" : "V O I D";
+
+                    setTimeout(() => {
+                        t.style.color = '';
+                        t.textContent = originalText;
+                    }, 300);
+                }
+            }
+
+            // Ciclo continuo (Tiempo variable 2-4s)
+            setTimeout(triggerHallucination, 2000 + Math.random() * 2000);
+        }
+
+        // Iniciar alucinaciones despues de un momento
+        setTimeout(triggerHallucination, 2000);
+
+
+        // 4. GLITCH CSS (Solo en UI o Body suave)
+        // Reducido para performance, solo afecta elementos específicos o hue-rotate leve
+        setInterval(() => {
+            if (Math.random() > 0.85) {
+                document.body.dataset.glitch = "true";
+                setTimeout(() => delete document.body.dataset.glitch, 150 + Math.random() * 200);
+            }
+        }, 4000);
     });
 
-    // Estilos del modo void
+    // ESTILOS PROPIOS DEL MODO VOID
     const style = document.createElement('style');
     style.textContent = `
-        [data-void="true"] {
-            --bg-color: #000 !important;
-            --text-color: #555 !important;
+        /* Variables */
+        :root {
+            --void-red: #ff3333;
+            --void-shadow: 2px 2px 0px rgba(0,0,0,0.8);
         }
 
+        /* 1. Cambios Globales (Optimized) */
+        [data-void="true"] {
+            --bg-color: #050505 !important;
+            --card-bg: #111 !important;
+            --text-color: #aaa !important;
+        }
+        
         [data-void="true"] body {
-            filter: saturate(0.1) brightness(0.5) contrast(1.1);
-            background-color: #000 !important;
+            background-color: #050505 !important;
+            /* Removemos el filtro pesado del body para mejorar performance */
+            /* filter: saturate(0) contrast(1.2); -> CAUSA LAG */ 
+        }
+
+        /* Efecto Glitch Leve en el Body si se activa */
+        body[data-glitch="true"] {
+            filter: hue-rotate(90deg) contrast(1.5);
+            transform: scale(1.01);
         }
 
         [data-void="true"] .game-card {
-            filter: grayscale(0.8) brightness(0.6);
-            opacity: 0.7;
+            filter: grayscale(1) brightness(0.7);
+            transition: filter 0.3s;
         }
-
         [data-void="true"] .game-card:hover {
-            filter: grayscale(0.5) brightness(0.8);
+            filter: grayscale(0) brightness(1);
+            outline: 1px solid var(--void-red);
         }
 
-        [data-void="true"] .logo {
-            animation: voidFlicker 3s infinite;
-            color: #444 !important;
-        }
-
-        [data-void="true"] header {
-            background: rgba(0, 0, 0, 0.95) !important;
-        }
-
+        /* 2. OVERLAY (Vignette + Scanlines) */
         .void-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             z-index: 9990;
-            background: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 1px,
-                    rgba(0, 0, 0, 0.15) 1px,
-                    rgba(0, 0, 0, 0.15) 2px
-                ),
-                radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
         }
 
-        .void-clock {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        /* 3. CLOCK (VCR Style - Top Right) */
+        .void-clock-ui {
+            position: fixed;
+            top: 30px;
+            right: 40px;
             font-family: 'Courier New', monospace;
-            font-size: 16px;
-            color: #ff0000;
-            z-index: 10001;
+            z-index: 10000;
+            color: #fff;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            pointer-events: none;
             display: flex;
-            align-items: center;
-            gap: 10px;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.4);
-            background: rgba(0, 0, 0, 0.6);
-            padding: 6px 12px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 0, 0, 0.3);
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
         }
 
-        .void-rec {
-            animation: voidBlink 1s infinite;
+        .void-rec-indicator {
+            color: var(--void-red);
             font-weight: bold;
-            font-size: 10px;
-            background: #ff0000;
-            color: #000;
-            padding: 2px 5px;
-            border-radius: 2px;
+            font-size: 18px;
+            text-transform: uppercase;
+            animation: blinkRec 2s infinite step-start;
         }
 
-        .void-time {
+        .void-dot {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .void-time-display {
+            font-size: 32px;
             font-weight: bold;
             letter-spacing: 2px;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 10px;
         }
 
-        .void-message {
-            position: absolute;
-            top: 50%;
-            left: 20%;
-            transform: translate(-50%, -50%);
+        @keyframes blinkRec {
+            50% { opacity: 0; }
+        }
+
+        /* 4. MESSAGES (Subtitle Style - Bottom Center) */
+        .void-message-container {
+            position: fixed;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #888;
-            z-index: 10001;
-            opacity: 0;
-            transition: opacity 0.8s ease;
+            font-size: 28px;
+            color: #ccc;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 30px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            letter-spacing: 3px;
+            z-index: 10000;
+            text-shadow: 2px 2px 0 #000, 0 0 20px rgba(255,255,255,0.2);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
         }
 
-        .void-message.show {
+        .void-message-container.visible {
             opacity: 1;
         }
 
-        .void-glitch {
-            animation: voidGlitch 0.2s linear !important;
-        }
-
-        @keyframes voidBlink {
-            0%, 45% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-
-        @keyframes voidFlicker {
-            0%, 90%, 100% { opacity: 0.8; }
-            92%, 98% { opacity: 0.3; }
-            94% { opacity: 0.1; }
-        }
-
-        @keyframes voidGlitch {
-            0% { transform: translate(0); filter: hue-rotate(0deg); }
-            20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg) saturate(2); }
-            40% { transform: translate(3px, -2px); filter: hue-rotate(180deg); }
-            60% { transform: translate(-2px, 3px); filter: hue-rotate(270deg) saturate(0); }
-            80% { transform: translate(2px, -1px); filter: hue-rotate(360deg); }
-            100% { transform: translate(0); filter: hue-rotate(0deg); }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .void-clock-ui { top: 20px; right: 20px; transform: scale(0.8); transform-origin: top right; }
+            .void-message-container { font-size: 20px; bottom: 20%; }
         }
     `;
     document.head.appendChild(style);
