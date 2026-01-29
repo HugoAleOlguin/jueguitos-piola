@@ -239,12 +239,10 @@ const gamesData = [
         "description": "siuu.",
         "fullDescription": "Un jueguito.",
         "image": "https://www.guvi.in/blog/wp-content/uploads/2024/03/Puzzle-Game.webp",
+        "downloadUrl": "https://github.com/HugoAleOlguin/Agus-Simulator-2025/releases/download/v4.0/AgusSimulator_v4.0.zip",
         "tags": [
             "Puzzle"
-        ],
-        "downloadUrl": "https://www.mediafire.com/file/agus",
-        "fixOnlineUrl": "",
-        "modsUrl": ""
+        ]
     },
     {
         "id": "lfd2",
@@ -327,14 +325,15 @@ const gamesData = [
         "id": "raft",
         "title": "Raft",
         "description": "Eleven anclas chavales.",
+        "fullDescription": "la casita del Agus parece una cucha de perro.",
         "image": "https://i.ibb.co/kgcdvGvX/raft-prime.gif",
-        "tags": [
-            "Supervivencia",
-            "Crafteo",
-            "Coop"
-        ],
         "downloadUrl": "https://www.mediafire.com/file/zaupng2lmrhbnvd/Raft.v1.1.07-0xdeadcode.zip/file",
-        "fullDescription": "la casita del Agus parece una cucha de perro."
+        "modsUrl": "https://www.mediafire.com/file/zy9t3zdsg3kqwnf/agus.7z/file",
+        "tags": [
+            "Coop",
+            "Supervivencia",
+            "Crafteo"
+        ]
     },
     {
         "id": "rain2",
@@ -418,7 +417,7 @@ const gamesData = [
         "id": "deep",
         "title": "Deep Rock Galactic",
         "description": "enanos re duros.",
-        "fullDescription": "Contraseña: elenemigos.com",
+        "fullDescription": "Contraseña: elenemigos.com\n\nDonde tu enemigo son los amigos",
         "image": "https://media.tenor.com/YkKT0_BTRtQAAAAM/drg-deep-rock-galactic.gif",
         "downloadUrl": "https://www.mediafire.com/file/4u47tnq460162hd/Deep+Rock+Galactic_v1.39.120607.0_ElEnemigos.rar/file",
         "tags": [
@@ -442,11 +441,12 @@ const gamesData = [
         "id": "prueba2",
         "title": "otra prueba",
         "description": "solo es otra purebaa ok??",
+        "fullDescription": "Contraseña: elenemigos.com",
         "image": "https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUyZ3Fub3RmbHI2ZmJsNGx3amoyOThyanBybGR4dmk3czh2emFiMmJ1MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/OahphIy7RjNhJQcikp/200w.gif",
+        "downloadUrl": "https://www.mediafire.com/file/wdeb2ste29s88kf/Furry+Love_b13554090_ElEnemigos.rar/file",
         "tags": [
-            "Puzzle",
-            "Party"
-        ],
-        "downloadUrl": "https://uploadrar.com/uwi8vmyp31d9"
+            "Party",
+            "Puzzle"
+        ]
     }
 ];
