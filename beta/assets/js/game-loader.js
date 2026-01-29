@@ -64,9 +64,6 @@ function renderizarPagina(game) {
                     </div>
                     
                     <div class="game-description" id="gameDescContainer"></div>
-                    <script>
-                        document.getElementById('gameDescContainer').innerHTML = \`${descripcion}\`;
-                    </script>
                     
                     <div class="action-buttons">
                         ${botones}
@@ -75,6 +72,12 @@ function renderizarPagina(game) {
             </div>
         </div>
     `;
+
+    // Render description safely after HTML insertion
+    setTimeout(() => {
+        const descContainer = document.getElementById('gameDescContainer');
+        if (descContainer) descContainer.innerHTML = descripcion;
+    }, 0);
 }
 
 
