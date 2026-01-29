@@ -1027,7 +1027,7 @@
                 const baseTreeSha = commitData.tree.sha;
 
                 // 3. Prepare Blobs (Content)
-                const gamesContent = `const gamesData = ${JSON.stringify(state.games, null, 4)};\n`;
+                const gamesContent = `const gamesData = ${JSON.stringify(state.games, null, 2)};\n`;
                 const gamesBlob = await createBlob(gamesContent);
 
                 const currentVersion = await fetchFile(CONFIG.VERSION_PATH);

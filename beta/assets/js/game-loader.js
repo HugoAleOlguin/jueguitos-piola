@@ -63,9 +63,10 @@ function renderizarPagina(game) {
                         ${tagsHTML}
                     </div>
                     
-                    <div class="game-description">
-                        <p>${descripcion}</p>
-                    </div>
+                    <div class="game-description" id="gameDescContainer"></div>
+                    <script>
+                        document.getElementById('gameDescContainer').innerHTML = \`${descripcion}\`;
+                    </script>
                     
                     <div class="action-buttons">
                         ${botones}
@@ -88,16 +89,16 @@ function generarBotones(game) {
     if (game.buttons && Array.isArray(game.buttons) && game.buttons.length > 0) {
         game.buttons.forEach(btn => {
             let cssClass = 'button'; // Default style
-            
+
             // Map styles
             if (btn.style === 'primary') cssClass = 'btn btn-primary';
             else if (btn.style === 'secondary') cssClass = 'btn btn-secondary';
             else if (btn.style === 'danger') cssClass = 'btn btn-danger'; // Need to ensure this exists or use style attr
-            else if (btn.style === 'outline') cssClass = 'button'; 
+            else if (btn.style === 'outline') cssClass = 'button';
 
             html += `<a href="${btn.url}" target="_blank" class="${cssClass}">${btn.label}</a>`;
         });
-    } 
+    }
     // Fallback: Estructura legacy (para juegos viejos no migrados aún)
     else {
         if (game.downloadUrl) {
