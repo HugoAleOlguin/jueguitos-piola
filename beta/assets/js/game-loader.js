@@ -84,18 +84,36 @@ function renderizarPagina(game) {
 function generarBotones(game) {
     let html = '';
 
-    if (game.downloadUrl) {
-        html += `<a href="${game.downloadUrl}" target="_blank" class="btn btn-primary">Descargar</a>`;
+    // Nueva estructura: Array de botones dinámicos
+    if (game.buttons && Array.isArray(game.buttons) && game.buttons.length > 0) {
+        game.buttons.forEach(btn => {
+            let cssClass = 'button'; // Default style
+            
+            // Map styles
+            if (btn.style === 'primary') cssClass = 'btn btn-primary';
+            else if (btn.style === 'secondary') cssClass = 'btn btn-secondary';
+            else if (btn.style === 'danger') cssClass = 'btn btn-danger'; // Need to ensure this exists or use style attr
+            else if (btn.style === 'outline') cssClass = 'button'; 
+
+            html += `<a href="${btn.url}" target="_blank" class="${cssClass}">${btn.label}</a>`;
+        });
+    } 
+    // Fallback: Estructura legacy (para juegos viejos no migrados aún)
+    else {
+        if (game.downloadUrl) {
+            html += `<a href="${game.downloadUrl}" target="_blank" class="btn btn-primary">Descargar</a>`;
+        }
+
+        if (game.fixOnlineUrl) {
+            html += `<a href="${game.fixOnlineUrl}" target="_blank" class="button">Fix Online</a>`;
+        }
+
+        if (game.modsUrl) {
+            html += `<a href="${game.modsUrl}" target="_blank" class="button">Mods</a>`;
+        }
     }
 
-    if (game.fixOnlineUrl) {
-        html += `<a href="${game.fixOnlineUrl}" target="_blank" class="button">Fix Online</a>`;
-    }
-
-    if (game.modsUrl) {
-        html += `<a href="${game.modsUrl}" target="_blank" class="button">Mods</a>`;
-    }
-
+    // Botón Volver siempre al final (hardcoded por consistencia de navegación, o configurable si se desea)
     html += `<a href="../index.html" class="btn btn-secondary">Volver</a>`;
 
     return html;

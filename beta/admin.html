@@ -109,13 +109,54 @@
 
         .input-field {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.4);
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
             border-radius: 8px;
-            color: white;
-            font-size: 1rem;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             transition: all 0.3s ease;
+        }
+
+        .input-sm {
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+
+        .select-sm {
+            padding: 6px 10px;
+            background: rgb(20, 20, 25);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 8px;
+            border-radius: 6px;
+            align-items: center;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .btn-row:focus-within {
+            border-color: var(--primary);
+        }
+
+        .btn-row .input-sm,
+        .btn-row .select-sm {
+            background: transparent;
+            border: none;
+            padding: 4px 8px;
+        }
+
+        .btn-row .input-sm:focus {
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .input-field:focus {
@@ -729,22 +770,18 @@
                                         <div id="tagsSelector" class="tags-wrapper"></div>
                                     </div>
 
-                                    <div class="form-section" style="background:rgba(0,0,0,0.3)">
-                                        <h4>Enlaces de Descarga</h4>
-                                        <br>
-                                        <div class="form-group">
-                                            <label>Link Principal (MediaFire/Drive/etc)</label>
-                                            <input type="url" id="inpDownload" class="input-field" required>
+                                    <div class="form-section">
+                                        <div
+                                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                            <h4 style="margin:0; font-size:0.9rem; color:#888;">Botones del Juego</h4>
+                                            <button type="button" onclick="addDynamicButton()"
+                                                class="btn btn-ghost btn-sm"
+                                                style="font-size:0.8rem; padding: 4px 8px; background: rgba(255,255,255,0.05)">+
+                                                Agregar Otro</button>
                                         </div>
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label>Fix Online (Opcional)</label>
-                                                <input type="url" id="inpFix" class="input-field">
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Mods (Opcional)</label>
-                                                <input type="url" id="inpMods" class="input-field">
-                                            </div>
+                                        <div id="dynamicButtonsList"
+                                            style="display:flex; flex-direction:column; gap:6px;">
+                                            <!-- Buttons dynamic rows -->
                                         </div>
                                     </div>
 
@@ -764,15 +801,10 @@
                                         <img id="previewImgEl" style="display:none" alt="Preview">
                                     </div>
                                     <div class="preview-content">
-                                        <h3 id="previewTitleEl">Título del Juego</h3>
-                                        <p id="previewDescEl">Descripción corta del juego...</p>
+                                        <h3 id="previewTitleEl" class="card-title">Título del Juego</h3>
+                                        <p id="previewDescEl" class="card-desc">Descripción corta del juego...</p>
                                         <div id="previewTagsEl" class="preview-tags">
                                             <!-- Tags -->
-                                        </div>
-                                        <div style="margin-top: 10px;">
-                                            <button class="btn btn-primary"
-                                                style="font-size: 0.8rem; padding: 6px 12px; width: auto;">Jugar
-                                                Ahora</button>
                                         </div>
                                     </div>
                                 </div>
@@ -882,7 +914,7 @@
 
             // Initial Load
             loadTags();
-            updatePreview();
+            resetForm(); // Ensure default state with one button
         }
 
         async function login() {
@@ -1271,21 +1303,53 @@
         // FORM HANDLING
         // =============================================================================
 
+        function addDynamicButton(data = {}) {
+            const container = document.getElementById('dynamicButtonsList');
+            const div = document.createElement('div');
+            div.className = 'btn-row';
+            div.innerHTML = `
+                <input type="text" class="input-field input-sm d-btn-name" placeholder="Nombre" value="${data.label || ''}" style="width:25%">
+                <input type="text" class="input-field input-sm d-btn-url" placeholder="URL" value="${data.url || ''}" style="flex:1">
+                <select class="select-sm d-btn-style" style="width:90px">
+                    <option value="primary" ${data.style === 'primary' ? 'selected' : ''}>Azul</option>
+                    <option value="button" ${(!data.style || data.style === 'button') ? 'selected' : ''}>Normal</option>
+                    <option value="secondary" ${data.style === 'secondary' ? 'selected' : ''}>Gris</option>
+                    <option value="danger" ${data.style === 'danger' ? 'selected' : ''}>Rojo</option>
+                </select>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" style="color:#666; padding:0 8px">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
         function handleFormSubmit(e) {
             e.preventDefault();
+
+            // Harvest Dynamic Buttons
+            const buttons = [];
+            document.querySelectorAll('.btn-row').forEach(row => {
+                const label = row.querySelector('.d-btn-name').value.trim();
+                const url = row.querySelector('.d-btn-url').value.trim();
+                const style = row.querySelector('.d-btn-style').value;
+                if (label && url) {
+                    buttons.push({ label, url, style });
+                }
+            });
+
+            // Convert newlines to <br> for FullDesc
+            let fullDescRaw = document.getElementById('inpFullDesc').value;
+            let fullDescProcessed = fullDescRaw.replace(/\n/g, '<br>');
 
             const formData = {
                 id: document.getElementById('inpId').value,
                 title: document.getElementById('inpTitle').value,
                 description: document.getElementById('inpDesc').value,
-                fullDescription: document.getElementById('inpFullDesc').value,
+                fullDescription: fullDescProcessed,
                 image: document.getElementById('inpImage').value,
-                downloadUrl: document.getElementById('inpDownload').value,
-                fixOnlineUrl: document.getElementById('inpFix').value,
-                modsUrl: document.getElementById('inpMods').value,
                 tags: Array.from(document.querySelectorAll('#tagsSelector .selected')).map(el => el.textContent),
+                buttons: buttons // New Array
             };
 
+            // Remove empty keys
             Object.keys(formData).forEach(key => {
                 if (formData[key] === '' || formData[key] === null) delete formData[key];
             });
@@ -1315,11 +1379,24 @@
             document.getElementById('inpId').value = game.id;
             document.getElementById('inpTitle').value = game.title;
             document.getElementById('inpDesc').value = game.description || '';
-            document.getElementById('inpFullDesc').value = game.fullDescription || '';
+
+            // Convert <br> back to \n for editing
+            document.getElementById('inpFullDesc').value = (game.fullDescription || '').replaceAll('<br>', '\n');
+
             document.getElementById('inpImage').value = game.image || '';
-            document.getElementById('inpDownload').value = game.downloadUrl || '';
-            document.getElementById('inpFix').value = game.fixOnlineUrl || '';
-            document.getElementById('inpMods').value = game.modsUrl || '';
+
+            // Handle Buttons Migration
+            document.getElementById('dynamicButtonsList').innerHTML = ''; // Clear list
+
+            if (game.buttons && game.buttons.length > 0) {
+                // New System
+                game.buttons.forEach(btn => addDynamicButton(btn));
+            } else {
+                // Legacy System Migration (UI only, data cleaned on save)
+                if (game.downloadUrl) addDynamicButton({ label: 'Descargar', url: game.downloadUrl, style: 'primary' });
+                if (game.fixOnlineUrl) addDynamicButton({ label: 'Fix Online', url: game.fixOnlineUrl, style: 'button' });
+                if (game.modsUrl) addDynamicButton({ label: 'Mods', url: game.modsUrl, style: 'button' });
+            }
 
             document.querySelectorAll('#tagsSelector .tag-badge').forEach(el => {
                 el.classList.remove('selected');
@@ -1346,6 +1423,11 @@
 
         function resetForm() {
             document.getElementById('gameForm').reset();
+            document.getElementById('dynamicButtonsList').innerHTML = ''; // Clear dynamic buttons
+
+            // Default "Descargar" button as requested
+            addDynamicButton({ label: 'Descargar', url: '', style: 'primary' });
+
             state.editingIndex = null;
             document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
             document.getElementById('formTitle').textContent = 'Agregar Nuevo Juego';
