@@ -1303,18 +1303,28 @@
         // FORM HANDLING
         // =============================================================================
 
-        function addDynamicButton(data = {}) {
+        function addDynamicButton(data = null) {
+            let label = '', url = '', style = 'button';
+
+            if (data) {
+                if (Array.isArray(data)) {
+                    [label, url, style] = data;
+                } else {
+                    ({ label, url, style } = data);
+                }
+            }
+
             const container = document.getElementById('dynamicButtonsList');
             const div = document.createElement('div');
             div.className = 'btn-row';
             div.innerHTML = `
-                <input type="text" class="input-field input-sm d-btn-name" placeholder="Nombre" value="${data.label || ''}" style="width:25%">
-                <input type="text" class="input-field input-sm d-btn-url" placeholder="URL" value="${data.url || ''}" style="flex:1">
+                <input type="text" class="input-field input-sm d-btn-name" placeholder="Nombre" value="${label}" style="width:25%">
+                <input type="text" class="input-field input-sm d-btn-url" placeholder="URL" value="${url}" style="flex:1">
                 <select class="select-sm d-btn-style" style="width:90px">
-                    <option value="primary" ${data.style === 'primary' ? 'selected' : ''}>Azul</option>
-                    <option value="button" ${(!data.style || data.style === 'button') ? 'selected' : ''}>Normal</option>
-                    <option value="secondary" ${data.style === 'secondary' ? 'selected' : ''}>Gris</option>
-                    <option value="danger" ${data.style === 'danger' ? 'selected' : ''}>Rojo</option>
+                    <option value="primary" ${style === 'primary' ? 'selected' : ''}>Azul</option>
+                    <option value="button" ${(!style || style === 'button') ? 'selected' : ''}>Normal</option>
+                    <option value="secondary" ${style === 'secondary' ? 'selected' : ''}>Gris</option>
+                    <option value="danger" ${style === 'danger' ? 'selected' : ''}>Rojo</option>
                 </select>
                 <button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" style="color:#666; padding:0 8px">✕</button>
             `;
@@ -1331,7 +1341,8 @@
                 const url = row.querySelector('.d-btn-url').value.trim();
                 const style = row.querySelector('.d-btn-style').value;
                 if (label && url) {
-                    buttons.push({ label, url, style });
+                    // Save as compact array: ["Label", "URL", "style"]
+                    buttons.push([label, url, style]);
                 }
             });
 
@@ -1389,13 +1400,13 @@
             document.getElementById('dynamicButtonsList').innerHTML = ''; // Clear list
 
             if (game.buttons && game.buttons.length > 0) {
-                // New System
+                // Compatible with both new arrays and old objects via addDynamicButton logic
                 game.buttons.forEach(btn => addDynamicButton(btn));
             } else {
-                // Legacy System Migration (UI only, data cleaned on save)
-                if (game.downloadUrl) addDynamicButton({ label: 'Descargar', url: game.downloadUrl, style: 'primary' });
-                if (game.fixOnlineUrl) addDynamicButton({ label: 'Fix Online', url: game.fixOnlineUrl, style: 'button' });
-                if (game.modsUrl) addDynamicButton({ label: 'Mods', url: game.modsUrl, style: 'button' });
+                // Legacy System Migration
+                if (game.downloadUrl) addDynamicButton(['Descargar', game.downloadUrl, 'primary']);
+                if (game.fixOnlineUrl) addDynamicButton(['Fix Online', game.fixOnlineUrl, 'button']);
+                if (game.modsUrl) addDynamicButton(['Mods', game.modsUrl, 'button']);
             }
 
             document.querySelectorAll('#tagsSelector .tag-badge').forEach(el => {
@@ -1426,7 +1437,7 @@
             document.getElementById('dynamicButtonsList').innerHTML = ''; // Clear dynamic buttons
 
             // Default "Descargar" button as requested
-            addDynamicButton({ label: 'Descargar', url: '', style: 'primary' });
+            addDynamicButton(['Descargar', '', 'primary']);
 
             state.editingIndex = null;
             document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));

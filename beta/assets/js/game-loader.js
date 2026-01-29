@@ -91,15 +91,25 @@ function generarBotones(game) {
     // Nueva estructura: Array de botones dinámicos
     if (game.buttons && Array.isArray(game.buttons) && game.buttons.length > 0) {
         game.buttons.forEach(btn => {
+            let label, url, style;
+
+            if (Array.isArray(btn)) {
+                // Compact format: ["Label", "URL", "style"]
+                [label, url, style] = btn;
+            } else {
+                // Legacy Object format
+                ({ label, url, style } = btn);
+            }
+
             let cssClass = 'button'; // Default style
 
             // Map styles
-            if (btn.style === 'primary') cssClass = 'btn btn-primary';
-            else if (btn.style === 'secondary') cssClass = 'btn btn-secondary';
-            else if (btn.style === 'danger') cssClass = 'btn btn-danger'; // Need to ensure this exists or use style attr
-            else if (btn.style === 'outline') cssClass = 'button';
+            if (style === 'primary') cssClass = 'btn btn-primary';
+            else if (style === 'secondary') cssClass = 'btn btn-secondary';
+            else if (style === 'danger') cssClass = 'btn btn-danger';
+            else if (style === 'outline') cssClass = 'button';
 
-            html += `<a href="${btn.url}" target="_blank" class="${cssClass}">${btn.label}</a>`;
+            html += `<a href="${url}" target="_blank" class="${cssClass}">${label}</a>`;
         });
     }
     // Fallback: Estructura legacy (para juegos viejos no migrados aún)
