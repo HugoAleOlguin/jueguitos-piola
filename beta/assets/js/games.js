@@ -441,12 +441,18 @@ const gamesData = [
         "id": "prueba2",
         "title": "otra prueba",
         "description": "solo es otra purebaa ok??",
-        "fullDescription": "Contraseña: elenemigos.com",
+        "fullDescription": "Contraseña: elenemigos.com<br>por que tenia contraseña no?",
         "image": "https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUyZ3Fub3RmbHI2ZmJsNGx3amoyOThyanBybGR4dmk3czh2emFiMmJ1MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/OahphIy7RjNhJQcikp/200w.gif",
-        "downloadUrl": "https://www.mediafire.com/file/wdeb2ste29s88kf/Furry+Love_b13554090_ElEnemigos.rar/file",
         "tags": [
             "Party",
             "Puzzle"
+        ],
+        "buttons": [
+            {
+                "label": "Descargar",
+                "url": "https://www.mediafire.com/file/wdeb2ste29s88kf/Furry+Love_b13554090_ElEnemigos.rar/file",
+                "style": "primary"
+            }
         ]
     }
 ];
