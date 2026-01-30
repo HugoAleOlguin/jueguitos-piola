@@ -15,8 +15,7 @@
             CACHE: 'jueguitosGamesCache',
             VERSION: 'jueguitosVersion',
             FAVS: 'jueguitosFavorites',
-            HINT: 'primeHintShown',
-            MUSIC: 'jueguitosMusicEnabled'
+            HINT: 'primeHintShown'
         },
         ICONS: {
             RETRO: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="4" width="20" height="16" rx="2"/><rect x="5" y="7" width="8" height="6" fill="none" stroke="currentColor"/><circle cx="17" cy="10" r="2"/><circle cx="17" cy="15" r="1"/></svg>',

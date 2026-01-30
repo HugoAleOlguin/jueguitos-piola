@@ -5,10 +5,10 @@
 
 const SettingsManager = (() => {
     // Constants
+    // Constants
     const STORAGE_KEYS = {
         BG_TYPE: 'jueguitos_settings_bg_type',   // 'default', 'url', 'custom'
         BG_VALUE: 'jueguitos_settings_bg_value', // URL string or Base64
-        MUSIC_ID: 'jueguitos_settings_music_id', // YouTube Video ID
         BLUR: 'jueguitos_settings_blur',         // Blur intensity
         THEME_COLOR: 'jueguitos_settings_color'  // Primary color override
     };
@@ -16,7 +16,6 @@ const SettingsManager = (() => {
     const DEFAULTS = {
         BG_TYPE: 'default',
         BG_VALUE: '',
-        MUSIC_ID: '_HY9wyLjRDE', // Default lofi/ambient track
         BLUR: '0',
         THEME_COLOR: '#00f3ff'
     };
@@ -47,7 +46,6 @@ const SettingsManager = (() => {
 
         inputBgUrl = document.getElementById('settingBgUrl');
         inputBgFile = document.getElementById('settingBgFile');
-        inputMusicId = document.getElementById('settingMusicId');
         previewBg = document.getElementById('settingBgPreview');
     };
 
@@ -76,7 +74,6 @@ const SettingsManager = (() => {
         currentSettings = {
             bgType: localStorage.getItem(STORAGE_KEYS.BG_TYPE) || DEFAULTS.BG_TYPE,
             bgValue: localStorage.getItem(STORAGE_KEYS.BG_VALUE) || DEFAULTS.BG_VALUE,
-            musicId: localStorage.getItem(STORAGE_KEYS.MUSIC_ID) || DEFAULTS.MUSIC_ID,
             blur: localStorage.getItem(STORAGE_KEYS.BLUR) || DEFAULTS.BLUR
         };
     };
@@ -100,7 +97,6 @@ const SettingsManager = (() => {
     const openModal = () => {
         // Populate UI with current settings
         inputBgUrl.value = currentSettings.bgType === 'url' ? currentSettings.bgValue : '';
-        inputMusicId.value = currentSettings.musicId;
 
         // Show Modal
         modal.classList.add('active');
@@ -113,10 +109,6 @@ const SettingsManager = (() => {
     };
 
     const saveFromUI = () => {
-        // Music
-        const rawMusicInfo = inputMusicId.value.trim();
-        const musicId = extractVideoID(rawMusicInfo) || currentSettings.musicId;
-
         // Background
         // If file input has a file, it takes precedence if valid
         if (inputBgFile.files && inputBgFile.files[0]) {
@@ -128,7 +120,7 @@ const SettingsManager = (() => {
                 // Compression/Validation check could go here
 
                 // Save
-                saveSettings(musicId, 'custom', base64);
+                saveSettings('custom', base64);
                 closeModal();
                 alert('Configuración guardada correctamente.');
             };
@@ -140,25 +132,24 @@ const SettingsManager = (() => {
 
             reader.readAsDataURL(file);
         } else if (inputBgUrl.value.trim()) {
-            saveSettings(musicId, 'url', inputBgUrl.value.trim());
+            saveSettings('url', inputBgUrl.value.trim());
             closeModal();
         } else {
             // Default background
-            saveSettings(musicId, 'default', '');
+            saveSettings('default', '');
             closeModal();
         }
     };
 
-    const saveSettings = (musicId, bgType, bgValue) => {
-        currentSettings = { musicId, bgType, bgValue };
+    const saveSettings = (bgType, bgValue) => {
+        currentSettings = { bgType, bgValue };
 
-        localStorage.setItem(STORAGE_KEYS.MUSIC_ID, musicId);
         localStorage.setItem(STORAGE_KEYS.BG_TYPE, bgType);
         localStorage.setItem(STORAGE_KEYS.BG_VALUE, bgValue);
 
         applySettings();
 
-        // Reload page to apply music changes cleanly
+        // Reload page to apply changes cleanly
         location.reload();
     };
 
@@ -166,7 +157,6 @@ const SettingsManager = (() => {
         if (confirm('¿Restablecer toda la configuración?')) {
             localStorage.removeItem(STORAGE_KEYS.BG_TYPE);
             localStorage.removeItem(STORAGE_KEYS.BG_VALUE);
-            localStorage.removeItem(STORAGE_KEYS.MUSIC_ID);
 
             // Reload
             location.reload();
@@ -176,11 +166,7 @@ const SettingsManager = (() => {
     // ========================================================================
     // HELPERS
     // ========================================================================
-    const extractVideoID = (url) => {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null; // Return ID or null if not found
-    };
+
 
     const updatePreviewFromUrl = (e) => {
         const url = e.target.value;
@@ -204,8 +190,7 @@ const SettingsManager = (() => {
 
     // Public API
     return {
-        init,
-        getMusicId: () => currentSettings.musicId
+        init
     };
 })();
 
