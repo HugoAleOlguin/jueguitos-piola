@@ -441,7 +441,8 @@ const gamesData = [
       "Party",
       "Puzzle"
     ],
-    "downloadUrl": "https://uploadrar.com/qiul4uor5bjf"
+    "downloadUrl": "https://uploadrar.com/qiul4uor5bjf",
+    "hidden": true
   },
   {
     "id": "prueba2",
@@ -459,7 +460,8 @@ const gamesData = [
         "url": "https://www.mediafire.com/file/wdeb2ste29s88kf/Furry+Love_b13554090_ElEnemigos.rar/file",
         "style": "primary"
       }
-    ]
+    ],
+    "hidden": true
   },
   {
     "id": "gunfire",
