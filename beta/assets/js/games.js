@@ -416,14 +416,20 @@ const gamesData = [
   {
     "id": "deep",
     "title": "Deep Rock Galactic",
-    "description": "enanos re duros.",
-    "fullDescription": "Contraseña: elenemigos.com\n\nDonde tu enemigo son los amigos",
+    "description": "Arian deja la cerveza ~(>_<。)＼",
+    "fullDescription": "Contraseña: elenemigos.com<br>Donde tu enemigo son los amigos",
     "image": "https://media.tenor.com/YkKT0_BTRtQAAAAM/drg-deep-rock-galactic.gif",
-    "downloadUrl": "https://www.mediafire.com/file/4u47tnq460162hd/Deep+Rock+Galactic_v1.39.120607.0_ElEnemigos.rar/file",
     "tags": [
       "Coop",
       "Accion",
       "Supervivencia"
+    ],
+    "buttons": [
+      [
+        "Descargar",
+        "https://www.mediafire.com/file/4u47tnq460162hd/Deep+Rock+Galactic_v1.39.120607.0_ElEnemigos.rar/file",
+        "primary"
+      ]
     ]
   },
   {
