@@ -9,10 +9,27 @@
 
 (function () {
     const MUSIC_KEY = 'jueguitosMusicEnabled';
-    const VIDEO_ID = '_HY9wyLjRDE';
+    const VIDEO_ID = localStorage.getItem('jueguitos_settings_music_id') || '_HY9wyLjRDE'; // Dynamic ID
 
     let iframe = null;
     let isEnabled = localStorage.getItem(MUSIC_KEY) === 'true';
+
+    // Inject styles once
+    const style = document.createElement('style');
+    style.textContent = `
+        #musicResumePrompt {
+            position: fixed; bottom: 20px; right: 20px; background: rgba(0, 243, 255, 0.15);
+            border: 1px solid rgba(0, 243, 255, 0.4); color: #00f3ff;
+            padding: 10px 16px; border-radius: 25px; cursor: pointer;
+            font-size: 0.85rem; z-index: 9999; backdrop-filter: blur(8px);
+            display: flex; align-items: center; gap: 8px;
+            animation: slideIn 0.3s ease; transition: all 0.2s;
+        }
+        #musicResumePrompt:hover { background: rgba(0, 243, 255, 0.25); transform: scale(1.02); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: scale(0.9); } }
+    `;
+    document.head.appendChild(style);
 
     // Crear botón de música en el header
     function createMusicButton() {
@@ -41,49 +58,12 @@
         const prompt = document.createElement('div');
         prompt.id = 'musicResumePrompt';
         prompt.innerHTML = '🎵 <span>Continuar música</span>';
-        prompt.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 243, 255, 0.15);
-            border: 1px solid rgba(0, 243, 255, 0.4);
-            color: #00f3ff;
-            padding: 10px 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            z-index: 9999;
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            animation: slideIn 0.3s ease;
-            transition: all 0.2s;
-        `;
-
-        prompt.addEventListener('mouseenter', () => {
-            prompt.style.background = 'rgba(0, 243, 255, 0.25)';
-            prompt.style.transform = 'scale(1.02)';
-        });
-
-        prompt.addEventListener('mouseleave', () => {
-            prompt.style.background = 'rgba(0, 243, 255, 0.15)';
-            prompt.style.transform = 'scale(1)';
-        });
 
         prompt.addEventListener('click', () => {
             createPlayer();
             prompt.style.animation = 'fadeOut 0.2s ease forwards';
             setTimeout(() => prompt.remove(), 200);
         });
-
-        // Agregar animaciones
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-            @keyframes fadeOut { to { opacity: 0; transform: scale(0.9); } }
-        `;
-        document.head.appendChild(style);
 
         document.body.appendChild(prompt);
     }

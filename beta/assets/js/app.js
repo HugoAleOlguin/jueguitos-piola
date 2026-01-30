@@ -12,20 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    // Lazy loading de imágenes con IntersectionObserver
-    const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const cardImage = entry.target;
-                const bgUrl = cardImage.dataset.bg;
-                if (bgUrl) {
-                    cardImage.style.backgroundImage = bgUrl;
-                    cardImage.classList.add('loaded');
-                }
-                imageObserver.unobserve(cardImage);
-            }
-        });
-    }, { rootMargin: '50px' });
+    // Función para asignar clase especial según el tag
+    const getTagClass = (tag) => {
+        const tagLower = tag.toLowerCase();
+        if (tagLower === 'coop') return 'tag tag-coop';
+        if (tagLower === 'terror') return 'tag tag-terror';
+        if (tagLower === 'party') return 'tag tag-party';
+        return 'tag';
+    };
+
+
 
 
     // === SISTEMA DE FAVORITOS ===
@@ -109,6 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gamesGrid.innerHTML = '<p style="color: red; text-align: center;">Error: No se pudieron cargar los datos de los juegos.</p>';
     }
 
+
+
     // Función para renderizar las tarjetas
     function renderGames(games, animate = true) {
         gamesGrid.innerHTML = '';
@@ -125,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.setAttribute('data-game-id', game.id);
 
             if (animate) {
-                card.style.animationDelay = `${index * 0.05}s`;
+                card.style.animationDelay = `${index * 0.03}s`;
             } else {
                 card.style.animation = 'none';
                 card.style.opacity = '1';
@@ -133,15 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const bgImage = game.image ? `url('${game.image}')` : 'linear-gradient(45deg, #111, #222)';
-
-            // Función para asignar clase especial según el tag
-            const getTagClass = (tag) => {
-                const tagLower = tag.toLowerCase();
-                if (tagLower === 'coop') return 'tag tag-coop';
-                if (tagLower === 'terror') return 'tag tag-terror';
-                if (tagLower === 'party') return 'tag tag-party';
-                return 'tag';
-            };
 
             // Verificar si es utilidad
             const isUtility = game.tags.some(tag => tag.toLowerCase() === 'utilidad');
@@ -151,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="favorite-btn${gameIsFavorite ? ' active' : ''}" data-game-id="${game.id}" title="${gameIsFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
                     ★
                 </button>
-                <div class="card-image" data-bg="${bgImage}">
+                <div class="card-image loaded" style="background-image: ${bgImage}">
                     ${utilityRibbon}
                 </div>
                 <div class="card-content">
@@ -162,10 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-
-            // Observar imagen para lazy loading
-            const cardImage = card.querySelector('.card-image');
-            if (cardImage) imageObserver.observe(cardImage);
 
             // Click en el botón de favorito
             const favBtn = card.querySelector('.favorite-btn');

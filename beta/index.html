@@ -14,12 +14,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
         rel="stylesheet">
-    <!-- Aplicar tema oscuro inmediatamente (antes del render) -->
-    <script>
-        if (localStorage.getItem('jueguitosTheme') === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-    </script>
+    <!-- Botón Configuración Avanzada -->
+    <style>
+        /* Small fix for settings button position if needed */
+    </style>
 </head>
 
 <body>
@@ -31,12 +29,59 @@
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="Buscar juegos...">
             </div>
-            <!-- Botón para cambiar entre tema claro/oscuro -->
-            <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
-                🌙
+            <!-- Botón Configuración Avanzada -->
+            <button class="theme-toggle" id="settingsToggle" title="Configuración">
+                ⚙️
             </button>
         </div>
     </header>
+
+    <!-- Modal de Configuración -->
+    <div class="settings-modal-overlay" id="settingsModal">
+        <div class="settings-modal">
+            <div class="settings-header">
+                <h2>Configuración</h2>
+                <button class="btn-close" id="btnCancelSettings">×</button>
+            </div>
+
+            <div class="settings-body">
+                <!-- Sección Fondo -->
+                <div class="settings-section">
+                    <h3>🎨 Apariencia</h3>
+                    <div class="form-group">
+                        <label for="settingBgUrl">Fondo Personalizado (URL)</label>
+                        <input type="text" id="settingBgUrl" placeholder="https://ejemplo.com/imagen.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label for="settingBgFile" class="custom-file-upload">
+                            📂 Subir imagen <span style="font-size: 0.8em; opacity: 0.7; margin-left: 5px;">(Máx
+                                3MB)</span>
+                        </label>
+                        <input type="file" id="settingBgFile" accept="image/*" style="display:none;">
+                    </div>
+                    <div class="preview-box" id="settingBgPreview">
+                        <span>Vista Previa</span>
+                    </div>
+                </div>
+
+                <!-- Sección Música -->
+                <div class="settings-section">
+                    <h3>🎵 Música de Fondo</h3>
+                    <div class="form-group">
+                        <label for="settingMusicId">Link de YouTube o ID</label>
+                        <input type="text" id="settingMusicId" placeholder="Ej: _HY9wyLjRDE">
+                        <small>Pega el link del video que quieras escuchar.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-footer">
+                <button class="btn-text" id="btnResetSettings">Restaurar</button>
+                <div style="flex: 1;"></div>
+                <button class="button" id="btnSaveSettings">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
 
     <main>
         <div class="games-grid" id="gamesGrid">
@@ -52,6 +97,7 @@
     <script src="assets/js/games.js"></script>
     <script src="assets/js/app.js" defer></script>
     <script src="assets/js/theme.js" defer></script>
+    <script src="assets/js/settings.js" defer></script>
     <script src="assets/js/music.js" defer></script>
 
 </body>

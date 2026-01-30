@@ -112,6 +112,16 @@ Historial de cambios estructurales y visuales del proyecto.
 
 ---
 
+**30 de Enero**
+- **Eliminación del Modo Claro** — Ahora el sitio es 100% Dark/Cyberpunk.
+- **Nuevo Menú de Configuración**
+  - Diseño Glassmorphism moderno.
+  - Personalización de fondo (URL o Subida local).
+  - Persistencia de configuración entre páginas.
+  - Carga instantánea de cambios (sin confirmación).
+
+---
+
 ## Versiones Principales
 
 | Versión | Fecha | Cambio Principal |
