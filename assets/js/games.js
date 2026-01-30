@@ -500,5 +500,25 @@ const gamesData = [
       ]
     ],
     "hidden": true
+  },
+  {
+    "id": "robo",
+    "title": " Roboquest",
+    "description": "robot que se caga a tiros",
+    "fullDescription": "Contraseña: elenemigos.com",
+    "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/692890/capsule_616x353.jpg?t=1763992816",
+    "tags": [
+      "Coop",
+      "Accion",
+      "Supervivencia"
+    ],
+    "buttons": [
+      [
+        "Descargar",
+        "https://www.mediafire.com/file/0xl69sr10x5g38c/Roboquest_rev51755_ElEnemigos.rar/file",
+        "primary"
+      ]
+    ],
+    "hidden": true
   }
 ];
