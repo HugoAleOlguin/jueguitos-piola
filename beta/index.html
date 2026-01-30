@@ -64,6 +64,40 @@
                     </div>
                 </div>
 
+                <!-- Sección Estilo Visual -->
+                <div class="settings-section">
+                    <h3>✨ Estilo Visual</h3>
+                    <div class="form-group">
+                        <label for="settingBlur">Intensidad de Desenfoque (Blur)</label>
+                        <input type="range" id="settingBlur" min="0" max="20" step="1" value="0" style="width: 100%;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888;">
+                            <span>Nítido</span>
+                            <span>Muy Borroso</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Color de Acento (Neon)</label>
+                        <div class="color-presets">
+                            <!-- Presets -->
+                            <button class="color-btn" style="--bg: #00f3ff" data-color="#00f3ff"
+                                title="Cyan Cyberpunk"></button>
+                            <button class="color-btn" style="--bg: #bc13fe" data-color="#bc13fe"
+                                title="Magenta Neon"></button>
+                            <button class="color-btn" style="--bg: #00ff88" data-color="#00ff88"
+                                title="Verde Matrix"></button>
+                            <button class="color-btn" style="--bg: #ff9500" data-color="#ff9500"
+                                title="Naranja Ámbar"></button>
+                            <button class="color-btn" style="--bg: #ff4757" data-color="#ff4757"
+                                title="Rojo Glitch"></button>
+
+                            <!-- Custom -->
+                            <div class="custom-color-wrapper" title="Color Personalizado">
+                                <input type="color" id="settingColor" value="#00f3ff">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
             </div>
 
@@ -78,6 +112,12 @@
     <main>
         <div class="games-grid" id="gamesGrid">
             <!-- Los juegos se cargarán aquí dinámicamente -->
+        </div>
+
+        <!-- Vista de Detalle de Juego (SPA) -->
+        <div id="game-view" style="display: none; animation: fadeIn 0.5s ease;">
+            <!-- El contenido del juego se renderiza aquí -->
+            <div id="game-container"></div>
         </div>
     </main>
 

@@ -124,8 +124,8 @@ header {
     align-items: center;
     padding: 1.5rem 4rem;
     background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(var(--glass-blur, 20px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
     border-bottom: 1px solid var(--glass-border);
     position: sticky;
     top: 0;
@@ -581,8 +581,8 @@ footer:hover p {
     padding: 3rem;
     max-width: 1100px;
     margin: 0 auto;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(var(--glass-blur, 20px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
     box-shadow: var(--shadow-soft);
     position: relative;
     animation: fadeInUp 0.6s var(--ease-out-expo) forwards;
@@ -1646,4 +1646,69 @@ img {
     background: rgba(255, 0, 127, 0.15);
     border-color: rgba(255, 0, 127, 0.4);
     color: #ff007f;
+}
+
+/* =====================================================
+   COLOR PRESETS (SETTINGS)
+   ===================================================== */
+.color-presets {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.color-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background-color: var(--bg);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    padding: 0;
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+    border-color: white;
+    box-shadow: 0 0 10px var(--bg);
+}
+
+.color-btn.active {
+    border-color: white;
+    box-shadow: 0 0 15px var(--bg), inset 0 0 0 2px rgba(0, 0, 0, 0.5);
+    transform: scale(1.15);
+}
+
+/* Custom color picker wrapper to look like a button */
+.custom-color-wrapper {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+}
+
+.custom-color-wrapper:hover {
+    transform: scale(1.1);
+    border-color: white;
+}
+
+.custom-color-wrapper input[type="color"] {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    opacity: 0;
 }
