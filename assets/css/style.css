@@ -1,0 +1,1714 @@
+/* =====================================================
+   JUEGUITOS PIOLA - SISTEMA DE ESTILOS UNIFICADO
+   Tema: Neón Ciberpunk (Cyan + Magenta)
+   ===================================================== */
+
+:root {
+    /* Colores principales - TEMA OSCURO (por defecto) */
+    --bg-color: #020202;
+    --bg-secondary: #0a0a0a;
+    --text-color: #d0d0d0;
+    --text-muted: #555;
+    --primary-color: #00f3ff;
+    --secondary-color: #bc13fe;
+    --accent-green: #00ff88;
+    --accent-orange: #ff9500;
+    --accent-red: #ff4757;
+
+    /* Efectos de vidrio */
+    --glass-bg: rgba(255, 255, 255, 0.025);
+    --glass-bg-hover: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --glass-border-hover: rgba(0, 243, 255, 0.25);
+    --card-bg: rgba(15, 15, 15, 0.9);
+
+    /* Sombras y brillos */
+    --glow-cyan: 0 0 20px rgba(0, 243, 255, 0.4);
+    --glow-magenta: 0 0 20px rgba(188, 19, 254, 0.4);
+    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.7);
+
+    /* Tipografía */
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-display: 'Orbitron', sans-serif;
+
+    /* Transiciones profesionales */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+/* =====================================================
+   BOTÓN TOGGLE DE TEMA
+   ===================================================== */
+.theme-toggle {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.theme-toggle:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--primary-color);
+}
+
+/* Reset y base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* =====================================================
+   SCROLLBAR PERSONALIZADA
+   ===================================================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #33f5ff, #d447ff);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) rgba(0, 0, 0, 0.3);
+}
+
+/* =====================================================
+   BODY Y FONDO
+   ===================================================== */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(188, 19, 254, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, var(--bg-color) 100%);
+    line-height: 1.6;
+    scroll-behavior: smooth;
+}
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(var(--glass-blur, 20px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), var(--secondary-color), transparent);
+    opacity: 0.5;
+}
+
+.logo {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    letter-spacing: 3px;
+    transition: all 0.3s var(--ease-smooth);
+    cursor: pointer;
+}
+
+.logo:hover {
+    text-shadow: 0 0 20px rgba(0, 243, 255, 0.8), 0 0 40px rgba(0, 243, 255, 0.4);
+    transform: scale(1.02);
+}
+
+/* =====================================================
+   BARRA DE BÚSQUEDA
+   ===================================================== */
+.search-bar {
+    position: relative;
+    width: 320px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    border-radius: 50px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: white;
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.3s ease;
+}
+
+.search-bar input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2), inset 0 0 20px rgba(0, 243, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.search-bar input:focus::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* =====================================================
+   CONTENIDO PRINCIPAL
+   ===================================================== */
+main {
+    padding: 3rem 4rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    min-height: calc(100vh - 200px);
+}
+
+/* =====================================================
+   GRID DE JUEGOS
+   ===================================================== */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Limitar a máximo 3 columnas */
+@media (min-width: 1000px) {
+    .games-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* =====================================================
+   TARJETAS DE JUEGOS
+   ===================================================== */
+.game-card {
+    background: rgba(15, 15, 15, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s var(--ease-out-expo);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    will-change: transform, box-shadow;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(135deg, transparent 40%, var(--primary-color) 50%, transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-smooth);
+    pointer-events: none;
+}
+
+.game-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 20px 40px rgba(0, 243, 255, 0.15), 0 0 0 1px rgba(0, 243, 255, 0.1);
+}
+
+.game-card:hover::before {
+    opacity: 1;
+}
+
+.game-card:active {
+    transform: translateY(-4px) scale(1.01);
+    transition-duration: 0.1s;
+}
+
+/* Botón de favoritos */
+.favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #666;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s var(--ease-out-back);
+    z-index: 10;
+    backdrop-filter: blur(4px);
+}
+
+.favorite-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 200, 0, 0.3);
+    color: #ffc800;
+    transform: scale(1.1);
+}
+
+.favorite-btn.active {
+    color: #ffc800;
+    background: rgba(255, 200, 0, 0.15);
+    border-color: rgba(255, 200, 0, 0.4);
+    text-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
+}
+
+.favorite-btn.active:hover {
+    background: rgba(255, 200, 0, 0.25);
+}
+
+/* Tarjeta favorita - destacada con borde dorado */
+.game-card.is-favorite {
+    border-color: rgba(255, 200, 0, 0.35);
+    background: rgba(25, 22, 15, 0.95);
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 200, 0, 0.15),
+        inset 0 1px 0 rgba(255, 200, 0, 0.1);
+}
+
+.game-card.is-favorite:hover {
+    border-color: rgba(255, 200, 0, 0.5);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(255, 200, 0, 0.15),
+        0 0 0 1px rgba(255, 200, 0, 0.3);
+}
+
+/* Imagen de la tarjeta */
+.card-image {
+    height: 180px;
+    background-color: #111;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    /* Estado de carga inicial - degradado placeholder */
+    background-image: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%);
+    transition: opacity 0.3s ease;
+}
+
+/* Imagen cargada con fade-in */
+.card-image.loaded {
+    animation: fadeInImage 0.3s ease forwards;
+}
+
+@keyframes fadeInImage {
+    from {
+        opacity: 0.7;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Cinta diagonal para utilidades */
+.utility-ribbon {
+    position: absolute;
+    top: 12px;
+    left: -35px;
+    background: linear-gradient(135deg, #ff9500, #ff6b00);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 4px 40px;
+    transform: rotate(-45deg);
+    z-index: 5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(255, 149, 0, 0.4);
+}
+
+.card-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--ease-smooth);
+}
+
+.game-card:hover .card-image::before {
+    transform: translateX(100%);
+}
+
+.card-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+/* Contenido de la tarjeta */
+.card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    color: white;
+    transition: color 0.3s ease;
+}
+
+.game-card:hover .card-title {
+    color: var(--primary-color);
+}
+
+.card-desc {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+/* Tags */
+.card-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tag {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #999;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s var(--ease-smooth);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+/* Tag especial para Coop - destacado */
+.tag-coop {
+    background: rgba(0, 255, 136, 0.15);
+    color: var(--accent-green);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+/* Tag para Terror */
+.tag-terror {
+    background: rgba(255, 71, 87, 0.1);
+    color: var(--accent-red);
+    border-color: rgba(255, 71, 87, 0.2);
+}
+
+/* Tag para Party */
+.tag-party {
+    background: rgba(188, 19, 254, 0.1);
+    color: var(--secondary-color);
+    border-color: rgba(188, 19, 254, 0.2);
+}
+
+.game-card:hover .tag {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.game-card:hover .tag-coop {
+    background: rgba(0, 255, 136, 0.2);
+    border-color: rgba(0, 255, 136, 0.5);
+}
+
+.game-card:hover .tag-terror {
+    background: rgba(255, 71, 87, 0.15);
+    border-color: rgba(255, 71, 87, 0.4);
+}
+
+.game-card:hover .tag-party {
+    background: rgba(188, 19, 254, 0.15);
+    border-color: rgba(188, 19, 254, 0.4);
+}
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: #555;
+    font-size: 0.9rem;
+    border-top: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+    opacity: 0.3;
+}
+
+footer p {
+    transition: color 0.3s ease;
+}
+
+footer:hover p {
+    color: #888;
+}
+
+/* =====================================================
+   ANIMACIONES
+   ===================================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
+    }
+}
+
+.game-card {
+    animation: fadeIn 0.5s var(--ease-out-expo) forwards;
+    opacity: 0;
+}
+
+/* =====================================================
+   PÁGINA DE DETALLE DEL JUEGO
+   ===================================================== */
+.game-detail-container {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    backdrop-filter: blur(var(--glass-blur, 20px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    animation: fadeInUp 0.6s var(--ease-out-expo) forwards;
+}
+
+.game-detail-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--primary-color), transparent 30%, transparent 70%, var(--secondary-color));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.game-header {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.game-poster {
+    width: 350px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 243, 255, 0.15);
+    border: 1px solid var(--glass-border);
+    transition: all 0.4s var(--ease-smooth);
+    object-fit: cover;
+}
+
+.game-poster:hover {
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 243, 255, 0.25);
+    border-color: var(--primary-color);
+}
+
+.game-info-header {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.game-info-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.2rem;
+    text-shadow: 0 0 30px rgba(0, 243, 255, 0.25);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+}
+
+.game-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.game-meta span {
+    padding: 0.4rem 1rem;
+    background: rgba(188, 19, 254, 0.1);
+    border: 1px solid rgba(188, 19, 254, 0.3);
+    border-radius: 20px;
+    color: var(--secondary-color);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.game-description {
+    line-height: 1.85;
+    color: #aaa;
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+}
+
+/* =====================================================
+   BOTONES
+   ===================================================== */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn,
+.button {
+    padding: 0.9rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    transition: all 0.3s var(--ease-out-back);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+}
+
+/* Efecto ripple */
+.btn::after,
+.button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+}
+
+.btn:active::after,
+.button:active::after {
+    transform: scale(2);
+    opacity: 1;
+    transition: transform 0s, opacity 0s;
+}
+
+/* Botón primario */
+.btn-primary,
+.button {
+    background: linear-gradient(135deg, var(--primary-color), #00d4e0);
+    color: #000;
+    box-shadow: 0 4px 20px rgba(0, 243, 255, 0.3);
+}
+
+.btn-primary:hover,
+.button:hover {
+    background: linear-gradient(135deg, #33f5ff, var(--primary-color));
+    box-shadow: 0 6px 30px rgba(0, 243, 255, 0.5);
+    transform: translateY(-3px);
+}
+
+.btn-primary:active,
+.button:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 15px rgba(0, 243, 255, 0.4);
+}
+
+/* Botón secundario */
+.btn-secondary,
+.button-secondary {
+    background: transparent;
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    transition: all 0.3s var(--ease-out-back);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btn-secondary:hover,
+.button-secondary:hover {
+    background: var(--secondary-color);
+    color: white;
+    box-shadow: 0 6px 25px rgba(188, 19, 254, 0.4);
+    transform: translateY(-3px);
+}
+
+.btn-secondary:active,
+.button-secondary:active {
+    transform: translateY(-1px);
+}
+
+/* =====================================================
+   TABLAS DE DATOS (PARA MODS)
+   ===================================================== */
+.tabla-datos {
+    width: 100%;
+    max-width: 100%;
+    margin: 2rem 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.9rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+}
+
+.tabla-datos th,
+.tabla-datos td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.tabla-datos thead {
+    background: linear-gradient(135deg, rgba(188, 19, 254, 0.2), rgba(0, 243, 255, 0.1));
+}
+
+.tabla-datos thead th {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+}
+
+.tabla-datos tbody tr {
+    transition: background 0.3s ease;
+}
+
+.tabla-datos tbody tr:hover {
+    background: rgba(0, 243, 255, 0.05);
+}
+
+.tabla-datos tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-datos a {
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.tabla-datos a:hover {
+    background: var(--primary-color);
+    color: #000;
+}
+
+/* =====================================================
+   SECCIÓN DE MODS
+   ===================================================== */
+.mods-section {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+}
+
+.mods-section h2 {
+    color: var(--primary-color);
+    font-family: var(--font-display);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.mods-section h3 {
+    color: var(--secondary-color);
+    margin: 1.5rem 0 1rem;
+    font-size: 1.1rem;
+}
+
+.mods-section h4 {
+    color: #ddd;
+    margin: 1rem 0 0.5rem;
+    font-size: 1rem;
+}
+
+.mods-section ul,
+.mods-section ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.mods-section li {
+    margin-bottom: 0.75rem;
+    color: #bbb;
+}
+
+.mod-download-btn {
+    display: inline-block;
+    margin: 0.5rem 0;
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, var(--accent-green), #00cc6a);
+    color: #000;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s var(--ease-out-back);
+}
+
+.mod-download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4);
+}
+
+/* =====================================================
+   IMÁGENES DE INFORMACIÓN
+   ===================================================== */
+.info-image,
+.game-image,
+.minimap {
+    max-width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+    /* Optimización de carga */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 300px;
+}
+
+.info-image:hover,
+.game-image:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+/* Optimización de imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.game-poster {
+    /* Añadir placeholder mientras carga */
+    background: linear-gradient(135deg, #111 0%, #222 100%);
+}
+
+/* =====================================================
+   CONTENEDOR GENÉRICO (LEGACY SUPPORT)
+   ===================================================== */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.content {
+    padding: 2rem;
+}
+
+/* =====================================================
+   ACCESIBILIDAD - REDUCED MOTION
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .game-card {
+        opacity: 1;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - MÓVILES
+   ===================================================== */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.25rem;
+    }
+
+    .logo {
+        font-size: 1.4rem;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    main {
+        padding: 1.5rem;
+    }
+
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .game-detail-container {
+        padding: 1.5rem;
+        margin: 1rem;
+        border-radius: 16px;
+    }
+
+    .game-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .game-poster {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .game-info-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .game-meta {
+        justify-content: center;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn,
+    .button,
+    .btn-secondary,
+    .button-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .game-specs {
+        grid-template-columns: 1fr;
+    }
+
+    .tabla-datos {
+        font-size: 0.8rem;
+    }
+
+    .tabla-datos th,
+    .tabla-datos td {
+        padding: 0.75rem;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - TABLETS
+   ===================================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    main {
+        padding: 2rem;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .game-poster {
+        width: 250px;
+    }
+
+    .game-info-header h1 {
+        font-size: 2rem;
+    }
+}
+
+/* =====================================================
+   RAWG API - SECCIONES DINÁMICAS
+   ===================================================== */
+
+/* === SPECS === */
+.rawg-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    min-width: 70px;
+}
+
+.spec-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.spec-label {
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.spec-rating .spec-value {
+    color: #ffd700;
+}
+
+.spec-metacritic .spec-value {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.spec-metacritic.high .spec-value {
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--accent-green);
+}
+
+.spec-metacritic.mid .spec-value {
+    background: rgba(255, 200, 0, 0.2);
+    color: #ffc800;
+}
+
+.spec-metacritic.low .spec-value {
+    background: rgba(255, 71, 87, 0.2);
+    color: var(--accent-red);
+}
+
+.spec-genres .spec-value {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+}
+
+/* === SECCIONES RAWG === */
+.rawg-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* === SCREENSHOTS === */
+.screenshots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.screenshot-item {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 16 / 9;
+    background: #111;
+}
+
+.screenshot-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s var(--ease-smooth);
+}
+
+.screenshot-item:hover img {
+    transform: scale(1.05);
+}
+
+.screenshot-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-size: 1.5rem;
+}
+
+.screenshot-item:hover .screenshot-overlay {
+    opacity: 1;
+}
+
+/* === JUEGOS SIMILARES === */
+.similar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.similar-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.similar-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 25px rgba(0, 243, 255, 0.15);
+}
+
+.similar-image {
+    height: 100px;
+    background-size: cover;
+    background-position: center;
+    background-color: #111;
+}
+
+.similar-info {
+    padding: 0.75rem;
+}
+
+.similar-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.similar-rating {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* === ATRIBUCIÓN RAWG === */
+.rawg-attribution {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #555;
+    border-top: 1px solid var(--glass-border);
+}
+
+.rawg-attribution a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.rawg-attribution a:hover {
+    text-decoration: underline;
+}
+
+/* === RESPONSIVE RAWG === */
+@media (max-width: 768px) {
+    .rawg-specs {
+        justify-content: center;
+    }
+
+    .screenshots-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .similar-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* =====================================================
+   🕹️ MODO PRIME / LEGACY (Easter Egg)
+   =====================================================
+   Activa estos estilos escribiendo "prime" en el buscador
+   Replica el estilo original del sitio
+   ===================================================== */
+[data-theme="retro"] {
+    /* Variables del sitio legacy original */
+    --color-grid: rgba(253, 190, 241, 0.2);
+    --bg-color: #050505;
+    --primary-color: #4CAF50;
+    --secondary-color: #ff007f;
+    --card-bg: rgba(20, 0, 15, 0.85);
+    --text-color: #bbb;
+
+    /* Quitar efectos neón modernos */
+    --glow-cyan: none;
+    --glow-magenta: none;
+}
+
+[data-theme="retro"] body {
+    background-color: #050505;
+    background-image:
+        linear-gradient(0deg, transparent 24%, var(--color-grid) 25%, var(--color-grid) 26%, transparent 27%, transparent 74%, var(--color-grid) 75%, var(--color-grid) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, var(--color-grid) 25%, var(--color-grid) 26%, transparent 27%, transparent 74%, var(--color-grid) 75%, var(--color-grid) 76%, transparent 77%, transparent);
+    background-size: 50px 50px;
+}
+
+/* Scrollbar retro con gradiente rosa/dorado */
+[data-theme="retro"] ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d53369, #daae51);
+}
+
+[data-theme="retro"] ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #e84a82, #ecc36a);
+}
+
+/* Selección rosa */
+[data-theme="retro"] ::selection {
+    background: #ff007f;
+    color: white;
+}
+
+/* Header estilo legacy - más simple y centrado */
+[data-theme="retro"] header {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+[data-theme="retro"] header::after {
+    display: none;
+}
+
+[data-theme="retro"] .logo {
+    color: #4CAF50 !important;
+    text-shadow: none !important;
+}
+
+[data-theme="retro"] .logo:hover {
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.5) !important;
+}
+
+/* Barra de búsqueda estilo legacy */
+[data-theme="retro"] .search-bar input {
+    border-color: rgba(76, 175, 80, 0.5);
+}
+
+[data-theme="retro"] .search-bar input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+/* Tarjetas estilo legacy - sin efectos modernos */
+[data-theme="retro"] .game-card {
+    background-color: rgba(20, 0, 15, 0.85);
+    border: 1px solid rgba(255, 9, 148, 0.616);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="retro"] .game-card::before {
+    display: none;
+}
+
+[data-theme="retro"] .game-card:hover {
+    transform: scale(1.03);
+    background-color: rgba(41, 2, 30, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 9, 148, 0.8);
+}
+
+[data-theme="retro"] .game-card:hover .card-title {
+    color: #fff;
+}
+
+[data-theme="retro"] .card-title {
+    color: aliceblue;
+    font-family: var(--font-main);
+}
+
+[data-theme="retro"] .card-desc {
+    color: #bbb;
+}
+
+/* Tags estilo legacy */
+[data-theme="retro"] .tag {
+    background: rgba(76, 175, 80, 0.1);
+    border-color: rgba(76, 175, 80, 0.5);
+    color: #4CAF50;
+}
+
+[data-theme="retro"] .tag-coop {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border-color: rgba(76, 175, 80, 0.6);
+}
+
+/* Botones verdes estilo legacy */
+[data-theme="retro"] .btn-primary,
+[data-theme="retro"] .button {
+    background: #4CAF50;
+    box-shadow: none;
+}
+
+[data-theme="retro"] .btn-primary:hover,
+[data-theme="retro"] .button:hover {
+    background: #45a049;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Footer estilo legacy */
+[data-theme="retro"] footer {
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+[data-theme="retro"] footer::before {
+    display: none;
+}
+
+/* Página de detalle estilo legacy */
+[data-theme="retro"] .game-detail-container {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 9, 148, 0.4);
+}
+
+[data-theme="retro"] .game-detail-container::before {
+    display: none;
+}
+
+[data-theme="retro"] .game-info-header h1 {
+    color: #4CAF50;
+    text-shadow: none;
+}
+
+/* =====================================================
+   MODAL DE CONFIGURACIÓN (Settings)
+   ===================================================== */
+.settings-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.settings-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.settings-modal {
+    background: linear-gradient(145deg, rgba(20, 20, 25, 0.98), rgba(15, 15, 20, 0.98));
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    width: 90%;
+    max-width: 520px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    transform: translateY(30px) scale(0.95);
+    transition: all 0.3s var(--ease-out-back);
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+}
+
+.settings-modal-overlay.active .settings-modal {
+    transform: translateY(0) scale(1);
+}
+
+.settings-header {
+    padding: 1.8rem 2.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.settings-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.5;
+    transition: all 0.2s;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.btn-close:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+.settings-body {
+    padding: 2.2rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+}
+
+.settings-section h3 {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+    color: #eee;
+    font-weight: 500;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-family: var(--font-main);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-group input[type="text"]:focus {
+    border-color: var(--primary-color);
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 0 3px rgba(0, 243, 255, 0.1);
+}
+
+/* Custom File Upload Button */
+.custom-file-upload {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #aaa;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.custom-file-upload:hover {
+    border-color: var(--primary-color);
+    color: #fff;
+    background: rgba(0, 243, 255, 0.05);
+}
+
+.preview-box {
+    margin-top: 1rem;
+    height: 140px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    background: rgba(0, 0, 0, 0.5);
+    background-size: cover;
+    background-position: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.preview-box::after {
+    content: 'Vista Previa';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-size: 10px;
+    text-transform: uppercase;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 4px;
+    color: #888;
+}
+
+.settings-footer {
+    padding: 1.8rem 2.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 24px 24px;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+    padding: 8px 12px;
+}
+
+.btn-text:hover {
+    color: #ff4757;
+}
+
+[data-theme="retro"] .game-poster {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 9, 148, 0.4);
+}
+
+[data-theme="retro"] .game-meta span {
+    background: rgba(255, 0, 127, 0.15);
+    border-color: rgba(255, 0, 127, 0.4);
+    color: #ff007f;
+}
+
+/* =====================================================
+   COLOR PRESETS (SETTINGS)
+   ===================================================== */
+.color-presets {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.color-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background-color: var(--bg);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    padding: 0;
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+    border-color: white;
+    box-shadow: 0 0 10px var(--bg);
+}
+
+.color-btn.active {
+    border-color: white;
+    box-shadow: 0 0 15px var(--bg), inset 0 0 0 2px rgba(0, 0, 0, 0.5);
+    transform: scale(1.15);
+}
+
+/* Custom color picker wrapper to look like a button */
+.custom-color-wrapper {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+}
+
+.custom-color-wrapper:hover {
+    transform: scale(1.1);
+    border-color: white;
+}
+
+.custom-color-wrapper input[type="color"] {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    opacity: 0;
+}

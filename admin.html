@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración | Jueguitos Piola</title>
+    <link rel="icon" href="favicon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #00f3ff;
+            --primary-dark: #00a8b3;
+            --danger: #ff4757;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --bg-dark: #0a0a0f;
+            --bg-panel: #14141e;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(20, 20, 30, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #0d1117 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+        }
+
+        /* Login Screen */
+        .login-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: rgba(20, 20, 30, 0.95);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 340px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-box h2 {
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .input-sm {
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+
+        .select-sm {
+            padding: 6px 10px;
+            background: rgb(20, 20, 25);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 8px;
+            border-radius: 6px;
+            align-items: center;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .btn-row:focus-within {
+            border-color: var(--primary);
+        }
+
+        .btn-row .input-sm,
+        .btn-row .select-sm {
+            background: transparent;
+            border: none;
+            padding: 4px 8px;
+        }
+
+        .btn-row .input-sm:focus {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            border-color: white;
+            color: white;
+        }
+
+        /* Layout */
+        .app-container {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            height: 100vh;
+            padding-top: 2rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem 1rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            padding: 0 2rem;
+            height: calc(100vh - 100px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-panel);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 1rem;
+            height: fit-content;
+        }
+
+        .nav-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* Content Area */
+        .content-area {
+            background: var(--bg-panel);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Editor Layout (Form + Preview) */
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Preview Card Style */
+        .preview-sticky {
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .preview-card {
+            background: #1a1a24;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .preview-img-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .preview-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-content {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .preview-content h3 {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-content p {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 1rem;
+        }
+
+        .preview-tags span {
+            display: inline-block;
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--primary);
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+
+        /* Forms */
+        .form-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        textarea.input-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Tags */
+        .tags-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .tag-badge:hover {
+            border-color: var(--primary);
+        }
+
+        .tag-badge.selected {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Drag & Drop Styles */
+        .game-card-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            transition: transform 0.2s, background 0.2s;
+            cursor: default;
+        }
+
+        .game-card-item.dragging {
+            opacity: 0.5;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px dashed var(--primary);
+        }
+
+        .game-card-item.drag-over {
+            border-top: 2px solid var(--primary);
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-muted);
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            user-select: none;
+        }
+
+        .drag-handle:hover {
+            color: var(--primary);
+        }
+
+        .game-thumb {
+            width: 120px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+            background: #000;
+        }
+
+        /* Smooth Sortable Styles */
+        .sortable-ghost {
+            opacity: 0.2;
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px dashed var(--primary);
+        }
+
+        .sortable-drag {
+            position: fixed;
+            /* Fixed prevents scroll issues */
+            z-index: 9999;
+            pointer-events: none;
+            background: var(--bg-panel);
+            border: 1px solid var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: rotate(2deg) scale(1.02);
+            width: var(--drag-width);
+            opacity: 0.95;
+            list-style: none;
+            /* Safekeeping */
+        }
+
+        /* Notification Bar (Refined) */
+        .pending-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: auto;
+            width: auto;
+            min-width: 320px;
+            background: rgba(20, 20, 30, 0.95);
+            border: 1px solid #ff9f43;
+            /* var(--warning) hardcoded for safety */
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .pending-bar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ff9f43;
+            font-weight: 600;
+        }
+
+        .pending-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .status-toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .status-toast.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .status-toast.error {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Warning Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-sm {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* =========================================
+           RESPONSIVE DESIGN
+           ========================================= */
+        @media (max-width: 1024px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+                /* Stack form and preview */
+            }
+
+            .preview-column {
+                order: -1;
+                /* Show preview on top */
+                margin-bottom: 2rem;
+            }
+
+            .preview-sticky {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding-top: 0;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .app-header {
+                padding: 1rem;
+                margin-bottom: 0;
+                background: var(--bg-panel);
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .main-layout {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                height: auto;
+                overflow-y: visible;
+                display: block;
+                /* Remove grid height restriction */
+            }
+
+            .sidebar {
+                margin-bottom: 1.5rem;
+                padding: 0.5rem;
+                border: none;
+                background: transparent;
+            }
+
+            .sidebar nav {
+                display: flex;
+                overflow-x: auto;
+                gap: 10px;
+                padding-bottom: 5px;
+                /* Scrollbar space */
+            }
+
+            .nav-item {
+                white-space: nowrap;
+                margin-bottom: 0;
+                background: var(--bg-panel);
+                border: 1px solid var(--border);
+            }
+
+            .nav-item.active {
+                border-left: 1px solid var(--primary);
+                /* Reset border */
+                border: 1px solid var(--primary);
+            }
+
+            .content-area {
+                padding: 1rem;
+                height: auto;
+                border: none;
+                background: transparent;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .pending-bar {
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                width: auto;
+                min-width: 0;
+            }
+
+            .status-toast {
+                left: 20px;
+                right: auto;
+                bottom: 80px;
+                /* Above pending bar */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen hidden">
+        <div class="login-box">
+            <h2>ACCESO ADMIN</h2>
+            <div class="form-group">
+                <input type="password" id="passwordInput" class="input-field" placeholder="Contraseña de acceso"
+                    autofocus>
+            </div>
+            <button onclick="login()" class="btn btn-primary">
+                <span>Ingresar al Sistema</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="appContainer" class="app-container">
+
+        <header class="app-header">
+            <h3>PANEL DE CONTROL</h3>
+            <button onclick="logout()" class="btn btn-ghost btn-sm">Cerrar Sesión</button>
+        </header>
+
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav>
+                    <div class="nav-item active" data-tab="add">
+                        <span>➕</span> Agregar Juego
+                    </div>
+                    <div class="nav-item" data-tab="list">
+                        <span>📋</span> Lista de Juegos
+                    </div>
+                    <div class="nav-item" data-tab="settings">
+                        <span>⚙️</span> Configuración
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content-area">
+
+                <!-- View: Add / Edit -->
+                <div id="addView" class="view-section">
+                    <div class="editor-container">
+                        <!-- Form Column -->
+                        <div class="form-column">
+                            <div class="form-section">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:1rem">
+                                    <h3 id="formTitle">Agregar Nuevo Juego</h3>
+                                    <button onclick="resetForm()" class="btn btn-ghost"
+                                        style="padding:4px 8px">Limpiar</button>
+                                </div>
+
+                                <form id="gameForm" onsubmit="handleFormSubmit(event)">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>ID Único (slug)</label>
+                                            <input type="text" id="inpId" class="input-field"
+                                                placeholder="ej: lethal-company" required oninput="updatePreview()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Título del Juego</label>
+                                            <input type="text" id="inpTitle" class="input-field"
+                                                placeholder="ej: Lethal Company" required oninput="updatePreview()">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Descripción Corta (Tarjeta)</label>
+                                        <input type="text" id="inpDesc" class="input-field" required
+                                            oninput="updatePreview()">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Descripción Completa (Opcional)</label>
+                                        <textarea id="inpFullDesc" class="input-field"
+                                            placeholder="Detalles, instrucciones, updates..."></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>URL de Imagen</label>
+                                        <input type="url" id="inpImage" class="input-field" placeholder="https://..."
+                                            required oninput="updatePreview()">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Etiquetas</label>
+                                        <div id="tagsSelector" class="tags-wrapper"></div>
+                                    </div>
+
+                                    <div class="form-section">
+                                        <div
+                                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                            <h4 style="margin:0; font-size:0.9rem; color:#888;">Botones del Juego</h4>
+                                            <button type="button" onclick="addDynamicButton()"
+                                                class="btn btn-ghost btn-sm"
+                                                style="font-size:0.8rem; padding: 4px 8px; background: rgba(255,255,255,0.05)">+
+                                                Agregar Otro</button>
+                                        </div>
+                                        <div id="dynamicButtonsList"
+                                            style="display:flex; flex-direction:column; gap:6px;">
+                                            <!-- Buttons dynamic rows -->
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary" id="finalSubmitBtn">
+                                        <span id="submitBtnText">Agregar a la lista</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Preview Column -->
+                        <div class="preview-column">
+                            <div class="preview-sticky">
+                                <h4 style="margin-bottom: 1rem; color: var(--text-muted)">Vista Previa</h4>
+                                <div class="preview-card">
+                                    <div class="preview-img-container">
+                                        <img id="previewImgEl" style="display:none" alt="Preview">
+                                    </div>
+                                    <div class="preview-content">
+                                        <h3 id="previewTitleEl" class="card-title">Título del Juego</h3>
+                                        <p id="previewDescEl" class="card-desc">Descripción corta del juego...</p>
+                                        <div id="previewTagsEl" class="preview-tags">
+                                            <!-- Tags -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View: List -->
+                <div id="listView" class="view-section hidden">
+                    <div style="margin-bottom: 1rem;">
+                        <input type="text" id="searchGames" class="input-field" placeholder="Buscar juego..."
+                            onkeyup="renderGamesList()">
+                    </div>
+                    <div id="gamesList">
+                        <!-- Items rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- View: Settings -->
+                <div id="settingsView" class="view-section hidden">
+                    <div class="form-section">
+                        <h3>Token de GitHub</h3>
+                        <p style="color:#888; margin-bottom:1rem">Necesario para guardar cambios en la nube.</p>
+                        <div class="form-group">
+                            <input type="password" id="tokenSettingsInput" class="input-field" placeholder="ghp_...">
+                        </div>
+                        <button onclick="saveToken()" class="btn btn-primary">Actualizar Token</button>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <!-- Pending Changes Bar (Subtle) -->
+        <div id="pendingBar" class="pending-bar hidden">
+            <div class="pending-bar-header">
+                <span>⚠️ Cambios pendientes: <span id="pendingCount">0</span></span>
+            </div>
+            <div class="pending-actions">
+                <button onclick="discardChanges()" class="btn btn-ghost btn-sm">Descartar</button>
+                <button onclick="commitChanges()" class="btn btn-primary btn-sm">Publicar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Token Modal (Initial Setup) -->
+    <div id="tokenModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Configuración Inicial</h3>
+            <p style="margin: 1rem 0; color: #aaa;">Para administrar este sitio, necesitas un <strong>GitHub Personal
+                    Access Token</strong> con permisos de "repo".</p>
+            <input type="password" id="tokenInput" class="input-field" placeholder="Pega tu token aquí">
+            <br><br>
+            <button onclick="saveToken()" class="btn btn-primary">Guardar y Continuar</button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Admin Panel Logic
+         * Author: Hugo Ale Olguin
+         */
+
+        const CONFIG = {
+            REPO_OWNER: 'HugoAleOlguin',
+            REPO_NAME: 'jueguitos-piola',
+            FILE_PATH: 'beta/assets/js/games.js',
+            VERSION_PATH: 'beta/version.json',
+            BRANCH: 'gh-pages',
+            PASSWORD_HASH: '8f03db6b63d7319da347b6feebe9999cbab2d234b997dfdc39998482018153ba'
+        };
+
+        // State
+        let state = {
+            games: [],
+            pendingChanges: [],
+            originalSha: null,
+            isAuthenticated: false,
+            editingIndex: null
+        };
+
+        // =============================================================================
+        // AUTHENTICATION
+        // =============================================================================
+
+        async function init() {
+            // Check Session
+            if (sessionStorage.getItem('adminAuth') === 'true') {
+                showAdminPanel();
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }
+
+            // Enter key support
+            document.getElementById('passwordInput').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') login();
+            });
+
+            // Sidebar navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    switchTab(item.dataset.tab);
+                });
+            });
+
+            // Initial Load
+            loadTags();
+            resetForm(); // Ensure default state with one button
+        }
+
+        async function login() {
+            const input = document.getElementById('passwordInput').value;
+            const hash = await sha256(input);
+
+            if (hash === CONFIG.PASSWORD_HASH) {
+                sessionStorage.setItem('adminAuth', 'true');
+                showAdminPanel();
+            } else {
+                showToast('Contraseña incorrecta', 'error');
+                document.getElementById('passwordInput').classList.add('error');
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminAuth');
+            location.reload();
+        }
+
+        function showAdminPanel() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appContainer').style.display = 'block';
+            checkToken();
+        }
+
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // =============================================================================
+        // GITHUB API INTERACTION
+        // =============================================================================
+
+        function getToken() {
+            return localStorage.getItem('githubToken');
+        }
+
+        function checkToken() {
+            if (!getToken()) {
+                document.getElementById('tokenModal').classList.remove('hidden');
+            } else {
+                loadData();
+            }
+        }
+
+        function saveToken() {
+            const token = document.getElementById('tokenInput').value.trim() || document.getElementById('tokenSettingsInput').value.trim();
+            if (token) {
+                localStorage.setItem('githubToken', token);
+                document.getElementById('tokenModal').classList.add('hidden');
+                loadData();
+            }
+        }
+
+        async function loadData() {
+            try {
+                setLoading(true);
+                const data = await fetchFile(CONFIG.FILE_PATH);
+                state.originalSha = data.sha;
+
+                // Parse JS content safely
+                const content = decodeBase64(data.content);
+                const match = content.match(/const gamesData = \[([\s\S]*)\];/);
+
+                if (match) {
+                    state.games = new Function(`return [${match[1]}]`)();
+                    renderGamesList();
+                    showToast('Datos cargados correctamente', 'success');
+                } else {
+                    throw new Error('Formato de archivo inválido');
+                }
+            } catch (error) {
+                showToast(`Error cargando datos: ${error.message}`, 'error');
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function fetchFile(path) {
+            const response = await fetch(
+                `https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${path}?ref=${CONFIG.BRANCH}`,
+                {
+                    headers: {
+                        'Authorization': `token ${getToken()}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                }
+            );
+            if (!response.ok) throw new Error(response.statusText);
+            return await response.json();
+        }
+
+        async function commitChanges() {
+            if (state.pendingChanges.length === 0) return;
+
+            try {
+                setLoading(true, 'Sincronizando con GitHub...');
+
+                // 1. Get HEAD Ref
+                const refData = await fetchAPI(`git/refs/heads/${CONFIG.BRANCH}`);
+                const latestCommitSha = refData.object.sha;
+
+                // 2. Get Tree of HEAD
+                const commitData = await fetchAPI(`git/commits/${latestCommitSha}`);
+                const baseTreeSha = commitData.tree.sha;
+
+                // 3. Prepare Blobs (Content)
+                const gamesContent = `const gamesData = ${JSON.stringify(state.games, null, 2)};\n`;
+                const gamesBlob = await createBlob(gamesContent);
+
+                const currentVersion = await fetchFile(CONFIG.VERSION_PATH);
+                const versionData = JSON.parse(decodeBase64(currentVersion.content));
+                const now = new Date();
+                const newVersion = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+                versionData.version = newVersion;
+                versionData.updated = now.toISOString();
+                const versionBlob = await createBlob(JSON.stringify(versionData, null, 4));
+
+                // 4. Create New Tree
+                const treeData = await createTree(baseTreeSha, [
+                    {
+                        path: CONFIG.FILE_PATH,
+                        mode: '100644', // file
+                        type: 'blob',
+                        sha: gamesBlob.sha
+                    },
+                    {
+                        path: CONFIG.VERSION_PATH,
+                        mode: '100644', // file
+                        type: 'blob',
+                        sha: versionBlob.sha
+                    }
+                ]);
+
+                // 5. Create Commit
+                const message = `${state.pendingChanges.join(', ')} (v${newVersion})`;
+                const newCommit = await createCommit(message, treeData.sha, latestCommitSha);
+
+                // 6. Update Ref (Force push slightly safer in this context as we based on latest)
+                await updateRef(newCommit.sha);
+
+                // Cleanup
+                state.pendingChanges = [];
+                updatePendingUI();
+                showToast('Cambios publicados exitosamente (v' + newVersion + ')', 'success');
+
+            } catch (error) {
+                showToast(`Error publicando: ${error.message}`, 'error');
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // --- Low Level Git API Helpers ---
+
+        async function fetchAPI(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: {
+                    'Authorization': `token ${getToken()}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                }
+            };
+            if (body) options.body = JSON.stringify(body);
+
+            const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/${endpoint}`, options);
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.message || res.statusText);
+            }
+            return await res.json();
+        }
+
+        async function createBlob(content) {
+            return await fetchAPI('git/blobs', 'POST', {
+                content: content,
+                encoding: 'utf-8'
+            });
+        }
+
+        async function createTree(base_tree, tree_items) {
+            return await fetchAPI('git/trees', 'POST', {
+                base_tree,
+                tree: tree_items
+            });
+        }
+
+        async function createCommit(message, tree, parent) {
+            return await fetchAPI('git/commits', 'POST', {
+                message,
+                tree,
+                parents: [parent]
+            });
+        }
+
+        async function updateRef(sha) {
+            return await fetchAPI(`git/refs/heads/${CONFIG.BRANCH}`, 'PATCH', {
+                sha,
+                force: false
+            });
+        }
+
+        // Deprecated high-level helpers (kept for read operations if needed)
+        async function pushFile(path, content, sha, message) {
+            // Replaced by Git Tree flow
+        }
+        async function updateVersion() {
+            // Replaced by Git Tree flow
+        }
+
+        function decodeBase64(str) {
+            return decodeURIComponent(escape(atob(str)));
+        }
+
+        // =============================================================================
+        // UI LOGIC
+        // =============================================================================
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`${tabId}View`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.nav-item[data-tab="${tabId}"]`).classList.add('active');
+
+            if (tabId !== 'add' && state.editingIndex !== null) {
+                resetForm();
+            }
+        }
+
+        function renderGamesList() {
+            const container = document.getElementById('gamesList');
+            const filter = document.getElementById('searchGames').value.toLowerCase();
+
+            // We render games in order. Using state.games order.
+            container.innerHTML = state.games
+                .map((game, index) => ({ ...game, originalIndex: index }))
+                .filter(game => game.title.toLowerCase().includes(filter) || game.id.includes(filter))
+                .map((game, visibleIndex) => `
+                    <div class="game-card-item" data-index="${game.originalIndex}">
+                        <div class="drag-handle" title="Arrastrar para reordenar" onpointerdown="initSortable(event, this)">☰</div>
+                        <img src="${game.image}" class="game-thumb" onerror="this.src='favicon.png'">
+                        <div style="flex:1">
+                            <h4>${game.title}</h4>
+                            <p class="text-sm">${game.id}</p>
+                        </div>
+                        <div class="tags-wrapper">
+                            ${(game.tags || []).map(t => `<span class="tag-badge" style="cursor:default">${t}</span>`).join('')}
+                        </div>
+                        <div>
+                            <button class="btn btn-ghost" onclick="editGame(${game.originalIndex})">✏️</button>
+                            <button class="btn btn-ghost" onclick="deleteGame(${game.originalIndex})" style="color:var(--danger)">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // =============================================================================
+        // DRAG AND DROP LOGIC
+        // =============================================================================
+
+        let draggedItem = null;
+
+        function addDragListeners() {
+            const items = document.querySelectorAll('.game-card-item');
+
+            items.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragenter', handleDragEnter);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('dragleave', handleDragLeave);
+                item.addEventListener('drop', handleDrop);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedItem = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.index);
+            setTimeout(() => this.classList.add('dragging'), 0);
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            if (this !== draggedItem) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation(); // stops the browser from redirecting.
+            this.classList.remove('drag-over');
+
+            if (draggedItem !== this) {
+                const srcIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                const targetIndex = parseInt(this.dataset.index);
+
+                // Reorder array
+                const itemToMove = state.games[srcIndex];
+                state.games.splice(srcIndex, 1);
+                state.games.splice(targetIndex, 0, itemToMove);
+
+                // Add to pending changes if not already generic update
+                if (!state.pendingChanges.includes('~ Orden actualizado')) {
+                    state.pendingChanges.push('~ Orden actualizado');
+                }
+
+                updatePendingUI();
+                renderGamesList();
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.game-card-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            draggedItem = null;
+        }
+
+        function loadTags() {
+            const tags = ["Coop", "Terror", "Party", "Accion", "Roguelike", "Supervivencia", "Simulacion", "Estrategia", "Puzzle", "Carreras", "Crafteo", "Sandbox", "Utilidad"];
+            const container = document.getElementById('tagsSelector');
+
+            container.innerHTML = tags.map(tag => `
+                <span class="tag-badge" onclick="toggleTag(this, '${tag}')">${tag}</span>
+            `).join('');
+        }
+
+        function toggleTag(element, tag) {
+            element.classList.toggle('selected');
+            updatePreview();
+        }
+
+        // =============================================================================
+        // PREVIEW LOGIC
+        // =============================================================================
+
+        function updatePreview() {
+            const title = document.getElementById('inpTitle').value || 'Título del Juego';
+            const desc = document.getElementById('inpDesc').value || 'Descripción corta...';
+            const img = document.getElementById('inpImage').value || 'favicon.png';
+            const tags = Array.from(document.querySelectorAll('#tagsSelector .selected')).map(el => el.textContent);
+
+            document.getElementById('previewTitleEl').textContent = title;
+            document.getElementById('previewDescEl').textContent = desc;
+
+            const imgEl = document.getElementById('previewImgEl');
+
+            if (img) {
+                imgEl.src = img;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
+
+            // Handle Img Error
+            imgEl.onerror = function () {
+                this.style.display = 'none';
+            };
+
+            const tagsContainer = document.getElementById('previewTagsEl');
+            tagsContainer.innerHTML = tags.map(t => `<span>${t}</span>`).join('');
+        }
+
+        // =============================================================================
+        // FORM HANDLING
+        // =============================================================================
+
+        function addDynamicButton(data = null) {
+            let label = '', url = '', style = 'button';
+
+            if (data) {
+                if (Array.isArray(data)) {
+                    [label, url, style] = data;
+                } else {
+                    ({ label, url, style } = data);
+                }
+            }
+
+            const container = document.getElementById('dynamicButtonsList');
+            const div = document.createElement('div');
+            div.className = 'btn-row';
+            div.innerHTML = `
+                <input type="text" class="input-field input-sm d-btn-name" placeholder="Nombre" value="${label}" style="width:25%">
+                <input type="text" class="input-field input-sm d-btn-url" placeholder="URL" value="${url}" style="flex:1">
+                <select class="select-sm d-btn-style" style="width:90px">
+                    <option value="primary" ${style === 'primary' ? 'selected' : ''}>Azul</option>
+                    <option value="button" ${(!style || style === 'button') ? 'selected' : ''}>Normal</option>
+                    <option value="secondary" ${style === 'secondary' ? 'selected' : ''}>Gris</option>
+                    <option value="danger" ${style === 'danger' ? 'selected' : ''}>Rojo</option>
+                </select>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" style="color:#666; padding:0 8px">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            // Harvest Dynamic Buttons
+            const buttons = [];
+            document.querySelectorAll('.btn-row').forEach(row => {
+                const label = row.querySelector('.d-btn-name').value.trim();
+                const url = row.querySelector('.d-btn-url').value.trim();
+                const style = row.querySelector('.d-btn-style').value;
+                if (label && url) {
+                    // Save as compact array: ["Label", "URL", "style"]
+                    buttons.push([label, url, style]);
+                }
+            });
+
+            // Convert newlines to <br> for FullDesc
+            let fullDescRaw = document.getElementById('inpFullDesc').value;
+            let fullDescProcessed = fullDescRaw.replace(/\n/g, '<br>');
+
+            const formData = {
+                id: document.getElementById('inpId').value,
+                title: document.getElementById('inpTitle').value,
+                description: document.getElementById('inpDesc').value,
+                fullDescription: fullDescProcessed,
+                image: document.getElementById('inpImage').value,
+                tags: Array.from(document.querySelectorAll('#tagsSelector .selected')).map(el => el.textContent),
+                buttons: buttons // New Array
+            };
+
+            // Remove empty keys
+            Object.keys(formData).forEach(key => {
+                if (formData[key] === '' || formData[key] === null) delete formData[key];
+            });
+
+            if (state.editingIndex !== null) {
+                state.games[state.editingIndex] = formData;
+                state.pendingChanges.push(`~ ${formData.title}`);
+            } else {
+                if (state.games.some(g => g.id === formData.id)) {
+                    showToast('El ID ya existe', 'error');
+                    return;
+                }
+                state.games.push(formData);
+                state.pendingChanges.push(`+ ${formData.title}`);
+            }
+
+            resetForm();
+            updatePendingUI();
+            showToast('Juego guardado localmente', 'success');
+            renderGamesList();
+        }
+
+        function editGame(index) {
+            state.editingIndex = index;
+            const game = state.games[index];
+
+            document.getElementById('inpId').value = game.id;
+            document.getElementById('inpTitle').value = game.title;
+            document.getElementById('inpDesc').value = game.description || '';
+
+            // Convert <br> back to \n for editing
+            document.getElementById('inpFullDesc').value = (game.fullDescription || '').replaceAll('<br>', '\n');
+
+            document.getElementById('inpImage').value = game.image || '';
+
+            // Handle Buttons Migration
+            document.getElementById('dynamicButtonsList').innerHTML = ''; // Clear list
+
+            if (game.buttons && game.buttons.length > 0) {
+                // Compatible with both new arrays and old objects via addDynamicButton logic
+                game.buttons.forEach(btn => addDynamicButton(btn));
+            } else {
+                // Legacy System Migration
+                if (game.downloadUrl) addDynamicButton(['Descargar', game.downloadUrl, 'primary']);
+                if (game.fixOnlineUrl) addDynamicButton(['Fix Online', game.fixOnlineUrl, 'button']);
+                if (game.modsUrl) addDynamicButton(['Mods', game.modsUrl, 'button']);
+            }
+
+            document.querySelectorAll('#tagsSelector .tag-badge').forEach(el => {
+                el.classList.remove('selected');
+                if (game.tags && game.tags.includes(el.textContent)) {
+                    el.classList.add('selected');
+                }
+            });
+
+            document.getElementById('formTitle').textContent = 'Editar Juego';
+            document.getElementById('submitBtnText').textContent = 'Guardar Cambios';
+            switchTab('add');
+            updatePreview();
+        }
+
+        function deleteGame(index) {
+            if (confirm('¿Seguro que querés borrar este juego?')) {
+                const game = state.games[index];
+                state.games.splice(index, 1);
+                state.pendingChanges.push(`- ${game.title}`);
+                renderGamesList();
+                updatePendingUI();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('gameForm').reset();
+            document.getElementById('dynamicButtonsList').innerHTML = ''; // Clear dynamic buttons
+
+            // Default "Descargar" button as requested
+            addDynamicButton(['Descargar', '', 'primary']);
+
+            state.editingIndex = null;
+            document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+            document.getElementById('formTitle').textContent = 'Agregar Nuevo Juego';
+            document.getElementById('submitBtnText').textContent = 'Agregar a la lista';
+            updatePreview();
+        }
+
+        function updatePendingUI() {
+            const bar = document.getElementById('pendingBar');
+            if (state.pendingChanges.length > 0) {
+                bar.classList.remove('hidden');
+                document.getElementById('pendingCount').textContent = state.pendingChanges.length;
+            } else {
+                bar.classList.add('hidden');
+            }
+        }
+
+        function discardChanges() {
+            if (confirm('¿Descartar todos los cambios no guardados?')) {
+                loadData();
+                state.pendingChanges = [];
+                updatePendingUI();
+            }
+        }
+
+        function showToast(msg, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `status-toast ${type}`;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function setLoading(isLoading, msg = 'Cargando...') {
+            document.body.style.cursor = isLoading ? 'wait' : 'default';
+        }
+
+        // =============================================================================
+        // SMOOTH SORTABLE LOGIC (Pointer API)
+        // =============================================================================
+
+        let dragEl = null;
+        let ghostEl = null;
+        let placeholderEl = null;
+        let initialIndex = null;
+        let clone = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        function initSortable(e, handle) {
+            if (e.target.closest('button')) return;
+            e.preventDefault();
+
+            dragEl = handle.closest('.game-card-item');
+            initialIndex = parseInt(dragEl.dataset.index);
+
+            // 1. Create Placeholder
+            placeholderEl = dragEl.cloneNode(true);
+            placeholderEl.className = 'game-card-item sortable-ghost';
+            placeholderEl.innerHTML = '';
+
+            // 2. Create Floating Clone
+            clone = dragEl.cloneNode(true);
+            clone.classList.add('sortable-drag');
+            const rect = dragEl.getBoundingClientRect();
+
+            clone.style.top = rect.top + 'px';
+            clone.style.left = rect.left + 'px';
+            clone.style.setProperty('--drag-width', rect.width + 'px');
+
+            document.body.appendChild(clone);
+            dragEl.parentNode.insertBefore(placeholderEl, dragEl);
+            dragEl.style.display = 'none';
+
+            // 3. Calc Offset
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+
+            // 4. Attach Global Events
+            dragEl.setPointerCapture(e.pointerId);
+            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointerup', onPointerUp);
+            document.addEventListener('pointercancel', onPointerUp);
+        }
+
+        function onPointerMove(e) {
+            if (!clone) return;
+
+            clone.style.top = (e.clientY - dragOffset.y) + 'px';
+            clone.style.left = (e.clientX - dragOffset.x) + 'px';
+
+            clone.style.display = 'none';
+            const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            clone.style.display = '';
+
+            if (!elemBelow) return;
+            const sortableItem = elemBelow.closest('.game-card-item');
+
+            if (sortableItem && sortableItem !== placeholderEl && sortableItem.classList.contains('game-card-item')) {
+                const bounding = sortableItem.getBoundingClientRect();
+                const offset = bounding.y + bounding.height / 2;
+
+                if (e.clientY - offset > 0) {
+                    sortableItem.after(placeholderEl);
+                } else {
+                    sortableItem.before(placeholderEl);
+                }
+            }
+        }
+
+        function onPointerUp(e) {
+            document.removeEventListener('pointermove', onPointerMove);
+            document.removeEventListener('pointerup', onPointerUp);
+            document.removeEventListener('pointercancel', onPointerUp);
+
+            if (clone) {
+                clone.remove();
+                clone = null;
+            }
+
+            if (!dragEl) return;
+
+            dragEl.style.display = '';
+
+            if (placeholderEl && placeholderEl.parentNode) {
+                placeholderEl.replaceWith(dragEl);
+            }
+
+            const container = document.getElementById('gamesList');
+            const newIndex = Array.from(container.children).indexOf(dragEl);
+
+            if (document.getElementById('searchGames').value === '') {
+                // Update array
+                const item = state.games.splice(initialIndex, 1)[0];
+                state.games.splice(newIndex, 0, item);
+
+                if (initialIndex !== newIndex) {
+                    if (!state.pendingChanges.includes('~ Orden actualizado')) {
+                        state.pendingChanges.push('~ Orden actualizado');
+                    }
+                    updatePendingUI();
+                    // Re-render handled by DOM manipulation (no full re-render needed visuals are done)
+                    // But we should re-render to sanitize indices
+                    renderGamesList();
+                }
+            } else {
+                showToast('No se puede reordenar con filtro activo', 'error');
+                renderGamesList();
+            }
+
+            dragEl = null;
+            placeholderEl = null;
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>
