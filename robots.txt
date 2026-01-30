@@ -1,3 +1,6 @@
 User-agent: *
-Allow: /
+Disallow: /old/
+Disallow: /admin.html
+Disallow: /assets/css/
+Disallow: /assets/js/
 

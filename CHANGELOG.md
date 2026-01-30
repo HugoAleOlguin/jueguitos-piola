@@ -113,12 +113,14 @@ Historial de cambios estructurales y visuales del proyecto.
 ---
 
 **30 de Enero**
-- **Eliminación del Modo Claro** — Ahora el sitio es 100% Dark/Cyberpunk.
-- **Nuevo Menú de Configuración**
-  - Diseño Glassmorphism moderno.
-  - Personalización de fondo (URL o Subida local).
-  - Persistencia de configuración entre páginas.
-  - Carga instantánea de cambios (sin confirmación).
+- **Lanzamiento Oficial v3.0**
+  - La versión Beta ahora es la **Oficial** (Antigua versión archivada en `/old`).
+  - **SPA (Single Page Application)**: Navegación instantánea sin recargas.
+  - **Configuración Avanzada**:
+    - Selectores de Color Neon y Blur en tiempo real.
+    - Personalización de fondo persistente.
+  - **Sistema de Música v2**: Reescrito con YouTube IFrame API (más estable).
+  - **Fixes**: Corrección del "Void Mode" (3AM) y optimizaciones de caché.
 
 ---
 
@@ -126,6 +128,7 @@ Historial de cambios estructurales y visuales del proyecto.
 
 | Versión | Fecha | Cambio Principal |
 |---------|-------|------------------|
+| **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
 | **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
 | **2.9** | Mar 2025 | Responsive final |
 | **2.0** | Mar 2025 | Rediseño completo |
@@ -133,4 +136,4 @@ Historial de cambios estructurales y visuales del proyecto.
 
 ---
 
-**134 commits** | **Ene 2025 → Ene 2026**
+**150+ commits** | **Ene 2025 → Ene 2026**

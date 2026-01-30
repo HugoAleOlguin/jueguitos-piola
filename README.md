@@ -15,17 +15,17 @@
 
 <p align="center">
   <img src="https://media.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="10" height="10" /> 
-  <b>Acá tenés las dos versiones corriendo. La oficial es la que está estable, y la beta es donde estoy probando cosas nuevas.</b>
+  <b>Versión 3.0 Oficial (SPA) - Más rápida, más fluida y totalmente personalizable.</b>
   <img src="https://media.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="10" height="10" /> 
 </p>
 
-| 🟢 Versión Oficial | 🧪 Versión Beta |
-|:---:|:---:|
-| **Es la que funciona.** | **Es la que estoy codeando ahora.** |
-| [![Sitio Oficial](https://img.shields.io/badge/🌐-Ir_al_Sitio-2ea44f?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/) | [![Sitio Beta](https://img.shields.io/badge/🧪-Ir_a_la_Beta-orange?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/beta/index.html) |
-| <a href="https://hugoaleolguin.github.io/jueguitos-piola/index.html" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=600" alt="Vista previa oficial"></a> | <a href="https://hugoaleolguin.github.io/jueguitos-piola/beta/index.html" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/beta/index.html&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=600&refresh=true" alt="Vista previa beta"></a> |
+| 🟢 Sitio Oficial |
+|:---:|
+| **Nuevo Diseño Cyberpunk / SPA** |
+| [![Sitio Oficial](https://img.shields.io/badge/🌐-Jugar_Ahora-2ea44f?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/) |
+| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=800&refresh=true" alt="Vista previa oficial"></a> |
 
-*(Nota: Las imágenes de arriba se generan dinámicamente. Si tardan en cargar, refrescá la página).*
+> *La versión antigua ha sido archivada en [/old](https://hugoaleolguin.github.io/jueguitos-piola/old) para la posteridad.*
 
 ---
 
@@ -41,9 +41,9 @@
 Nada de frameworks pesados, todo puro y simple para aprender cómo funciona la web:
 
 *   **HTML5** 📄
-*   **CSS3** 🎨 (Grid & Flexbox)
-*   **JavaScript** (Vanilla, ES6+)
-*   **GitHub Actions** (Para el deploy automático con GitHub Pages)
+*   **CSS3** 🎨 (Variables, Glassmorphism, Animations)
+*   **JavaScript** (Vanilla ES6+, SPA Architecture)
+*   **GitHub Actions** (Para el deploy automático)
 
 ---
 
@@ -62,6 +62,7 @@ Nada de frameworks pesados, todo puro y simple para aprender cómo funciona la w
   cd jueguitos-piola
 
   # 3. Abrí el index.html en tu navegador.
+  # Recomendado: Usar "Live Server" en VS Code para la navegación SPA correcta.
   ```
 
 </details>
@@ -70,16 +71,18 @@ Nada de frameworks pesados, todo puro y simple para aprender cómo funciona la w
 
 ## 🧠 Estado del Proyecto (Roadmap)
 
-![Progreso](https://img.shields.io/badge/Progreso-47%25-yellow)
+![Progreso](https://img.shields.io/badge/Progreso-77%25-green)
 
 Esto es un side-project, así que avanzo a mi ritmo:
 
 ### ✅ Hecho
-- [x] Crear estructura base del HTML.
-- [x] Subir primeros juegos (agregare juegos a medida que los juguemos).
+- [x] **Lanzamiento v3.0 Oficial (SPA)**.
+- [x] Migración completa de Beta a Main.
+- [x] Sistema de Configuración Avanzada (Blur, Colores).
+- [x] Integración YouTube Music API.
 
 ### 🚧 En Progreso / Pendiente
-- [ ] Migrar diseño de la **Beta** a la versión final (cuando quede "piola").
+- [ ] Más easter eggs y secretos.
 - [ ] Optimizar tiempos de carga y assets.
 
 ---
