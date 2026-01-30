@@ -1105,7 +1105,39 @@
                 const baseTreeSha = commitData.tree.sha;
 
                 // 3. Prepare Blobs (Content)
-                const gamesContent = `const gamesData = ${JSON.stringify(state.games, null, 2)};\n`;
+                // Custom Serializer for Compact Games Data
+                function serializeGames(games) {
+                    const lines = games.map(game => {
+                        let props = [];
+                        // Order matters for consistency: id, title, description first
+                        const keys = ['id', 'title', 'description', 'fullDescription', 'image', 'tags', 'downloadUrl', 'fixOnlineUrl', 'modsUrl', 'externalLink', 'internalLink', 'customPage', 'customUrl', 'buttons', 'hidden'];
+
+                        // Add known keys first
+                        keys.forEach(key => {
+                            if (game[key] !== undefined && game[key] !== "") {
+                                let val = JSON.stringify(game[key]);
+                                if (key === 'buttons' || key === 'tags') {
+                                    // keep arrays somewhat compact, removing extra spaces if possible
+                                    val = JSON.stringify(game[key]).replace(/,/g, ', ');
+                                }
+                                props.push(`${key}: ${val}`);
+                            }
+                        });
+
+                        // Add any remaining unknown keys
+                        Object.keys(game).forEach(k => {
+                            if (!keys.includes(k) && game[k] !== undefined && game[k] !== "") {
+                                props.push(`${k}: ${JSON.stringify(game[k])}`);
+                            }
+                        });
+
+                        return `    { ${props.join(', ')} }`;
+                    });
+
+                    return `const gamesData = [\n${lines.join(',\n')}\n];\n`;
+                }
+
+                const gamesContent = serializeGames(state.games);
                 const gamesBlob = await createBlob(gamesContent);
 
                 const currentVersion = await fetchFile(CONFIG.VERSION_PATH);
