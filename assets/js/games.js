@@ -480,5 +480,25 @@ const gamesData = [
         "primary"
       ]
     ]
+  },
+  {
+    "id": "shadow",
+    "title": "Shadow Warrior 2 ",
+    "description": "tome",
+    "fullDescription": "contraseña: www.gamezfull.com",
+    "image": "https://images.steamusercontent.com/ugc/100602257260247232/3B9D5004E7561A6AB736347BA3987546339BED25/",
+    "tags": [
+      "Coop",
+      "Accion",
+      "Supervivencia"
+    ],
+    "buttons": [
+      [
+        "Descargar",
+        "https://www.gratispaste.com/?v=5020",
+        "danger"
+      ]
+    ],
+    "hidden": true
   }
 ];
