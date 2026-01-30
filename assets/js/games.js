@@ -460,5 +460,23 @@ const gamesData = [
         "style": "primary"
       }
     ]
+  },
+  {
+    "id": "gunfire",
+    "title": "Gunfire Reborn",
+    "description": "furros re armados...",
+    "image": "https://media.tenor.com/VzRIHRc5lqYAAAAM/gunfire-reborn-gunfire.gif",
+    "tags": [
+      "Coop",
+      "Roguelike",
+      "Supervivencia"
+    ],
+    "buttons": [
+      [
+        "Descargar",
+        "https://fileq.net/aya46pwpcfpj.html",
+        "primary"
+      ]
+    ]
   }
 ];
