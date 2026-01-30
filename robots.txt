@@ -1,6 +1,7 @@
 User-agent: *
 Disallow: /old/
-Disallow: /admin.html
+Disallow: /pages/
 Disallow: /assets/css/
 Disallow: /assets/js/
+Disallow: /assets/data/
 

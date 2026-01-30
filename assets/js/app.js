@@ -67,6 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Search Input
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+
+                // 🕵️ SECRET ADMIN ACCESS
+                if (term === 'admin') {
+                    window.location.href = 'pages/admin.html';
+                    return;
+                }
+
                 handleSearch(e.target.value);
             });
         }
