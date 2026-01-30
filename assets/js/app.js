@@ -129,7 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const showGame = (gameId) => {
         const game = allGames.find(g => g.id === gameId);
         if (!game) {
-            navigateTo('/'); // Redirect home if not found
+            // Fix: Use location.pathname to stay in the repository/project root
+            // instead of jumping to the domain root ('/')
+            navigateTo(window.location.pathname);
             return;
         }
 
@@ -231,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (backBtn) {
             backBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                navigateTo('/'); // Or history.back()
+                navigateTo(window.location.pathname); // Fix: Use pathname instead of '/'
             });
         }
     };

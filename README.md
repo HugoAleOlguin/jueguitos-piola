@@ -23,7 +23,7 @@
 |:---:|
 | **Nuevo Diseño Cyberpunk / SPA** |
 | [![Sitio Oficial](https://img.shields.io/badge/🌐-Jugar_Ahora-2ea44f?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/) |
-| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=800&refresh=true" alt="Vista previa oficial"></a> |
+| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/?v=3.1&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=800&refresh=true" alt="Vista previa oficial"></a> |
 
 > *La versión antigua ha sido archivada en [/old](https://hugoaleolguin.github.io/jueguitos-piola/old) para la posteridad.*
 
