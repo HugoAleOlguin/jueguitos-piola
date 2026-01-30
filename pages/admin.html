@@ -826,13 +826,89 @@
 
                 <!-- View: Settings -->
                 <div id="settingsView" class="view-section hidden">
+                    <!-- GitHub Token -->
                     <div class="form-section">
-                        <h3>Token de GitHub</h3>
-                        <p style="color:#888; margin-bottom:1rem">Necesario para guardar cambios en la nube.</p>
+                        <h3>🔑 Credenciales</h3>
+                        <p class="text-sm" style="margin-bottom:1rem">Token necesario para guardar cambios en GitHub.
+                        </p>
                         <div class="form-group">
                             <input type="password" id="tokenSettingsInput" class="input-field" placeholder="ghp_...">
                         </div>
                         <button onclick="saveToken()" class="btn btn-primary">Actualizar Token</button>
+                    </div>
+
+                    <!-- Tools Section -->
+                    <div class="form-section">
+                        <h3>🛠️ Herramientas de Mantenimiento</h3>
+                        <div class="form-row" style="margin-top:1rem; grid-template-columns: 1fr 1fr;">
+                            <!-- Health Check -->
+                            <div>
+                                <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:5px">🔍 Diagnóstico
+                                </h4>
+                                <p class="text-sm" style="margin-bottom:10px">Busca imágenes rotas y enlaces vacíos.</p>
+                                <button onclick="runHealthCheck()" class="btn btn-ghost">
+                                    Ejecutar Diagnóstico
+                                </button>
+                            </div>
+
+                            <!-- Stats -->
+                            <div>
+                                <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:5px">📊 Estadísticas
+                                </h4>
+                                <p class="text-sm" style="margin-bottom:10px">Ver resumen del catálogo.</p>
+                                <button onclick="showStats()" class="btn btn-ghost">
+                                    Ver Reporte
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Console Output for Tools -->
+                        <div id="toolsOutput" class="hidden"
+                            style="margin-top:1rem; background:rgba(0,0,0,0.3); padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem; max-height:200px; overflow-y:auto; border:1px solid var(--border)">
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div class="form-section">
+                        <h3>💾 Gestión de Datos</h3>
+                        <div class="form-row" style="margin-top:1rem">
+                            <div>
+                                <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:5px">Copia de Seguridad
+                                </h4>
+                                <p class="text-sm" style="margin-bottom:10px">Descarga todo el catálogo en formato JSON.
+                                </p>
+                                <button onclick="downloadBackup()" class="btn btn-ghost">
+                                    ⬇️ Descargar Backup
+                                </button>
+                            </div>
+                            <div>
+                                <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:5px">Restaurar Datos
+                                </h4>
+                                <p class="text-sm" style="margin-bottom:10px">Importar un archivo JSON (Sobrescribe
+                                    todo).</p>
+                                <input type="file" id="restoreInput" style="display:none"
+                                    onchange="handleRestore(this)">
+                                <button onclick="document.getElementById('restoreInput').click()" class="btn btn-ghost">
+                                    ⬆️ Subir Archivo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="form-section"
+                        style="border-color: rgba(255, 71, 87, 0.3); background: rgba(255, 71, 87, 0.05);">
+                        <h3 style="color:var(--danger)">⚠️ Zona de Peligro</h3>
+                        <p class="text-sm" style="margin-bottom:1rem">Acciones destructivas o de cierre de sesión.</p>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap">
+                            <button onclick="clearCache()" class="btn btn-danger">
+                                🗑️ Borrar Caché Local
+                            </button>
+                            <button onclick="logout()" class="btn btn-ghost"
+                                style="color:var(--danger); border-color:var(--danger)">
+                                🚪 Cerrar Sesión Global
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -863,6 +939,8 @@
             <button onclick="saveToken()" class="btn btn-primary">Guardar y Continuar</button>
         </div>
     </div>
+
+
 
     <script>
         /**
@@ -1590,6 +1668,164 @@
 
             dragEl = null;
             placeholderEl = null;
+        }
+
+        // =============================================================================
+        // DATA MANAGEMENT (BACKUP / RESTORE)
+        // =============================================================================
+
+        function downloadBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.games, null, 4));
+            const downloadAnchorNode = document.createElement('a');
+            const date = new Date().toISOString().slice(0, 10);
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `jueguitos-backup-${date}.json`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function handleRestore(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if (Array.isArray(json)) {
+                        if (confirm(`¿Seguro que quieres restaurar ${json.length} juegos? Esto reemplazará la lista actual.`)) {
+                            state.games = json;
+                            state.pendingChanges.push('~ Restauración completa');
+                            updatePendingUI();
+                            renderGamesList();
+                            showToast('Datos restaurados correctamente', 'success');
+                        }
+                    } else {
+                        showToast('El archivo no tiene el formato correcto (Array)', 'error');
+                    }
+                } catch (err) {
+                    showToast('Error al leer el archivo JSON', 'error');
+                    console.error(err);
+                }
+            };
+            reader.readAsText(file);
+            input.value = ''; // Reset
+        }
+
+        function clearCache() {
+            if (confirm('¿Borrar credenciales y caché local? Tendrás que iniciar sesión de nuevo.')) {
+                localStorage.removeItem('githubToken');
+                sessionStorage.removeItem('adminAuth');
+                location.reload();
+            }
+        }
+
+        // =============================================================================
+        // ADMIN TOOLS (HEALTH & STATS)
+        // =============================================================================
+
+        // --- Improved Health Check ---
+        async function runHealthCheck() {
+            const output = document.getElementById('toolsOutput');
+            output.classList.remove('hidden');
+            output.innerHTML = '<span style="color:var(--warning)">⏳ Iniciando escaneo profundo...</span><br>';
+
+            let issues = 0;
+            const seenIds = new Set();
+            const checks = [];
+
+            // 1. Scan Duplicates & Empty Data
+            state.games.forEach((game, idx) => {
+                // Check Duplicates
+                if (seenIds.has(game.id)) {
+                    output.innerHTML += `<span style="color:var(--danger)">[ID DUPLICADO]</span> ${game.id} (en "${game.title}")<br>`;
+                    issues++;
+                }
+                seenIds.add(game.id);
+
+                // Check Mandatory Fields
+                if (!game.id || !game.title) {
+                    output.innerHTML += `<span style="color:var(--danger)">[DATA CRITICA]</span> Juego #${idx} sin ID o Título<br>`;
+                    issues++;
+                }
+
+                // Check Links
+                if (!game.downloadUrl && (!game.buttons || game.buttons.length === 0)) {
+                    output.innerHTML += `<span style="color:var(--warning)">[SIN LINKS]</span> ${game.title}<br>`;
+                    issues++;
+                }
+
+                // 2. Queue Image Check
+                if (game.image) {
+                    checks.push(checkImage(game.image).then(ok => {
+                        if (!ok) {
+                            output.innerHTML += `<span style="color:var(--danger)">[IMG ROTA]</span> ${game.title}<br>`;
+                            issues++;
+                        }
+                    }));
+                } else {
+                    output.innerHTML += `<span style="color:var(--text-muted)">[SIN IMG]</span> ${game.title}<br>`;
+                    issues++; // Count as minor issue
+                }
+            });
+
+            await Promise.all(checks);
+
+            if (issues === 0) {
+                output.innerHTML += '<br><span style="color:var(--success)">✅ Sistema Impecable. 0 Errores.</span>';
+            } else {
+                output.innerHTML += `<br><span style="color:var(--text-main)">Escaneo completo. <strong>${issues} incidencias detectadas.</strong></span>`;
+            }
+        }
+
+        function checkImage(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
+
+        function showStats() {
+            const output = document.getElementById('toolsOutput');
+            output.classList.remove('hidden');
+
+            const total = state.games.length;
+            const tagsCount = {};
+            let noImg = 0;
+            let noDesc = 0;
+
+            state.games.forEach(g => {
+                if (!g.image) noImg++;
+                if (!g.description) noDesc++;
+                if (g.tags) {
+                    g.tags.forEach(t => {
+                        tagsCount[t] = (tagsCount[t] || 0) + 1;
+                    });
+                }
+            });
+
+            // Top Tags
+            const topTags = Object.entries(tagsCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8) // Top 8
+                .map(([t, c]) => `<span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px">${t}: ${c}</span>`)
+                .join(' ');
+
+            output.innerHTML = `
+                <strong style="color:var(--primary)">📊 ESTADÍSTICAS DEL CATÁLOGO</strong><br>
+                <div style="display:grid; grid-template-columns:1fr 1fr; margin-top:8px; gap:8px">
+                    <div>Total Juegos: <strong>${total}</strong></div>
+                    <div>Sin Imagen: <strong style="color:${noImg > 0 ? 'var(--warning)' : 'inherit'}">${noImg}</strong></div>
+                    <div>Sin Descripción: <strong>${noDesc}</strong></div>
+                </div>
+                <div style="margin-top:10px">
+                    <strong>Etiquetas Populares:</strong><br>
+                    <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px">${topTags}</div>
+                </div>
+            `;
         }
 
         window.addEventListener('DOMContentLoaded', init);

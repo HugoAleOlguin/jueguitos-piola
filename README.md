@@ -79,7 +79,6 @@ Esto es un side-project, así que avanzo a mi ritmo:
 - [x] **Lanzamiento v3.0 Oficial (SPA)**.
 - [x] Migración completa de Beta a Main.
 - [x] Sistema de Configuración Avanzada (Blur, Colores).
-- [x] Integración YouTube Music API.
 
 ### 🚧 En Progreso / Pendiente
 - [ ] Más easter eggs y secretos.
