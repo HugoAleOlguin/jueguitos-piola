@@ -1238,23 +1238,36 @@
             container.innerHTML = state.games
                 .map((game, index) => ({ ...game, originalIndex: index }))
                 .filter(game => game.title.toLowerCase().includes(filter) || game.id.includes(filter))
-                .map((game, visibleIndex) => `
-                    <div class="game-card-item" data-index="${game.originalIndex}">
+                .map((game, visibleIndex) => {
+                    const isHidden = game.hidden === true;
+                    return `
+                    <div class="game-card-item" data-index="${game.originalIndex}" style="${isHidden ? 'opacity: 0.6; border: 1px dashed var(--text-muted);' : ''}">
                         <div class="drag-handle" title="Arrastrar para reordenar" onpointerdown="initSortable(event, this)">☰</div>
-                        <img src="${game.image}" class="game-thumb" onerror="this.src='favicon.png'">
+                        <img src="${game.image}" class="game-thumb" onerror="this.src='favicon.png'" style="${isHidden ? 'filter:grayscale(100%)' : ''}">
                         <div style="flex:1">
-                            <h4>${game.title}</h4>
+                            <h4>${game.title} ${isHidden ? '<small style="color:var(--warning); font-size:0.7em">(OCULTO)</small>' : ''}</h4>
                             <p class="text-sm">${game.id}</p>
                         </div>
                         <div class="tags-wrapper">
                             ${(game.tags || []).map(t => `<span class="tag-badge" style="cursor:default">${t}</span>`).join('')}
                         </div>
                         <div>
+                            <button class="btn btn-ghost" onclick="toggleVisibility(${game.originalIndex})" title="${isHidden ? 'Mostrar juego' : 'Ocultar juego'}">
+                                ${isHidden ? '👁️' : '👁️‍🗨️'}
+                            </button>
                             <button class="btn btn-ghost" onclick="editGame(${game.originalIndex})">✏️</button>
                             <button class="btn btn-ghost" onclick="deleteGame(${game.originalIndex})" style="color:var(--danger)">🗑️</button>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
+        }
+
+        function toggleVisibility(index) {
+            const game = state.games[index];
+            game.hidden = !game.hidden;
+            state.pendingChanges.push(`~ Visibilidad: ${game.title}`);
+            updatePendingUI();
+            renderGamesList();
         }
 
         // =============================================================================
