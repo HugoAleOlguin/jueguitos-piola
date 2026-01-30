@@ -116,13 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Render Grid (if empty or needs refresh)
+        // Filter out hidden games for default view
+        const visibleGames = allGames.filter(g => !g.hidden);
+
         if (gamesGrid.children.length === 0) {
-            renderGrid(sortGamesWithFavorites(allGames));
+            renderGrid(sortGamesWithFavorites(visibleGames));
         } else {
             // Ensure favorites are sorted correctly if returning
             // (Optional: simple re-append to avoid flicker, or full re-render)
             // Full re-render is safer for state consistency
-            renderGrid(sortGamesWithFavorites(allGames), false); // false = no animation
+            renderGrid(sortGamesWithFavorites(visibleGames), false); // false = no animation
         }
     };
 
@@ -215,7 +218,12 @@ document.addEventListener('DOMContentLoaded', () => {
         gameContainer.innerHTML = `
             <div class="game-detail-container" style="animation: fadeInUp 0.5s ease;">
                 <div class="game-header">
-                    <img src="${game.image}" alt="${game.title}" class="game-poster" onerror="this.src='favicon.png'">
+                    <div style="display:flex; flex-direction:column; gap:10px; flex-shrink:0;">
+                        <img src="${game.image}" alt="${game.title}" class="game-poster" onerror="this.src='favicon.png'">
+                        <button class="set-bg-btn" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px; cursor:pointer; color:var(--text-muted); font-size:0.75rem; transition:all 0.2s; width:100%; text-align:center;">
+                           Usar como fondo
+                        </button>
+                    </div>
                     <div class="game-info-header">
                         <h1>${game.title}</h1>
                         <div class="game-meta">${tagsHtml}</div>
@@ -233,7 +241,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (backBtn) {
             backBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                navigateTo(window.location.pathname); // Fix: Use pathname instead of '/'
+                navigateTo(window.location.pathname);
+            });
+        }
+
+        // Bind Set Background
+        const bgBtn = gameContainer.querySelector('.set-bg-btn');
+        if (bgBtn) {
+            bgBtn.addEventListener('click', () => {
+                // Direct apply without confirmation
+                localStorage.setItem('jueguitos_settings_bg_type', 'custom');
+                localStorage.setItem('jueguitos_settings_bg_value', game.image);
+                location.reload();
             });
         }
     };
@@ -267,10 +286,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // === UTILS (Search, Favorites) ===
     const handleSearch = debounce((term) => {
         const t = term.toLowerCase();
-        const filtered = allGames.filter(g =>
-            g.title.toLowerCase().includes(t) ||
-            g.tags.some(tag => tag.toLowerCase().includes(t))
-        );
+
+        // Logic for Hidden Games
+        let filtered;
+        if (t === 'oculto') {
+            // Show ONLY hidden games
+            filtered = allGames.filter(g => g.hidden === true);
+        } else {
+            // Normal Search (Excludes hidden)
+            filtered = allGames.filter(g => {
+                if (g.hidden) return false; // Hide hidden games by default
+                return g.title.toLowerCase().includes(t) ||
+                    g.tags.some(tag => tag.toLowerCase().includes(t));
+            });
+        }
+
         renderGrid(sortGamesWithFavorites(filtered), true);
     }, 150);
 

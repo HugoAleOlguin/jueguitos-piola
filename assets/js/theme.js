@@ -173,7 +173,7 @@
         },
         async checkForUpdates() {
             try {
-                const response = await fetch(`version.json?t=${Date.now()}`);
+                const response = await fetch(`assets/data/version.json?t=${Date.now()}`);
                 if (!response.ok) return;
                 const data = await response.json();
                 const localVersion = localStorage.getItem(CONFIG.KEYS.VERSION);
