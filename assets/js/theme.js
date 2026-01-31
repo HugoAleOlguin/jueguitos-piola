@@ -218,6 +218,10 @@
             searchInput.addEventListener('input', (e) => {
                 const val = e.target.value.toLowerCase().trim();
 
+                // 1. Reset everything immediately
+                this.hideImage();
+                clearTimeout(this.searchTimer);
+
                 // Retro Mode Trigger
                 if (val === 'prime') {
                     retroMode = !retroMode;
@@ -230,15 +234,18 @@
                     return;
                 }
 
-                // Secret Images
+                // 2. Secret Images Logic (Dry & Direct)
                 if (CONFIG.URLS.IMAGES[val]) {
-                    this.showImage(val, CONFIG.URLS.IMAGES[val]);
-                } else {
-                    this.hideImage();
+                    this.searchTimer = setTimeout(() => {
+                        this.showImage(CONFIG.URLS.IMAGES[val]);
+                    }, 1500);
                 }
             });
 
-            searchInput.addEventListener('blur', () => setTimeout(() => this.hideImage(), 150));
+            searchInput.addEventListener('blur', () => {
+                clearTimeout(this.searchTimer);
+                setTimeout(() => this.hideImage(), 150)
+            });
         },
         setupLogo() {
             const logo = document.querySelector('.logo');
@@ -265,8 +272,7 @@
         },
         showHint() {
             if (localStorage.getItem(CONFIG.KEYS.HINT)) return;
-            if (Math.random() > 0.9) return; // 10% chance provided via logic inversion? Original was > 0.9 return (10% runs? No, original was > 0.9 return means 90% it returns, so 10% chance. Wait.. PROBABILITY = 0.9. If random > 0.9. 10% chance. Correct.) 
-            // Original code: if (Math.random() > PROBABILITY) return; (PROBABILITY=0.9). Random is 0..1. So 10% chance.
+            if (Math.random() > 0.9) return;
 
             setTimeout(() => {
                 const hint = document.createElement('div');
@@ -300,17 +306,15 @@
                 setTimeout(() => notif.remove(), 300);
             }, 2000);
         },
-        // Image overlay logic
+        // Image logic - Simple & Direct (No State, No Transitions)
         eggContainer: null,
-        currentWord: null,
-        showImage(word, url) {
-            if (this.currentWord === word) return;
-            this.currentWord = word;
+        searchTimer: null,
 
+        showImage(url) {
             if (!this.eggContainer) {
                 this.eggContainer = document.createElement('div');
                 this.eggContainer.id = 'easter-egg-image';
-                this.eggContainer.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9998; pointer-events: none; opacity: 0; transition: opacity 0.25s ease;';
+                this.eggContainer.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9998; pointer-events: none; display: none;';
                 const img = document.createElement('img');
                 img.style.cssText = 'max-width: 80vw; max-height: 70vh; border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);';
                 this.eggContainer.appendChild(img);
@@ -318,13 +322,27 @@
             }
 
             const img = this.eggContainer.querySelector('img');
+
+            // Ensure invisible while loading
+            this.eggContainer.style.display = 'none';
+
+            img.onload = () => {
+                this.eggContainer.style.display = 'block'; // Show ONLY when ready
+            };
+
             img.src = url;
-            this.eggContainer.style.opacity = '1';
+
+            // Handle cached case
+            if (img.complete && img.naturalHeight !== 0) {
+                this.eggContainer.style.display = 'block';
+            }
         },
+
         hideImage() {
-            if (this.currentWord && this.eggContainer) {
-                this.currentWord = null;
-                this.eggContainer.style.opacity = '0';
+            if (this.eggContainer) {
+                this.eggContainer.style.display = 'none'; // Instant hidden
+                const img = this.eggContainer.querySelector('img');
+                if (img) img.src = ''; // Clear source to prevent ghosting
             }
         },
         showLogoMsg(text) {

@@ -5,10 +5,9 @@
 
 const SettingsManager = (() => {
     // Constants
-    // Constants
     const STORAGE_KEYS = {
-        BG_TYPE: 'jueguitos_settings_bg_type',   // 'default', 'url', 'custom'
-        BG_VALUE: 'jueguitos_settings_bg_value', // URL string or Base64
+        BG_TYPE: 'jueguitos_settings_bg_type',   // 'default', 'url', 'custom', 'blob'
+        BG_VALUE: 'jueguitos_settings_bg_value', // URL string or 'indexeddb'
         BLUR: 'jueguitos_settings_blur',         // Blur intensity
         THEME_COLOR: 'jueguitos_settings_color'  // Primary color override
     };
@@ -18,6 +17,53 @@ const SettingsManager = (() => {
         BG_VALUE: '',
         BLUR: '0',
         THEME_COLOR: '#00f3ff'
+    };
+
+    // ========================================================================
+    // INDEXED DB MANAGER (For Large Files)
+    // ========================================================================
+    const ImageCacheStore = {
+        dbName: 'JueguitosDB',
+        storeName: 'backgrounds',
+        dbVersion: 1,
+
+        async open() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(this.dbName, this.dbVersion);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(this.storeName)) {
+                        db.createObjectStore(this.storeName);
+                    }
+                };
+                request.onsuccess = (e) => resolve(e.target.result);
+                request.onerror = (e) => reject(e.target.error);
+            });
+        },
+
+        async saveBlob(key, blob) {
+            const db = await this.open();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(this.storeName, 'readwrite');
+                const store = tx.objectStore(this.storeName);
+                const req = store.put(blob, key);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => reject(req.error);
+                tx.oncomplete = () => db.close();
+            });
+        },
+
+        async getBlob(key) {
+            const db = await this.open();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(this.storeName, 'readonly');
+                const store = tx.objectStore(this.storeName);
+                const req = store.get(key);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+                tx.oncomplete = () => db.close();
+            });
+        }
     };
 
     // DOM Elements
@@ -57,8 +103,6 @@ const SettingsManager = (() => {
         // Modal Open/Close
         btnOpen.addEventListener('click', openModal);
         btnCancel.addEventListener('click', closeModal);
-        // Removed overlay click close to prevent missclicks
-
 
         // Save & Reset
         btnSave.addEventListener('click', saveFromUI);
@@ -107,15 +151,34 @@ const SettingsManager = (() => {
         };
     };
 
-    const applySettings = () => {
+    const applySettings = async () => {
         // Apply Background
-        if (currentSettings.bgType === 'url' || currentSettings.bgType === 'custom') {
-            document.body.style.backgroundImage = `url('${currentSettings.bgValue}')`;
+        const { bgType, bgValue } = currentSettings;
+
+        if (bgType === 'blob') {
+            try {
+                // Load from IndexedDB
+                const blob = await ImageCacheStore.getBlob('custom_bg');
+                if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    document.body.style.backgroundImage = `url('${url}')`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.style.backgroundPosition = 'center';
+                } else {
+                    console.warn('Background blob not found in DB');
+                    document.body.style.backgroundImage = '';
+                }
+            } catch (e) {
+                console.error('Error loading blob bg:', e);
+            }
+        } else if (bgType === 'url' || bgType === 'custom') {
+            document.body.style.backgroundImage = `url('${bgValue}')`;
             document.body.style.backgroundSize = 'cover';
             document.body.style.backgroundAttachment = 'fixed';
             document.body.style.backgroundPosition = 'center';
         } else {
-            // Revert to CSS default (remove inline styles)
+            // Revert to CSS default
             document.body.style.backgroundImage = '';
             document.body.style.backgroundSize = '';
             document.body.style.backgroundAttachment = '';
@@ -126,11 +189,6 @@ const SettingsManager = (() => {
         const blurVal = currentSettings.blur || '0';
         document.documentElement.style.setProperty('--glass-blur', `${blurVal}px`);
 
-        // HACK: Update backdrop-filter on specific elements if CSS variable isn't enough (depending on CSS impl)
-        // Ideally, CSS should use var(--glass-blur). We'll assume CSS is updated or we force it here if needed.
-        // For now, let's inject a style rule if we want to be 100% sure, or just rely on CSS var.
-        // Let's rely on CSS var, but we need to ensure style.css uses it. 
-        // If not using style.css edit, we can force it on common classes:
         document.querySelectorAll('.game-card, .game-detail-container, header').forEach(el => {
             el.style.backdropFilter = `blur(${blurVal}px)`;
             el.style.webkitBackdropFilter = `blur(${blurVal}px)`;
@@ -142,7 +200,7 @@ const SettingsManager = (() => {
     };
 
     const openModal = () => {
-        // Populate UI with current settings
+        // Populate UI
         inputBgUrl.value = currentSettings.bgType === 'url' ? currentSettings.bgValue : '';
         if (inputBlur) inputBlur.value = parseInt(currentSettings.blur || 0);
         if (inputColor) {
@@ -150,16 +208,21 @@ const SettingsManager = (() => {
             highlightActivePreset(inputColor.value);
         }
 
-        // Fix: Load preview
-        if (currentSettings.bgType === 'url' || currentSettings.bgType === 'custom') {
+        // Preview
+        // Note: For 'blob' type, we can't easily preview without re-fetching, 
+        // so we might leave it blank or fetch it. For perf, let's leave blank or show 'Custom Image Loaded' text.
+        if (currentSettings.bgType === 'url') {
             previewBg.style.backgroundImage = `url('${currentSettings.bgValue}')`;
+        } else if (currentSettings.bgType === 'blob') {
+            previewBg.style.backgroundImage = '';
+            // Ideally show a placeholder or fetch blob again. 
+            // Skipping for simplicity/perf unless user re-selects.
         } else {
             previewBg.style.backgroundImage = '';
         }
 
-        // Show Modal
         modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        document.body.style.overflow = 'hidden';
     };
 
     const closeModal = () => {
@@ -167,61 +230,59 @@ const SettingsManager = (() => {
         document.body.style.overflow = '';
     };
 
-    const saveFromUI = () => {
-        // Background
-        // If file input has a file, it takes precedence if valid
-        if (inputBgFile.files && inputBgFile.files[0]) {
-            const file = inputBgFile.files[0];
-            const reader = new FileReader();
+    const saveFromUI = async () => {
+        const btnSave = document.getElementById('btnSaveSettings');
+        const originalText = btnSave.innerText;
+        btnSave.innerText = 'Guardando...';
+        btnSave.disabled = true;
 
-            reader.onload = (e) => {
-                const base64 = e.target.result;
-                // Compression/Validation check could go here
+        try {
+            const blur = inputBlur ? inputBlur.value : '0';
+            const themeColor = inputColor ? inputColor.value : DEFAULTS.THEME_COLOR;
+            let type = 'default';
+            let value = '';
 
-                // Save
-                saveSettings('custom', base64);
-                closeModal();
-                alert('Configuración guardada correctamente.');
-            };
+            // 1. File Upload (Blob)
+            if (inputBgFile.files && inputBgFile.files[0]) {
+                const file = inputBgFile.files[0];
 
-            if (file.size > 3000000) { // 3MB limit
-                alert('La imagen es demasiado pesada (Máx 3MB). Intenta con una URL.');
-                return;
+                // Store in IDB
+                await ImageCacheStore.saveBlob('custom_bg', file);
+
+                type = 'blob';
+                value = 'indexeddb'; // Placeholder flag
+
+                // 2. URL Input
+            } else if (inputBgUrl.value.trim()) {
+                type = 'url';
+                value = inputBgUrl.value.trim();
+
+                // 3. Current Setting (Preserve if no change)
+            } else if (currentSettings.bgType !== 'default') {
+                type = currentSettings.bgType;
+                value = currentSettings.bgValue;
             }
 
-            reader.readAsDataURL(file);
-        } else if (inputBgUrl.value.trim()) {
-            saveSettings('url', inputBgUrl.value.trim());
+            // Save Config
+            localStorage.setItem(STORAGE_KEYS.BG_TYPE, type);
+            localStorage.setItem(STORAGE_KEYS.BG_VALUE, value);
+            localStorage.setItem(STORAGE_KEYS.BLUR, blur);
+            localStorage.setItem(STORAGE_KEYS.THEME_COLOR, themeColor);
+
+            // Update State
+            currentSettings = { bgType: type, bgValue: value, blur, themeColor };
+
+            await applySettings();
             closeModal();
-        } else {
-            // Default background
-            saveSettings('default', '');
-            closeModal();
+            // location.reload(); // Removed reload for SPA feel, applySettings handles it.
+
+        } catch (err) {
+            console.error(err);
+            alert('Error al guardar configuración: ' + err.message);
+        } finally {
+            btnSave.innerText = originalText;
+            btnSave.disabled = false;
         }
-    };
-
-    const saveSettings = (bgType, bgValue) => {
-        const blur = inputBlur ? inputBlur.value : '0';
-        const themeColor = inputColor ? inputColor.value : DEFAULTS.THEME_COLOR;
-
-        currentSettings = { bgType, bgValue, blur, themeColor };
-
-        localStorage.setItem(STORAGE_KEYS.BG_TYPE, bgType);
-        localStorage.setItem(STORAGE_KEYS.BG_VALUE, bgValue);
-        localStorage.setItem(STORAGE_KEYS.BLUR, blur);
-        localStorage.setItem(STORAGE_KEYS.THEME_COLOR, themeColor);
-
-        applySettings();
-
-        // No reload needed for CSS vars, but might be safer for deep changes. 
-        // Actually, CSS vars update instantly. Let's try avoiding reload for smooth UX?
-        // But the background image change logic above used reload. Let's keep it consistent or remove reload if possible.
-        // The original code did reload. Let's keep reload for now to ensure clean state, or ideally remove it if we can.
-        // User requested "configure menu", persistence is key.
-        // Let's stick to reload for robust ness, or try to be smooth. The prompt implied "put more configuration".
-        // Let's remove reload for better clicking experience if possible, but the original `saveSettings` had it.
-        // I will keep reload to ensure `theme.js` and other scripts dependent on stored configs re-init properly if needed.
-        location.reload();
     };
 
     const resetDefaults = () => {
@@ -230,8 +291,6 @@ const SettingsManager = (() => {
             localStorage.removeItem(STORAGE_KEYS.BG_VALUE);
             localStorage.removeItem(STORAGE_KEYS.BLUR);
             localStorage.removeItem(STORAGE_KEYS.THEME_COLOR);
-
-            // Reload
             location.reload();
         }
     };
@@ -240,14 +299,9 @@ const SettingsManager = (() => {
     // HELPERS
     // ========================================================================
 
-
     const updateLivePreview = (type, value) => {
         if (type === 'blur') {
             document.documentElement.style.setProperty('--glass-blur', `${value}px`);
-            document.querySelectorAll('.game-card, .game-detail-container, header').forEach(el => {
-                el.style.backdropFilter = `blur(${value}px)`;
-                el.style.webkitBackdropFilter = `blur(${value}px)`;
-            });
         }
         if (type === 'color') {
             document.documentElement.style.setProperty('--primary-color', value);
@@ -266,11 +320,7 @@ const SettingsManager = (() => {
 
     const updatePreviewFromUrl = (e) => {
         const url = e.target.value;
-        if (url) {
-            previewBg.style.backgroundImage = `url('${url}')`;
-        } else {
-            previewBg.style.backgroundImage = '';
-        }
+        if (url) previewBg.style.backgroundImage = `url('${url}')`;
     };
 
     const updatePreviewFromFile = (e) => {
@@ -278,7 +328,6 @@ const SettingsManager = (() => {
         if (file) {
             const tempUrl = URL.createObjectURL(file);
             previewBg.style.backgroundImage = `url('${tempUrl}')`;
-            // Update label to show filename
             const label = document.querySelector('label[for="settingBgFile"]');
             if (label) label.innerHTML = `📄 ${file.name}`;
         }
