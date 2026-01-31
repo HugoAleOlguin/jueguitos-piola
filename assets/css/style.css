@@ -1712,3 +1712,100 @@ img {
     cursor: pointer;
     opacity: 0;
 }
+
+/* =====================================================
+   PRESETS DE TEMAS
+   ===================================================== */
+.presets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.preset-card {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.preset-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.preset-preview {
+    height: 80px;
+    background-size: cover;
+    background-position: center;
+    background-color: #111;
+    position: relative;
+    transition: opacity 0.3s;
+}
+
+.preset-color-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.preset-info {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preset-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
+}
+
+.preset-delete {
+    background: none;
+    border: none;
+    color: #ff4757;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0 5px;
+    transition: transform 0.2s;
+}
+
+.preset-delete:hover {
+    transform: scale(1.2);
+    color: #ff6b81;
+}
+
+.preset-card.active-preset {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-color);
+}
+
+.preset-card.active-preset::before {
+    content: 'ACTIVO';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--primary-color);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 10;
+}

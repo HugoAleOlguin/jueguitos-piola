@@ -122,6 +122,13 @@ Historial de cambios estructurales y visuales del proyecto.
   - **Sistema de Música v2**: Reescrito con YouTube IFrame API (más estable).
   - **Fixes**: Corrección del "Void Mode" (3AM) y optimizaciones de caché.
 
+**31 de Enero**
+- **Sistema de Temas (Presets)**:
+  - Guardado de configuraciones personalizadas con nombre.
+  - **Persistencia Avanzada**: Soporte para fondos grandes (GIFs) usando IndexedDB.
+  - **UX/UI Mejorada**: Indicadores de "Tema Activo", gestión instantánea sin alertas intrusivas.
+- **Admin Panel Smart Save**: Formato compacto e inteligente para la base de datos de juegos.
+
 ---
 
 ## Versiones Principales

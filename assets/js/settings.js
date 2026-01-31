@@ -63,6 +63,18 @@ const SettingsManager = (() => {
                 req.onerror = () => reject(req.error);
                 tx.oncomplete = () => db.close();
             });
+        },
+
+        async deleteBlob(key) {
+            const db = await this.open();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(this.storeName, 'readwrite');
+                const store = tx.objectStore(this.storeName);
+                const req = store.delete(key);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => reject(req.error);
+                tx.oncomplete = () => db.close();
+            });
         }
     };
 
@@ -137,6 +149,12 @@ const SettingsManager = (() => {
                 }
             });
         });
+
+        // Theme Presets
+        const btnSavePreset = document.getElementById('btnSavePreset');
+        if (btnSavePreset) {
+            btnSavePreset.addEventListener('click', savePreset);
+        }
     };
 
     // ========================================================================
@@ -158,7 +176,10 @@ const SettingsManager = (() => {
         if (bgType === 'blob') {
             try {
                 // Load from IndexedDB
-                const blob = await ImageCacheStore.getBlob('custom_bg');
+                // Use stored key (bgValue) if it looks like a key (starts with 'preset_' or is 'custom_bg'), otherwise default
+                const key = (bgValue && bgValue !== 'indexeddb') ? bgValue : 'custom_bg';
+
+                const blob = await ImageCacheStore.getBlob(key);
                 if (blob) {
                     const url = URL.createObjectURL(blob);
                     document.body.style.backgroundImage = `url('${url}')`;
@@ -166,7 +187,7 @@ const SettingsManager = (() => {
                     document.body.style.backgroundAttachment = 'fixed';
                     document.body.style.backgroundPosition = 'center';
                 } else {
-                    console.warn('Background blob not found in DB');
+                    console.warn('Background blob not found in DB:', key);
                     document.body.style.backgroundImage = '';
                 }
             } catch (e) {
@@ -207,6 +228,9 @@ const SettingsManager = (() => {
             inputColor.value = currentSettings.themeColor || DEFAULTS.THEME_COLOR;
             highlightActivePreset(inputColor.value);
         }
+
+        // Refresh Presets List
+        loadPresetsList();
 
         // Preview
         // Note: For 'blob' type, we can't easily preview without re-fetching, 
@@ -282,17 +306,216 @@ const SettingsManager = (() => {
         } finally {
             btnSave.innerText = originalText;
             btnSave.disabled = false;
+            // Also refresh presets in case we saved over one (not implemented yet but good practice)
         }
     };
 
     const resetDefaults = () => {
-        if (confirm('¿Restablecer toda la configuración?')) {
-            localStorage.removeItem(STORAGE_KEYS.BG_TYPE);
-            localStorage.removeItem(STORAGE_KEYS.BG_VALUE);
-            localStorage.removeItem(STORAGE_KEYS.BLUR);
-            localStorage.removeItem(STORAGE_KEYS.THEME_COLOR);
-            location.reload();
+        localStorage.removeItem(STORAGE_KEYS.BG_TYPE);
+        localStorage.removeItem(STORAGE_KEYS.BG_VALUE);
+        localStorage.removeItem(STORAGE_KEYS.BLUR);
+        localStorage.removeItem(STORAGE_KEYS.THEME_COLOR);
+        location.reload();
+    };
+
+    // ========================================================================
+    // PRESETS MANAGER
+    // ========================================================================
+    const getPresets = () => JSON.parse(localStorage.getItem('jueguitos_presets') || '[]');
+
+    const savePreset = async () => {
+        const nameInput = document.getElementById('presetName');
+        const name = nameInput.value.trim();
+        if (!name) return alert('Escribe un nombre para el tema.');
+
+        const btn = document.getElementById('btnSavePreset');
+        btn.disabled = true;
+        btn.innerText = '...';
+
+        try {
+            const presets = getPresets();
+            // Capture current state from UI or stored State? Stored state is safer as it represents what's applied.
+            // But if user changed UI but didn't click "Save", we might want to capture UI?
+            // User flow: Change settings -> Click "Save Preset" or "Save Changes". 
+            // Usually "Save Preset" acts as saving the snapshot. I should grab from UI inputs?
+            // Actually, safe bet: Grab from currentSettings (APPLIED settings). 
+            // If user wants to save what they see in preview, they must Apply first? 
+            // Better: Grab from UI Inputs to allow saving "Concept" without applying.
+
+            // Getting values from UI similar to saveFromUI
+            const blur = inputBlur ? inputBlur.value : '0';
+            const themeColor = inputColor ? inputColor.value : DEFAULTS.THEME_COLOR;
+            let type = 'default';
+            let value = '';
+
+            // Handle blob logic for PRESET
+            if (inputBgFile.files && inputBgFile.files[0]) {
+                // User picked a new file for this preset
+                const file = inputBgFile.files[0];
+                const key = `preset_${Date.now()}`;
+                await ImageCacheStore.saveBlob(key, file);
+                type = 'blob';
+                value = key;
+            } else if (currentSettings.bgType === 'blob' && !inputBgUrl.value.trim()) {
+                // User is using existing blob. Copy it to new preset key to ensure persistence.
+                const currentKey = (currentSettings.bgValue && currentSettings.bgValue !== 'indexeddb') ? currentSettings.bgValue : 'custom_bg';
+                const currentBlob = await ImageCacheStore.getBlob(currentKey);
+                if (currentBlob) {
+                    const key = `preset_${Date.now()}`;
+                    await ImageCacheStore.saveBlob(key, currentBlob);
+                    type = 'blob';
+                    value = key;
+                } else {
+                    // Fallback
+                    type = 'default';
+                }
+            } else if (inputBgUrl.value.trim()) {
+                type = 'url';
+                value = inputBgUrl.value.trim();
+            } else if (currentSettings.bgType !== 'default') {
+                type = currentSettings.bgType;
+                value = currentSettings.bgValue;
+            }
+
+            const newPreset = {
+                id: Date.now(),
+                name,
+                bgType: type,
+                bgValue: value,
+                blur,
+                themeColor
+            };
+
+            presets.push(newPreset);
+            localStorage.setItem('jueguitos_presets', JSON.stringify(presets));
+
+            nameInput.value = '';
+            loadPresetsList();
+
+        } catch (e) {
+            console.error(e);
+            alert('Error al guardar preset');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Guardar';
         }
+    };
+
+    const loadPresetsList = async () => {
+        const container = document.getElementById('presetsGrid');
+        if (!container) return;
+
+        const presets = getPresets();
+        container.innerHTML = '';
+        console.log('[Settings] Loading presets list. Count:', presets.length);
+
+        if (presets.length === 0) {
+            container.innerHTML = '<div class="preset-empty" style="text-align: center; padding: 20px; color: #666; font-style: italic; grid-column: 1/-1;">No hay temas guardados</div>';
+            return;
+        }
+
+        for (const p of presets) {
+            const card = document.createElement('div');
+            card.className = 'preset-card';
+
+            const isActive = p.bgType === currentSettings.bgType &&
+                p.bgValue === currentSettings.bgValue &&
+                p.themeColor === currentSettings.themeColor;
+
+            if (isActive) card.classList.add('active-preset');
+
+            // Preview Logic
+            let bgStyle = 'background-color: #222;';
+            if (p.bgType === 'url') {
+                bgStyle = `background-image: url('${p.bgValue}');`;
+            } else if (p.bgType === 'blob') {
+                // Try to load blob for preview?
+                // For perf, maybe we skip or load generic?
+                // Let's try loading it.
+                try {
+                    const blob = await ImageCacheStore.getBlob(p.bgValue);
+                    if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        bgStyle = `background-image: url('${url}');`;
+                    }
+                } catch (e) { }
+            }
+
+            card.innerHTML = `
+                <div class="preset-preview" style="${bgStyle}">
+                    <div class="preset-color-dot" style="background-color: ${p.themeColor}"></div>
+                </div>
+                <div class="preset-info">
+                    <span class="preset-name" title="${p.name}">${p.name}</span>
+                    <button class="preset-delete" title="Borrar">x</button>
+                </div>
+            `;
+
+            // Apply Click
+            card.addEventListener('click', (e) => {
+                if (e.target.classList.contains('preset-delete')) return;
+                applyPreset(p);
+            });
+
+            // Delete Click
+            card.querySelector('.preset-delete').addEventListener('click', (e) => {
+                e.stopPropagation();
+                deletePreset(p.id);
+            });
+
+            container.appendChild(card);
+        }
+    };
+
+    const applyPreset = async (p) => {
+        console.log('[Settings] Applying preset:', p.name);
+        currentSettings = {
+            bgType: p.bgType,
+            bgValue: p.bgValue,
+            blur: p.blur,
+            themeColor: p.themeColor
+        };
+
+        // Save to main storage so it persists as "Current"
+        localStorage.setItem(STORAGE_KEYS.BG_TYPE, p.bgType);
+        localStorage.setItem(STORAGE_KEYS.BG_VALUE, p.bgValue);
+        localStorage.setItem(STORAGE_KEYS.BLUR, p.blur);
+        localStorage.setItem(STORAGE_KEYS.THEME_COLOR, p.themeColor);
+
+        await applySettings();
+        // Update UI inputs to reflect new state
+        if (inputBgUrl) inputBgUrl.value = (p.bgType === 'url') ? p.bgValue : '';
+        if (inputBlur) inputBlur.value = p.blur;
+        if (inputColor) inputColor.value = p.themeColor;
+
+        closeModal();
+    };
+
+    const deletePreset = async (id) => {
+        let presets = getPresets();
+        const target = presets.find(p => p.id === id);
+
+        if (target) {
+            console.log('[Settings] Deleting preset:', target.name);
+
+            if (target.bgType === 'blob') {
+                // Safety Check: Don't delete blob if it's currently active!
+                const activeKey = (currentSettings.bgValue && currentSettings.bgValue !== 'indexeddb') ? currentSettings.bgValue : 'custom_bg';
+
+                if (activeKey === target.bgValue) {
+                    console.warn('[Settings] Prevented deletion of active background blob!');
+                } else {
+                    try {
+                        await ImageCacheStore.deleteBlob(target.bgValue);
+                        console.log('[Settings] Deleted associated blob:', target.bgValue);
+                    } catch (e) { console.error(e); }
+                }
+            }
+        }
+
+        presets = presets.filter(p => p.id !== id);
+        localStorage.setItem('jueguitos_presets', JSON.stringify(presets));
+        loadPresetsList();
     };
 
     // ========================================================================
