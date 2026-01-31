@@ -14,19 +14,27 @@
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
         rel="stylesheet">
 
+    <!-- Main Styles & Settings -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/settings.js"></script>
+
     <style>
         :root {
-            --primary: #00f3ff;
+            /* Map Admin Variables to Main Theme Variables */
+            --primary: var(--primary-color, #00f3ff);
             --primary-dark: #00a8b3;
-            --danger: #ff4757;
-            --success: #2ecc71;
-            --warning: #f1c40f;
-            --bg-dark: #0a0a0f;
-            --bg-panel: #14141e;
-            --text-main: #ffffff;
-            --text-muted: #888888;
-            --border: rgba(255, 255, 255, 0.1);
-            --glass: rgba(20, 20, 30, 0.6);
+            --danger: var(--accent-red, #ff4757);
+            --success: var(--accent-green, #2ecc71);
+            --warning: var(--accent-orange, #f1c40f);
+
+            --bg-dark: var(--bg-color, #0a0a0f);
+            --bg-panel: var(--card-bg, rgba(15, 15, 15, 0.9));
+
+            --text-main: var(--text-color, #ffffff);
+            --text-muted: var(--text-muted, #888888);
+
+            --border: var(--glass-border, rgba(255, 255, 255, 0.1));
+            --glass: var(--glass-bg, rgba(20, 20, 30, 0.6));
         }
 
         * {
@@ -36,8 +44,8 @@
         }
 
         body {
-            font-family: 'Inter', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #0d1117 100%);
+            font-family: var(--font-main, 'Inter', sans-serif);
+            /* Background handled by style.css and settings.js */
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -215,29 +223,24 @@
         /* Layout */
         .app-container {
             display: none;
-            max-width: 1400px;
+            max-width: 1600px;
+            /* Match style.css main max-width approx */
             margin: 0 auto;
             width: 100%;
-            height: 100vh;
-            padding-top: 2rem;
+            /* height: 100vh;  Removed to allow natural flow */
+            /* padding-top: 2rem; Removed to avoid header push */
             animation: fadeIn 0.4s ease-out;
         }
 
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem 1rem;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 2rem;
-        }
+        /* .app-header removed to use global header styles */
 
         .main-layout {
             display: grid;
             grid-template-columns: 250px 1fr;
             gap: 2rem;
-            padding: 0 2rem;
-            height: calc(100vh - 100px);
+            padding: 2rem 4rem;
+            /* Match main padding */
+            /* height: calc(100vh - 100px); Removed */
         }
 
         /* Sidebar */
@@ -675,6 +678,35 @@
                 /* Above pending bar */
             }
         }
+
+        /* Layout */
+        .app-container {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            padding: 2rem 4rem;
+            max-width: 1600px;
+            /* Centered Content */
+            margin: 0 auto;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-panel);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 1rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            /* Sticky sidebar below header */
+        }
     </style>
 </head>
 
@@ -697,9 +729,12 @@
     <!-- Main Application -->
     <div id="appContainer" class="app-container">
 
-        <header class="app-header">
-            <h3>PANEL DE CONTROL</h3>
-            <button onclick="logout()" class="btn btn-ghost btn-sm">Cerrar Sesión</button>
+        <header>
+            <div style="display:flex; align-items:center; gap:15px">
+                <h3 style="margin:0; font-family: 'Orbitron', sans-serif; color:var(--primary-color);">PANEL DE CONTROL
+                </h3>
+            </div>
+            <button onclick="logout()" class="btn btn-ghost btn-sm" style="border-radius:20px">Cerrar Sesión</button>
         </header>
 
         <div class="main-layout">
@@ -1398,7 +1433,7 @@
         function updatePreview() {
             const title = document.getElementById('inpTitle').value || 'Título del Juego';
             const desc = document.getElementById('inpDesc').value || 'Descripción corta...';
-            const img = document.getElementById('inpImage').value || 'favicon.png';
+            const img = document.getElementById('inpImage').value || '../favicon.png';
             const tags = Array.from(document.querySelectorAll('#tagsSelector .selected')).map(el => el.textContent);
 
             document.getElementById('previewTitleEl').textContent = title;
