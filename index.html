@@ -53,6 +53,9 @@
                 <input type="text" id="searchInput" placeholder="Buscar juegos...">
             </div>
             <!-- Botón Configuración Avanzada -->
+            <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
+                🎲
+            </button>
             <button class="theme-toggle" id="settingsToggle" title="Configuración">
                 ⚙️
             </button>
@@ -97,6 +100,7 @@
                             <span>Muy Borroso</span>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label>Color de Acento (Neon)</label>
                         <div class="color-presets">
@@ -136,6 +140,21 @@
                     </div>
                 </div>
 
+                <!-- Toggle Modo Lite (Moved to Bottom) -->
+                <div class class="settings-section lite-section-container"
+                    style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 10px;">
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <label for="settingLiteMode"
+                                style="margin: 0; cursor: pointer; color: #ff9500; font-weight: bold;">Modo
+                                Lite</label>
+                            <div style="font-size: 0.8em; color: #888;">Más FPS, menos facha.</div>
+                        </div>
+                        <input type="checkbox" id="settingLiteMode"
+                            style="width: auto; transform: scale(1.5); cursor: pointer;">
+                    </div>
+                </div>
+
 
             </div>
 
@@ -143,6 +162,22 @@
                 <button class="btn-text" id="btnResetSettings">Restaurar</button>
                 <div style="flex: 1;"></div>
                 <button class="button" id="btnSaveSettings">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ruleta Randomizer -->
+    <div class="roulette-modal-overlay" id="rouletteModal">
+        <div class="roulette-container">
+            <div class="roulette-window">
+                <div class="roulette-strip" id="rouletteStrip">
+                    <!-- Images will be injected here -->
+                </div>
+                <div class="roulette-marker"></div>
+                <div class="roulette-marker-bottom"></div>
+            </div>
+            <div class="roulette-info">
+                <h2 id="rouletteGameTitle">GIRANDO...</h2>
             </div>
         </div>
     </div>

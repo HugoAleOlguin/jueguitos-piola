@@ -78,6 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 handleSearch(e.target.value);
             });
         }
+
+        // Randomizer Button
+        const btnRandom = document.getElementById('btnRandom');
+        if (btnRandom) {
+            btnRandom.addEventListener('click', startRoulette);
+        }
     };
 
     // === ROUTING LOGIC ===
@@ -356,6 +362,110 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!aFav && bFav) return 1;
             return 0;
         });
+    };
+
+    // === RANDOMIZER ROULETTE ===
+    const startRoulette = () => {
+        const modal = document.getElementById('rouletteModal');
+        const strip = document.getElementById('rouletteStrip');
+        const title = document.getElementById('rouletteGameTitle');
+        const win = document.querySelector('.roulette-window');
+
+        if (!modal || !strip) return;
+
+        // 1. Get Candidates
+        const candidates = allGames.filter(g => !g.hidden && !g.tags.some(t => t.toLowerCase() === 'utilidad'));
+        if (candidates.length === 0) return alert('No hay juegos para sortear.');
+
+        // 2. Setup Winner
+        const winnerIndex = Math.floor(Math.random() * candidates.length);
+        const winner = candidates[winnerIndex];
+
+        // 3. open Modal
+        modal.classList.add('active');
+        win.classList.remove('winner-pulse');
+        title.innerText = "GIRANDO...";
+        title.style.color = "var(--primary-color)";
+
+        // 4. Build Strip
+        // We need a long strip. Let's say 60 items.
+        // Target index for winner: 50.
+        // Format: [Random... * 49] [WINNER] [Random... * 10]
+        const CARD_WIDTH = 250; // Defined in CSS
+        const TARGET_INDEX = 50;
+        const TOTAL_ITEMS = 60;
+
+        strip.innerHTML = '';
+        strip.style.transition = 'none';
+        strip.style.transform = 'translateX(0px)';
+
+        const stripItems = [];
+
+        for (let i = 0; i < TOTAL_ITEMS; i++) {
+            let game;
+            if (i === TARGET_INDEX) {
+                game = winner;
+            } else {
+                game = candidates[Math.floor(Math.random() * candidates.length)];
+            }
+            stripItems.push(game);
+
+            const card = document.createElement('div');
+            card.className = 'roulette-card';
+            card.style.backgroundImage = `url('${game.image}')`;
+            card.innerHTML = `<span>${game.title}</span>`;
+
+            // Highlight winner for debugging? No.
+            strip.appendChild(card);
+        }
+
+        // 5. Calculate Scroll Position
+        // Center the winner. 
+        // Window Width = ~800px (max) or 90%
+        // We need the center of the window to align with the center of the winner card.
+        // But window width varies. 
+        // Actually, the marker is at 50% of the window.
+        // So we need: (TARGET_INDEX * CARD_WIDTH) + (CARD_WIDTH/2) should be at center.
+        // But transform uses top-left.
+        // strip is inside window.
+        // center of window = windowWidth / 2.
+        // center of card = (TARGET_INDEX * w) + w/2.
+        // translateX = center_of_window - center_of_card
+
+        const windowWidth = document.querySelector('.roulette-window').offsetWidth;
+        const centerOfCard = (TARGET_INDEX * CARD_WIDTH) + (CARD_WIDTH / 2);
+        const targetX = (windowWidth / 2) - centerOfCard;
+
+        // Add some random offset within the card to make it realistic ( +/- 40% of card width)
+        const randomOffset = (Math.random() * (CARD_WIDTH * 0.8)) - (CARD_WIDTH * 0.4);
+        const finalX = targetX + randomOffset;
+
+        // Force Reflow
+        strip.offsetHeight;
+
+        // 6. ANIMATE
+        // Long duration cubic bezier for "Spinning" feel
+        setTimeout(() => {
+            strip.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0.1, 1)'; // Fast start, very slow end
+            strip.style.transform = `translateX(${finalX}px)`;
+        }, 50);
+
+        // 7. Finish
+        setTimeout(() => {
+            // Animation finished
+            win.classList.add('winner-pulse');
+            title.innerText = winner.title;
+            title.style.color = "var(--secondary-color)";
+
+            // Confetti or Sound? (For now just pulse)
+
+            // Auto Navigate after delay
+            setTimeout(() => {
+                modal.classList.remove('active');
+                showGame(winner.id);
+            }, 2500); // Wait 2.5s to see the winner
+
+        }, 6050); // 6s duration + buffer
     };
 
     // Run

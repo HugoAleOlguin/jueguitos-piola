@@ -9,14 +9,16 @@ const SettingsManager = (() => {
         BG_TYPE: 'jueguitos_settings_bg_type',   // 'default', 'url', 'custom', 'blob'
         BG_VALUE: 'jueguitos_settings_bg_value', // URL string or 'indexeddb'
         BLUR: 'jueguitos_settings_blur',         // Blur intensity
-        THEME_COLOR: 'jueguitos_settings_color'  // Primary color override
+        THEME_COLOR: 'jueguitos_settings_color',  // Primary color override
+        LITE_MODE: 'jueguitos_settings_lite'     // Lite Mode (true/false)
     };
 
     const DEFAULTS = {
         BG_TYPE: 'default',
         BG_VALUE: '',
         BLUR: '0',
-        THEME_COLOR: '#00f3ff'
+        THEME_COLOR: '#00f3ff',
+        LITE_MODE: 'false'
     };
 
     // ========================================================================
@@ -80,7 +82,7 @@ const SettingsManager = (() => {
 
     // DOM Elements
     let modal, btnOpen, btnSave, btnReset, btnCancel;
-    let inputBgUrl, inputBgFile, previewBg, inputBlur, inputColor;
+    let inputBgUrl, inputBgFile, previewBg, inputBlur, inputColor, inputLite;
 
     // State
     let currentSettings = {};
@@ -107,6 +109,7 @@ const SettingsManager = (() => {
         previewBg = document.getElementById('settingBgPreview');
         inputBlur = document.getElementById('settingBlur');
         inputColor = document.getElementById('settingColor');
+        inputLite = document.getElementById('settingLiteMode');
     };
 
     const bindEvents = () => {
@@ -165,54 +168,69 @@ const SettingsManager = (() => {
             bgType: localStorage.getItem(STORAGE_KEYS.BG_TYPE) || DEFAULTS.BG_TYPE,
             bgValue: localStorage.getItem(STORAGE_KEYS.BG_VALUE) || DEFAULTS.BG_VALUE,
             blur: localStorage.getItem(STORAGE_KEYS.BLUR) || DEFAULTS.BLUR,
-            themeColor: localStorage.getItem(STORAGE_KEYS.THEME_COLOR) || DEFAULTS.THEME_COLOR
+            themeColor: localStorage.getItem(STORAGE_KEYS.THEME_COLOR) || DEFAULTS.THEME_COLOR,
+            liteMode: localStorage.getItem(STORAGE_KEYS.LITE_MODE) || DEFAULTS.LITE_MODE
         };
     };
 
     const applySettings = async () => {
+        // Apply Lite Mode First (Needs to block heavy effects)
+        const isLite = currentSettings.liteMode === 'true';
+        if (isLite) {
+            document.body.classList.add('lite-mode');
+        } else {
+            document.body.classList.remove('lite-mode');
+        }
+
         // Apply Background
         const { bgType, bgValue } = currentSettings;
 
-        if (bgType === 'blob') {
-            try {
-                // Load from IndexedDB
-                // Use stored key (bgValue) if it looks like a key (starts with 'preset_' or is 'custom_bg'), otherwise default
-                const key = (bgValue && bgValue !== 'indexeddb') ? bgValue : 'custom_bg';
-
-                const blob = await ImageCacheStore.getBlob(key);
-                if (blob) {
-                    const url = URL.createObjectURL(blob);
-                    document.body.style.backgroundImage = `url('${url}')`;
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundAttachment = 'fixed';
-                    document.body.style.backgroundPosition = 'center';
-                } else {
-                    console.warn('Background blob not found in DB:', key);
-                    document.body.style.backgroundImage = '';
-                }
-            } catch (e) {
-                console.error('Error loading blob bg:', e);
-            }
-        } else if (bgType === 'url' || bgType === 'custom') {
-            document.body.style.backgroundImage = `url('${bgValue}')`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundAttachment = 'fixed';
-            document.body.style.backgroundPosition = 'center';
-        } else {
-            // Revert to CSS default
-            document.body.style.backgroundImage = '';
+        if (isLite) {
+            // In Lite Mode, force simple background or solid color
+            document.body.style.backgroundImage = 'none'; // Clear heavy images
+            // Maybe set a clean dark color via CSS class, but we clear manual styles here
             document.body.style.backgroundSize = '';
             document.body.style.backgroundAttachment = '';
             document.body.style.backgroundPosition = '';
+        } else {
+            // Normal Background Logic
+            if (bgType === 'blob') {
+                try {
+                    const key = (bgValue && bgValue !== 'indexeddb') ? bgValue : 'custom_bg';
+                    const blob = await ImageCacheStore.getBlob(key);
+                    if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        document.body.style.backgroundImage = `url('${url}')`;
+                        document.body.style.backgroundSize = 'cover';
+                        document.body.style.backgroundAttachment = 'fixed';
+                        document.body.style.backgroundPosition = 'center';
+                    } else {
+                        document.body.style.backgroundImage = '';
+                    }
+                } catch (e) { console.error(e); }
+            } else if (bgType === 'url' || bgType === 'custom') {
+                document.body.style.backgroundImage = `url('${bgValue}')`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundAttachment = 'fixed';
+                document.body.style.backgroundPosition = 'center';
+            } else {
+                document.body.style.backgroundImage = '';
+                document.body.style.backgroundSize = '';
+                document.body.style.backgroundAttachment = '';
+                document.body.style.backgroundPosition = '';
+            }
         }
 
         // Apply Blur
-        const blurVal = currentSettings.blur || '0';
+        // If Lite Mode, Blur should be 0 regardless of setting
+        const blurVal = isLite ? '0' : (currentSettings.blur || '0');
         document.documentElement.style.setProperty('--glass-blur', `${blurVal}px`);
 
-        document.querySelectorAll('.game-card, .game-detail-container, header').forEach(el => {
-            el.style.backdropFilter = `blur(${blurVal}px)`;
-            el.style.webkitBackdropFilter = `blur(${blurVal}px)`;
+        // Optimizing selectors
+        const elementsToBlur = document.querySelectorAll('.game-card, .game-detail-container, header');
+        elementsToBlur.forEach(el => {
+            el.style.backdropFilter = isLite ? 'none' : `blur(${blurVal}px)`;
+            el.style.webkitBackdropFilter = isLite ? 'none' : `blur(${blurVal}px)`;
         });
 
         // Apply Theme Color
@@ -228,19 +246,15 @@ const SettingsManager = (() => {
             inputColor.value = currentSettings.themeColor || DEFAULTS.THEME_COLOR;
             highlightActivePreset(inputColor.value);
         }
+        if (inputLite) {
+            inputLite.checked = currentSettings.liteMode === 'true';
+        }
 
-        // Refresh Presets List
         loadPresetsList();
 
         // Preview
-        // Note: For 'blob' type, we can't easily preview without re-fetching, 
-        // so we might leave it blank or fetch it. For perf, let's leave blank or show 'Custom Image Loaded' text.
         if (currentSettings.bgType === 'url') {
             previewBg.style.backgroundImage = `url('${currentSettings.bgValue}')`;
-        } else if (currentSettings.bgType === 'blob') {
-            previewBg.style.backgroundImage = '';
-            // Ideally show a placeholder or fetch blob again. 
-            // Skipping for simplicity/perf unless user re-selects.
         } else {
             previewBg.style.backgroundImage = '';
         }
@@ -263,25 +277,19 @@ const SettingsManager = (() => {
         try {
             const blur = inputBlur ? inputBlur.value : '0';
             const themeColor = inputColor ? inputColor.value : DEFAULTS.THEME_COLOR;
+            const isLite = inputLite ? inputLite.checked : false;
             let type = 'default';
             let value = '';
 
             // 1. File Upload (Blob)
             if (inputBgFile.files && inputBgFile.files[0]) {
                 const file = inputBgFile.files[0];
-
-                // Store in IDB
                 await ImageCacheStore.saveBlob('custom_bg', file);
-
                 type = 'blob';
-                value = 'indexeddb'; // Placeholder flag
-
-                // 2. URL Input
+                value = 'indexeddb';
             } else if (inputBgUrl.value.trim()) {
                 type = 'url';
                 value = inputBgUrl.value.trim();
-
-                // 3. Current Setting (Preserve if no change)
             } else if (currentSettings.bgType !== 'default') {
                 type = currentSettings.bgType;
                 value = currentSettings.bgValue;
@@ -292,21 +300,19 @@ const SettingsManager = (() => {
             localStorage.setItem(STORAGE_KEYS.BG_VALUE, value);
             localStorage.setItem(STORAGE_KEYS.BLUR, blur);
             localStorage.setItem(STORAGE_KEYS.THEME_COLOR, themeColor);
+            localStorage.setItem(STORAGE_KEYS.LITE_MODE, isLite);
 
             // Update State
-            currentSettings = { bgType: type, bgValue: value, blur, themeColor };
+            currentSettings = { bgType: type, bgValue: value, blur, themeColor, liteMode: String(isLite) };
 
             await applySettings();
             closeModal();
-            // location.reload(); // Removed reload for SPA feel, applySettings handles it.
-
         } catch (err) {
             console.error(err);
             alert('Error al guardar configuración: ' + err.message);
         } finally {
             btnSave.innerText = originalText;
             btnSave.disabled = false;
-            // Also refresh presets in case we saved over one (not implemented yet but good practice)
         }
     };
 
@@ -315,6 +321,7 @@ const SettingsManager = (() => {
         localStorage.removeItem(STORAGE_KEYS.BG_VALUE);
         localStorage.removeItem(STORAGE_KEYS.BLUR);
         localStorage.removeItem(STORAGE_KEYS.THEME_COLOR);
+        localStorage.removeItem(STORAGE_KEYS.LITE_MODE);
         location.reload();
     };
 
@@ -334,15 +341,8 @@ const SettingsManager = (() => {
 
         try {
             const presets = getPresets();
-            // Capture current state from UI or stored State? Stored state is safer as it represents what's applied.
-            // But if user changed UI but didn't click "Save", we might want to capture UI?
-            // User flow: Change settings -> Click "Save Preset" or "Save Changes". 
-            // Usually "Save Preset" acts as saving the snapshot. I should grab from UI inputs?
-            // Actually, safe bet: Grab from currentSettings (APPLIED settings). 
-            // If user wants to save what they see in preview, they must Apply first? 
-            // Better: Grab from UI Inputs to allow saving "Concept" without applying.
 
-            // Getting values from UI similar to saveFromUI
+            // Getting values from UI
             const blur = inputBlur ? inputBlur.value : '0';
             const themeColor = inputColor ? inputColor.value : DEFAULTS.THEME_COLOR;
             let type = 'default';
@@ -350,14 +350,12 @@ const SettingsManager = (() => {
 
             // Handle blob logic for PRESET
             if (inputBgFile.files && inputBgFile.files[0]) {
-                // User picked a new file for this preset
                 const file = inputBgFile.files[0];
                 const key = `preset_${Date.now()}`;
                 await ImageCacheStore.saveBlob(key, file);
                 type = 'blob';
                 value = key;
             } else if (currentSettings.bgType === 'blob' && !inputBgUrl.value.trim()) {
-                // User is using existing blob. Copy it to new preset key to ensure persistence.
                 const currentKey = (currentSettings.bgValue && currentSettings.bgValue !== 'indexeddb') ? currentSettings.bgValue : 'custom_bg';
                 const currentBlob = await ImageCacheStore.getBlob(currentKey);
                 if (currentBlob) {
@@ -366,7 +364,6 @@ const SettingsManager = (() => {
                     type = 'blob';
                     value = key;
                 } else {
-                    // Fallback
                     type = 'default';
                 }
             } else if (inputBgUrl.value.trim()) {
@@ -429,9 +426,6 @@ const SettingsManager = (() => {
             if (p.bgType === 'url') {
                 bgStyle = `background-image: url('${p.bgValue}');`;
             } else if (p.bgType === 'blob') {
-                // Try to load blob for preview?
-                // For perf, maybe we skip or load generic?
-                // Let's try loading it.
                 try {
                     const blob = await ImageCacheStore.getBlob(p.bgValue);
                     if (blob) {
@@ -473,17 +467,19 @@ const SettingsManager = (() => {
             bgType: p.bgType,
             bgValue: p.bgValue,
             blur: p.blur,
-            themeColor: p.themeColor
+            themeColor: p.themeColor,
+            liteMode: currentSettings.liteMode // Keep current Lite Mode status
         };
 
-        // Save to main storage so it persists as "Current"
+        // Save to main storage
         localStorage.setItem(STORAGE_KEYS.BG_TYPE, p.bgType);
         localStorage.setItem(STORAGE_KEYS.BG_VALUE, p.bgValue);
         localStorage.setItem(STORAGE_KEYS.BLUR, p.blur);
         localStorage.setItem(STORAGE_KEYS.THEME_COLOR, p.themeColor);
+        // Note: Presets don't store "Lite Mode" state, it's global preference.
 
         await applySettings();
-        // Update UI inputs to reflect new state
+        // Update UI inputs
         if (inputBgUrl) inputBgUrl.value = (p.bgType === 'url') ? p.bgValue : '';
         if (inputBlur) inputBlur.value = p.blur;
         if (inputColor) inputColor.value = p.themeColor;
@@ -499,15 +495,12 @@ const SettingsManager = (() => {
             console.log('[Settings] Deleting preset:', target.name);
 
             if (target.bgType === 'blob') {
-                // Safety Check: Don't delete blob if it's currently active!
                 const activeKey = (currentSettings.bgValue && currentSettings.bgValue !== 'indexeddb') ? currentSettings.bgValue : 'custom_bg';
-
                 if (activeKey === target.bgValue) {
                     console.warn('[Settings] Prevented deletion of active background blob!');
                 } else {
                     try {
                         await ImageCacheStore.deleteBlob(target.bgValue);
-                        console.log('[Settings] Deleted associated blob:', target.bgValue);
                     } catch (e) { console.error(e); }
                 }
             }

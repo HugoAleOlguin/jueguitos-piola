@@ -131,6 +131,20 @@ Historial de cambios estructurales y visuales del proyecto.
 
 ---
 
+## Febrero 2026
+
+**1 de Febrero**
+- **Randomizer (Ruleta)**:
+  - Botón de dado 🎲 para elegir juego al azar.
+  - Animación de ruleta visual con ganadores.
+  - Exclusión automática de herramientas ("Utilidad").
+- **Modo Lite**:
+  - Opción de "Alto Rendimiento" en configuración.
+  - Fuente Monospace global y alto contraste (B/N).
+  - Eliminación total de bordes redondeados, sombras, brillos y gradientes.
+  - Cero animaciones y transiciones.
+  - Ocultación de configuraciones irrelevantes (Fondos, Blur, Color) al activarlo.
+
 ## Versiones Principales
 
 | Versión | Fecha | Cambio Principal |
