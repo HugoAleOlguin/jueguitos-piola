@@ -143,6 +143,8 @@
                     </div>
                 </div>
 
+
+
                 <!-- Toggle Modo Lite (Moved to Bottom) -->
                 <div class class="settings-section lite-section-container"
                     style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 10px;">
@@ -242,6 +244,30 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Modal Achievements -->
+    <div class="achievements-modal-overlay" id="achievementsModal" style="display: none;">
+        <div class="achievements-window">
+            <div class="achievements-header">
+                <h2>🏆 Logros Desbloqueados <span id="achTitleCount">(0/0)</span></h2>
+                <button class="btn-close-ach" id="btnCloseAchievements">×</button>
+            </div>
+            <div class="achievements-body">
+                <div class="achievements-grid-large" id="achievementsListLarge">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+            <div class="achievements-footer">
+                <button class="btn-text" id="btnResetAchievementsModal"
+                    style="color: #ff4757; font-size: 0.8rem;">Resetear Progreso</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Achievement Button (Bottom Right) -->
+    <div class="floating-fab" id="btnAchievementsFab" title="Ver Logros">
+        🏆
     </div>
 
     <!-- Scripts con defer para no bloquear el renderizado inicial -->

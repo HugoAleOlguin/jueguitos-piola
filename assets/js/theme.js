@@ -63,6 +63,7 @@
             position: fixed; background: rgba(0, 0, 0, 0.9); color: #fff;
             padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 10000;
             animation: logoMsgIn 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.1); white-space: nowrap;
+            transform: translateX(-50%);
         }
         @keyframes logoMsgIn { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         @keyframes logoMsgOut { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(-10px); } }

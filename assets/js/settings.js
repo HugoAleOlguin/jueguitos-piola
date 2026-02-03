@@ -160,6 +160,19 @@ const SettingsManager = (() => {
         if (btnSavePreset) {
             btnSavePreset.addEventListener('click', savePreset);
         }
+
+        // Achievements Reset
+        const btnResetAch = document.getElementById('btnResetAchievements');
+        if (btnResetAch) {
+            btnResetAch.addEventListener('click', () => {
+                if (confirm('¿Seguro que querés borrar todos los logros? No hay vuelta atrás.')) {
+                    if (typeof AchievementManager !== 'undefined') {
+                        AchievementManager.reset();
+                        renderAchievements();
+                    }
+                }
+            });
+        }
     };
 
     // ========================================================================
@@ -263,6 +276,8 @@ const SettingsManager = (() => {
 
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
+
+
     };
 
     const closeModal = () => {
@@ -563,6 +578,8 @@ const SettingsManager = (() => {
             if (label) label.innerHTML = `📄 ${file.name}`;
         }
     };
+
+
 
     // Public API
     return {
