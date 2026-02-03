@@ -56,6 +56,9 @@
             <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
                 🎲
             </button>
+            <button class="theme-toggle" id="btnVersus" title="Torneo Versus">
+                ⚔️
+            </button>
             <button class="theme-toggle" id="settingsToggle" title="Configuración">
                 ⚙️
             </button>
@@ -198,12 +201,56 @@
         <p>&copy; 2026 Jueguitos Piola.</p>
     </footer>
 
+    <!-- Modal Versus -->
+    <div class="versus-modal-overlay" id="versusModal" style="display: none;">
+        <div class="versus-container">
+            <div class="versus-header">
+                <h2 id="vsTitle">TORNEO PIOLA</h2>
+                <button class="btn-close-vs" id="btnCloseVersus">×</button>
+            </div>
+            <!-- Stage 1: Selection -->
+            <div id="vsStageSelection" class="vs-stage">
+                <button class="vs-mode-btn" data-mode="blitz">
+                    <span class="mode-icon">⚡</span>
+                    <span class="mode-title">Torneo Rápido</span>
+                    <span class="mode-desc">8 juegos al azar.</span>
+                </button>
+                <button class="vs-mode-btn" data-mode="all">
+                    <span class="mode-icon">🏆</span>
+                    <span class="mode-title">Torneo Completo</span>
+                    <span class="mode-desc">Todos los juegos.</span>
+                </button>
+            </div>
+            <!-- Stage 2: Duel -->
+            <div id="vsStageDuel" class="vs-stage hidden">
+                <div class="duel-arena">
+                    <div class="fighter-card" id="fighter1"></div>
+                    <div class="vs-badge">VS</div>
+                    <div class="fighter-card" id="fighter2"></div>
+                </div>
+                <div class="round-indicator" id="roundIndicator">Cuartos de Final (1/4)</div>
+            </div>
+            <!-- Stage 3: Winner -->
+            <div id="vsStageWinner" class="vs-stage hidden">
+                <div class="winner-showcase">
+                    <h3>¡TENEMOS UN GANADOR!</h3>
+                    <div class="winner-card" id="winnerCard"></div>
+                    <div class="winner-actions">
+                        <button class="btn btn-primary" id="btnPlayWinner">Jugar Ahora</button>
+                        <button class="btn btn-secondary" id="btnRestartVs">Otro Torneo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts con defer para no bloquear el renderizado inicial -->
     <script src="assets/js/games.js"></script>
     <script src="assets/js/app.js" defer></script>
     <script src="assets/js/theme.js?v=VOID" defer></script>
     <script src="assets/js/settings.js" defer></script>
     <script src="assets/js/achievements.js" defer></script>
+    <script src="assets/js/versus.js" defer></script>
 
 </body>
 
