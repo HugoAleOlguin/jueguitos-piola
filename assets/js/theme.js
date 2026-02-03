@@ -227,6 +227,9 @@
                     retroMode = !retroMode;
                     ThemeManager.setRetro(retroMode);
                     this.notify(retroMode ? 'Modo Prime activado' : 'Modo Prime desactivado', retroMode ? 'retro' : 'normal');
+                    // Achievement Hook
+                    if (retroMode && typeof AchievementManager !== 'undefined') AchievementManager.unlock('prime');
+
                     setTimeout(() => {
                         searchInput.value = '';
                         searchInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -236,10 +239,17 @@
 
                 // 2. Secret Images Logic (Dry & Direct)
                 if (CONFIG.URLS.IMAGES[val]) {
+                    if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('egg');
                     this.searchTimer = setTimeout(() => {
                         this.showImage(CONFIG.URLS.IMAGES[val]);
                     }, 1500);
                 }
+
+                // Achievement: Cochino
+                if (['sexo', 'porno', 'hentai', 'xxx'].some(w => val.includes(w))) {
+                    if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('cochino');
+                }
+
             });
 
             searchInput.addEventListener('blur', () => {
@@ -264,8 +274,21 @@
                 lastClick = now;
                 clicks++;
 
+                if (clicks >= 50 && typeof AchievementManager !== 'undefined') {
+                    AchievementManager.unlock('pesado');
+                }
+
                 if (clicks >= 7) {
                     this.showLogoMsg(Utils.randomChoice(CONFIG.MESSAGES.LOGO));
+                    // Reset clicks only if we didn't reach 50 yet, or maybe keep counting?
+                    // User requested 50 for 'pesado'. 
+                    // Let's reset clicks after message to keep the annoying behavior,
+                    // BUT we need to track total clicks for the achievement.
+                    // Actually, let's delegate to AchievementManager.trackEvent('LOGO_CLICK')
+                    // and keep existing logic for the message.
+                    if (typeof AchievementManager !== 'undefined') {
+                        for (let i = 0; i < 7; i++) AchievementManager.trackEvent({ type: 'LOGO_CLICK' });
+                    }
                     clicks = 0;
                 }
             });
@@ -380,7 +403,10 @@
 
             this.createOverlay();
             this.createUI();
+            this.createOverlay();
+            this.createUI();
             this.startLoop();
+            if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('void');
         },
         createOverlay() {
             const d = document.createElement('div');

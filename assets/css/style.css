@@ -2095,3 +2095,74 @@ body.lite-mode .settings-modal .settings-section:not(.lite-section-container) {
 body.lite-mode .settings-footer .btn-text {
     display: none !important;
 }
+
+/* =====================================================
+   ACHIEVEMENTS SYSTEM (TOAST NOTIFICATIONS)
+   ===================================================== */
+.achievement-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    background: #111;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 10px var(--primary-color);
+    border-radius: 50px;
+    /* Pill shape */
+
+    padding: 10px 25px;
+    min-width: 300px;
+    max-width: 90%;
+    z-index: 99999;
+
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.achievement-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.ach-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.ach-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.ach-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ach-desc {
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+/* Lite Mode Override for Achievements */
+body.lite-mode .achievement-toast {
+    background: #000;
+    border: 1px solid #fff;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: monospace;
+}
+
+body.lite-mode .ach-title {
+    text-shadow: none;
+    color: #fff;
+}

@@ -138,6 +138,7 @@ const SettingsManager = (() => {
             inputColor.addEventListener('input', (e) => {
                 updateLivePreview('color', e.target.value);
                 highlightActivePreset(e.target.value);
+                if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'COLOR_CHANGE' });
             });
         }
 
@@ -149,6 +150,7 @@ const SettingsManager = (() => {
                     inputColor.value = color;
                     updateLivePreview('color', color);
                     highlightActivePreset(color);
+                    if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'COLOR_CHANGE' });
                 }
             });
         });
@@ -302,6 +304,16 @@ const SettingsManager = (() => {
             localStorage.setItem(STORAGE_KEYS.THEME_COLOR, themeColor);
             localStorage.setItem(STORAGE_KEYS.LITE_MODE, isLite);
 
+            // Achievement: Potato (Lite Mode)
+            if (isLite && typeof AchievementManager !== 'undefined') AchievementManager.unlock('potato');
+
+            // Achievement: Blur (Max Blur > 18)
+            if (blur >= 18 && typeof AchievementManager !== 'undefined') AchievementManager.unlock('blur');
+
+            // Achievement: Custom BG (Designer/Own World from previous list, or just part of 'diseño'?)
+            // Users list removed 'custom_bg' but 'diseño' is preset.
+            // Let's stick to user list: 'diseño' = preset personalized.
+
             // Update State
             currentSettings = { bgType: type, bgValue: value, blur, themeColor, liteMode: String(isLite) };
 
@@ -385,6 +397,9 @@ const SettingsManager = (() => {
 
             presets.push(newPreset);
             localStorage.setItem('jueguitos_presets', JSON.stringify(presets));
+
+            // Achievement: Diseño (Save Preset)
+            if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('diseño');
 
             nameInput.value = '';
             loadPresetsList();

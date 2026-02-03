@@ -162,6 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Scroll top
         window.scrollTo(0, 0);
+
+        // Achievement: Game Open (Window Shopper tracking)
+        if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'GAME_OPEN' });
     };
 
     // === RENDER LOGIC (GRID) ===
@@ -261,6 +264,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 location.reload();
             });
         }
+
+
+        // Track Downloads
+        const dlBtns = gameContainer.querySelectorAll('.btn-download-track');
+        dlBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'DOWNLOAD_CLICK' });
+            });
+        });
     };
 
     const generateButtons = (game) => {
@@ -278,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 html += `<a href="${url}" target="_blank" class="${css}">${label}</a>`;
             });
         } else {
-            if (game.downloadUrl) html += `<a href="${game.downloadUrl}" target="_blank" class="btn btn-primary">Descargar</a>`;
+            if (game.downloadUrl) html += `<a href="${game.downloadUrl}" target="_blank" class="btn btn-primary btn-download-track">Descargar</a>`;
         }
         // Custom SPA Back Button
         html += `<a href="#" class="btn btn-secondary btn-back-spa">Volver</a>`;
@@ -449,6 +461,9 @@ document.addEventListener('DOMContentLoaded', () => {
             strip.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0.1, 1)'; // Fast start, very slow end
             strip.style.transform = `translateX(${finalX}px)`;
         }, 50);
+
+        // Achievement: Ludopath
+        if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'ROULETTE_SPIN' });
 
         // 7. Finish
         setTimeout(() => {
