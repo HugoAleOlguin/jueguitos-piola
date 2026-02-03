@@ -144,6 +144,43 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // SEO: Dynamic Title & Meta
+        document.title = `${game.title} - Jueguitos Piola`;
+
+        // Update Meta Description
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+            metaDesc = document.createElement('meta');
+            metaDesc.name = 'description';
+            document.head.appendChild(metaDesc);
+        }
+        metaDesc.content = `Descargar ${game.title} gratis. ${game.description}`;
+
+        // Update Open Graph (Facebook/Discord/WhatsApp)
+        const updateMeta = (prop, content) => {
+            let tag = document.querySelector(`meta[property="${prop}"]`);
+            if (!tag) {
+                tag = document.createElement('meta');
+                tag.setAttribute('property', prop);
+                document.head.appendChild(tag);
+            }
+            tag.content = content;
+        };
+
+        updateMeta('og:title', `${game.title} - Jueguitos Piola`);
+        updateMeta('og:description', game.fullDescription || game.description);
+        updateMeta('og:image', game.image);
+        updateMeta('og:url', window.location.href);
+
+        // Update Canonical
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.rel = 'canonical';
+            document.head.appendChild(canonical);
+        }
+        canonical.href = window.location.href;
+
         // Save Scroll Position before switching
         if (gamesGrid.style.display !== 'none') {
             sessionStorage.setItem('homeScrollPos', window.scrollY);
