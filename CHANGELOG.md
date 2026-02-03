@@ -145,6 +145,15 @@ Historial de cambios estructurales y visuales del proyecto.
   - Cero animaciones y transiciones.
   - Ocultación de configuraciones irrelevantes (Fondos, Blur, Color) al activarlo.
 
+**2-3 de Febrero**
+- **Sistema de Logros (beta)**:
+  - 12 Logros desbloqueables con notificaciones.
+  - Persistencia de progreso en LocalStorage.
+- **Modo Versus (Torneo beta)**:
+  - Sistema de torneo eliminatorio (Bracket de 8 o Todos contra Todos).
+  - **Torneo Rápido**: 8 juegos al azar para partidas rápidas.
+  - **Torneo Completo**: Enfrentamiento total de todo el catálogo.
+
 ## Versiones Principales
 
 | Versión | Fecha | Cambio Principal |
@@ -157,4 +166,4 @@ Historial de cambios estructurales y visuales del proyecto.
 
 ---
 
-**150+ commits** | **Ene 2025 → Ene 2026**
+**230+ commits** | **Ene 2025 → Feb 2026**
