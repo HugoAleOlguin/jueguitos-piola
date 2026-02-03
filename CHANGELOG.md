@@ -153,6 +153,16 @@ Historial de cambios estructurales y visuales del proyecto.
   - Sistema de torneo eliminatorio (Bracket de 8 o Todos contra Todos).
   - **Torneo Rápido**: 8 juegos al azar para partidas rápidas.
   - **Torneo Completo**: Enfrentamiento total de todo el catálogo.
+    
+**3 de Febrero (noche)**
+- **Revisión del Sistema de Logros**:
+  - **Modal Dedicado**: Nueva interfaz con FAB flotante para ver progreso.
+  - **Modo Speedrun (Silent Run)**: Timer secreto que trackea tu tiempo de platino (Start: 1er logro, End: Último logro).
+  - **Bypass Konami**: Código `↑↑↓↓←→←→BA` para desbloquear el logro Void.
+  - **Fixes Críticos**:
+    - Notificaciones ahora usan estilos inyectados por JS para garantizar visibilidad al 100%.
+    - Logro "Ludópata" rebalanceado a 5 giros (Session-based).
+    - `Reset` ahora limpia correctamente todos los stats internos.
 
 ## Versiones Principales
 
