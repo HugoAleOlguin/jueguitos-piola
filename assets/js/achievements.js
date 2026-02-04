@@ -15,7 +15,7 @@ const AchievementManager = (() => {
         { id: 'pesado', title: 'Sos Re Pesado', desc: 'Deja al pobre logo en paz.', icon: '📢' },
         { id: 'void', title: 'No Deberías Estar Aquí', desc: '3:33 AM.', icon: '🌑' },
         { id: 'egg', title: '¿Qué Carajo?', desc: 'Buscaste lo que no debías.', icon: '🥚' },
-        { id: 'cochino', title: 'Cochino', desc: 'Andá a buscar eso a otro lado (furro).', icon: '🐷' },
+        { id: 'cochino', title: 'Cochino', desc: 'Andá a buscar eso a otro lado.', icon: '🐷' },
         { id: 'curious_cat', title: 'Curioso', desc: '¿Qué esperabas encontrar acá abajo?', icon: '🐱' },
 
         // Ajustes
@@ -26,7 +26,10 @@ const AchievementManager = (() => {
 
         // Juegos
         { id: 'ludopath', title: 'Ludópata', desc: 'Te gusta girar la ruleta eh?', icon: '🎰' },
-        { id: 'window_shopper', title: 'Mirar y No Tocar', desc: 'Abriste 10 juegos sin descargar ninguno.', icon: '👀' }
+        { id: 'window_shopper', title: 'Mirar y No Tocar', desc: 'Abriste 10 juegos sin descargar ninguno.', icon: '👀' },
+
+        // Super Secreto
+        { id: 'speedrunner', title: 'SPEEDRUNNER', desc: 'Completaste todos los logros en menos de 30 segundos. Tocá pasto.', icon: '⚡', secret: true }
     ];
 
     // === STATE ===
@@ -82,6 +85,70 @@ const AchievementManager = (() => {
             .achievement-toast .ach-content { display: flex; flex-direction: column; }
             .achievement-toast .ach-title { color: #ffd700; font-weight: bold; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
             .achievement-toast .ach-desc { color: #ccc; font-size: 0.85rem; }
+            .achievement-toast .ach-desc { color: #ccc; font-size: 0.85rem; }
+
+            /* Speedrunner Special Card - Premium Design */
+            .achievement-card.speedrunner {
+                grid-column: 1 / -1;
+                background: linear-gradient(135deg, rgba(10, 5, 5, 0.98), rgba(30, 0, 0, 0.95));
+                border: 1px solid rgba(255, 215, 0, 0.3);
+                border-left: 4px solid #ffd700;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 0, 0, 0.05);
+                transform: scale(1.0);
+                margin-top: 20px;
+                padding: 30px;
+                position: relative;
+                overflow: hidden;
+            }
+            .achievement-card.speedrunner:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 15px 40px rgba(255, 215, 0, 0.1);
+                border-color: #ffd700;
+            }
+            
+            /* Background Grid Effect */
+            .achievement-card.speedrunner::after {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background-image: radial-gradient(rgba(255, 215, 0, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+                opacity: 0.1;
+                pointer-events: none;
+            }
+
+            .achievement-card.speedrunner h4 {
+                font-size: 2rem !important;
+                background: linear-gradient(to right, #ffd700, #ff8c00, #ff0080);
+                -webkit-background-clip: text;
+                color: transparent !important;
+                text-shadow: 0 2px 20px rgba(255, 215, 0, 0.1);
+                letter-spacing: 4px;
+                text-transform: uppercase;
+                margin-bottom: 8px;
+                font-weight: 900;
+            }
+            
+            .achievement-card.speedrunner p {
+                color: #bbb !important;
+                font-size: 1rem;
+                font-family: 'Consolas', monospace;
+                letter-spacing: 1px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding-top: 10px;
+                display: inline-block;
+            }
+
+            .achievement-card.speedrunner .ach-icon-large {
+                font-size: 4.5rem;
+                filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+                animation: floatIcon 3s ease-in-out infinite;
+            }
+
+            @keyframes floatIcon {
+                0%, 100% { transform: translateY(0) rotate(0deg); }
+                50% { transform: translateY(-10px) rotate(5deg); }
+            }
         `;
         document.head.appendChild(style);
     };
@@ -128,9 +195,19 @@ const AchievementManager = (() => {
 
         unlocked.add(id);
 
-        // Speedrun End Logic
-        if (unlocked.size === ACHIEVEMENTS.length && !speedrun.completionTime) {
+        // Speedrun End Logic (Check against non-secret achievements)
+        const nonSecretCount = ACHIEVEMENTS.filter(a => !a.secret).length;
+        const unlockedNonSecret = ACHIEVEMENTS.filter(a => !a.secret && unlocked.has(a.id)).length;
+
+        if (unlockedNonSecret === nonSecretCount && !speedrun.completionTime) {
             speedrun.completionTime = Date.now();
+
+            // Check for Speedrunner Achievement (< 30s displayed)
+            const duration = speedrun.completionTime - speedrun.startTime;
+            // Allow up to 31000ms (30.9s) because UI floors the seconds (shows 30s)
+            if (duration < 31000) {
+                setTimeout(() => unlock('speedrunner'), 1000); // Dramatic delay
+            }
         }
 
         saveProgress();
@@ -342,10 +419,14 @@ const AchievementManager = (() => {
 
         container.innerHTML = '';
         if (titleCount) {
-            let text = `(${unlocked.size}/${ACHIEVEMENTS.length})`;
+            const nonSecretTotal = ACHIEVEMENTS.filter(a => !a.secret).length;
+            let text = `(${unlocked.size}/${nonSecretTotal})`;
 
             // Show Speedrun Time if completed
-            if (unlocked.size === ACHIEVEMENTS.length && speedrun.startTime && speedrun.completionTime) {
+            // Check if all non-secrets are unlocked
+            const unlockedNonSecret = ACHIEVEMENTS.filter(a => !a.secret && unlocked.has(a.id)).length;
+
+            if (unlockedNonSecret === nonSecretTotal && speedrun.startTime && speedrun.completionTime) {
                 const duration = speedrun.completionTime - speedrun.startTime;
                 text += ` <span style="color: #00ff88; font-size: 0.8em; margin-left: 10px;">⏱️ ${formatTime(duration)}</span>`;
             } else if (speedrun.startTime) {
@@ -356,9 +437,15 @@ const AchievementManager = (() => {
         }
 
         ACHIEVEMENTS.forEach(ach => {
+            if (ach.secret && !unlocked.has(ach.id)) return; // Hide secret if locked
+
             const isUnlocked = unlocked.has(ach.id);
             const card = document.createElement('div');
-            card.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+            let className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+            if (ach.id === 'speedrunner') className += ' speedrunner';
+
+            card.className = className;
 
             card.innerHTML = `
                 <div class="ach-icon-large">${isUnlocked ? ach.icon : '🔒'}</div>
