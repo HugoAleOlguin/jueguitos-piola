@@ -1,7 +1,9 @@
 User-agent: *
+Allow: /assets/css/
+Allow: /assets/js/
+Allow: /assets/images/
 Disallow: /old/
 Disallow: /pages/
-Disallow: /assets/css/
-Disallow: /assets/js/
 Disallow: /assets/data/
 
+Sitemap: https://hugoaleolguin.github.io/jueguitos-piola/sitemap.xml
