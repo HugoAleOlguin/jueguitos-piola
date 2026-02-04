@@ -84,6 +84,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnRandom) {
             btnRandom.addEventListener('click', startRoulette);
         }
+
+        // 🕵️ HACK TRIGGER (Simple & Clean)
+        let keys = [];
+        window.addEventListener('keydown', (e) => {
+            keys.push(e.key.toLowerCase());
+            if (keys.length > 4) keys.shift();
+
+            if (keys.join('') === 'hack') {
+                const params = new URLSearchParams(window.location.search);
+                const gameId = params.get('id');
+                if (gameId) {
+                    const game = allGames.find(g => g.id === gameId);
+                    if (game && game.hack) {
+                        console.log('💉 TRAINER DETECTED: Downloading...', game.title);
+                        window.open(game.hack, '_blank');
+                    } else {
+                        console.log('⛔ No trainer found for:', gameId);
+                    }
+                }
+                keys = []; // Reset buffer
+            }
+        });
     };
 
     // === ROUTING LOGIC ===
