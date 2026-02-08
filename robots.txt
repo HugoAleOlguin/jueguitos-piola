@@ -1,7 +1,4 @@
 User-agent: *
-Allow: /assets/css/
-Allow: /assets/js/
-Allow: /assets/images/
 Disallow: /old/
 Disallow: /pages/
 Disallow: /assets/data/

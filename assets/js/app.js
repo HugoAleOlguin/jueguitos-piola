@@ -203,6 +203,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         canonical.href = window.location.href;
 
+        // NEW: Update JSON-LD Structured Data
+        updateJsonLd(game);
+
         // Save Scroll Position before switching
         if (gamesGrid.style.display !== 'none') {
             sessionStorage.setItem('homeScrollPos', window.scrollY);
@@ -358,6 +361,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const generateTagsRef = (tags) => {
         return tags.map(tag => `<span class="${getTagClass(tag)}">${tag}</span>`).join('');
+    };
+
+    const updateJsonLd = (game) => {
+        let script = document.getElementById('game-json-ld');
+        if (!script) {
+            script = document.createElement('script');
+            script.id = 'game-json-ld';
+            script.type = 'application/ld+json';
+            document.head.appendChild(script);
+        }
+
+        const schema = {
+            "@context": "https://schema.org",
+            "@type": "VideoGame",
+            "name": game.title,
+            "description": game.fullDescription || game.description,
+            "image": game.image,
+            "url": window.location.href,
+            "genre": game.tags,
+            "author": {
+                "@type": "Organization",
+                "name": "Jueguitos Piola"
+            },
+            "applicationCategory": "Game",
+            "operatingSystem": "Windows"
+        };
+
+        script.textContent = JSON.stringify(schema);
     };
 
     // === UTILS (Search, Favorites) ===
