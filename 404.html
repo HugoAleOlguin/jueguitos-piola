@@ -236,6 +236,72 @@
     </div>
 
     <script>
+        // Redirect logic for old URLs
+        (function () {
+            const currentPath = window.location.pathname;
+            const oldGamesPrefix = '/juegos/';
+
+            // Map old filenames to new IDs
+            const redirectMap = {
+                'AoE.html': 'age-of-empires-2',
+                'agus.html': 'agus-simulator',
+                'border2.html': 'borderlands-2',
+                'cc.html': 'castle-crashers-remastered',
+                'chained.html': 'chained-together',
+                'content-warning.html': 'content-warning',
+                'deadisland.html': 'dead-island',
+                'fastfood.html': 'fast-food-simulator',
+                'forest.html': 'the-forest',
+                'forever.html': 'forever-skies',
+                'gang-beast.html': 'gang-beasts',
+                'halo.html': 'halo-combat-evolved',
+                'initial.html': 'initial-unity',
+                'isaac.html': 'the-binding-of-isaac',
+                'lan.html': 'simular-lan',
+                'lethal-company.html': 'lethal-company',
+                'lfd.html': 'left-4-dead',
+                'lfd2.html': 'left-4-dead-2',
+                'liars.html': 'liars-bar',
+                'minecraft.html': 'minecraft',
+                'peak.html': 'peak',
+                'raft.html': 'raft',
+                'rain2.html': 'risk-of-rain-2',
+                'rain2d.html': 'risk-of-rain-returns',
+                'repo.html': 'repo',
+                'satisfactory.html': 'satisfactory',
+                'schedule.html': 'schedule',
+                'underplus.html': 'undertale-plus',
+                'sworn.html': 'sworn',
+                'hytale.html': 'hytale',
+                'drg.html': 'deep-rock-galactic',
+                'gunfire.html': 'gunfire-reborn',
+                'shadow2.html': 'shadow-warrior-2',
+                'roboquest.html': 'roboquest',
+                'tutorial-mods.html': 'tutorial-mods'
+            };
+
+            // Check if we are on a 404 from a /juegos/ path or just a filename match
+            // GitHub Pages might serve 404 for /juegos/halo.html
+
+            // Try to extract filename
+            // supports /juegos/halo.html or just /halo.html
+            const segments = currentPath.split('/');
+            const filename = segments[segments.length - 1];
+
+            if (redirectMap[filename]) {
+                const newId = redirectMap[filename];
+                const newUrl = '/jueguitos-piola/?id=' + newId;
+
+                // Show redirect message
+                document.querySelector('.error-title').textContent = 'Redireccionando...';
+                document.querySelector('.error-message').textContent = 'Encontramos la página que buscabas en la nueva versión.';
+
+                setTimeout(() => {
+                    window.location.replace(newUrl);
+                }, 1000);
+            }
+        })();
+
         // Crear partículas flotantes
         const container = document.getElementById('particles');
         for (let i = 0; i < 20; i++) {

@@ -40,3 +40,5 @@ links-backup.json
 *.env
 .env*
 secrets/
+
+logros.txt
