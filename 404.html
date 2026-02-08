@@ -220,27 +220,11 @@
             }
         }
     </style>
-</head>
-
-<body>
-    <div class="particles" id="particles"></div>
-
-    <div class="container">
-        <div class="error-code glitch">404</div>
-        <h1 class="error-title">Página no encontrada</h1>
-        <p class="error-message">
-            Hmm algo se rompió...
-            Mejor volvé antes que te re cage a trompadas.
-        </p>
-        <a href="/jueguitos-piola/" class="btn-home">Volver al Hub</a>
-    </div>
-
+    </style>
     <script>
-        // Redirect logic for old URLs
+        // Instant Redirect logic for old URLs
         (function () {
             const currentPath = window.location.pathname;
-            const oldGamesPrefix = '/juegos/';
-
             // Map old filenames to new IDs
             const redirectMap = {
                 'AoE.html': 'age-of-empires-2',
@@ -280,28 +264,32 @@
                 'tutorial-mods.html': 'tutorial-mods'
             };
 
-            // Check if we are on a 404 from a /juegos/ path or just a filename match
-            // GitHub Pages might serve 404 for /juegos/halo.html
-
-            // Try to extract filename
-            // supports /juegos/halo.html or just /halo.html
             const segments = currentPath.split('/');
             const filename = segments[segments.length - 1];
 
             if (redirectMap[filename]) {
                 const newId = redirectMap[filename];
                 const newUrl = '/jueguitos-piola/?id=' + newId;
-
-                // Show redirect message
-                document.querySelector('.error-title').textContent = 'Redireccionando...';
-                document.querySelector('.error-message').textContent = 'Encontramos la página que buscabas en la nueva versión.';
-
-                setTimeout(() => {
-                    window.location.replace(newUrl);
-                }, 1000);
+                window.location.replace(newUrl);
             }
         })();
+    </script>
+</head>
 
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="error-code glitch">404</div>
+        <h1 class="error-title">Página no encontrada</h1>
+        <p class="error-message">
+            Hmm algo se rompió...
+            Mejor volvé antes que te re cage a trompadas.
+        </p>
+        <a href="/jueguitos-piola/" class="btn-home">Volver al Hub</a>
+    </div>
+
+    <script>
         // Crear partículas flotantes
         const container = document.getElementById('particles');
         for (let i = 0; i < 20; i++) {
