@@ -1,0 +1,205 @@
+/* =====================================================
+   TARJETAS DE JUEGOS
+   Card principal, imagen, contenido, favoritos, ribbon
+   ===================================================== */
+
+.game-card {
+    background: rgba(15, 15, 15, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s var(--ease-out-expo);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    will-change: transform, box-shadow;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    /* Animación de entrada */
+    animation: fadeIn 0.5s var(--ease-out-expo) forwards;
+    opacity: 0;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(135deg, transparent 40%, var(--primary-color) 50%, transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-smooth);
+    pointer-events: none;
+}
+
+.game-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 20px 40px rgba(0, 243, 255, 0.15), 0 0 0 1px rgba(0, 243, 255, 0.1);
+}
+
+.game-card:hover::before {
+    opacity: 1;
+}
+
+.game-card:active {
+    transform: translateY(-4px) scale(1.01);
+    transition-duration: 0.1s;
+}
+
+/* =====================================================
+   BOTÓN DE FAVORITOS
+   ===================================================== */
+.favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #666;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s var(--ease-out-back);
+    z-index: 10;
+    backdrop-filter: blur(4px);
+}
+
+.favorite-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 200, 0, 0.3);
+    color: #ffc800;
+    transform: scale(1.1);
+}
+
+.favorite-btn.active {
+    color: #ffc800;
+    background: rgba(255, 200, 0, 0.15);
+    border-color: rgba(255, 200, 0, 0.4);
+    text-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
+}
+
+.favorite-btn.active:hover {
+    background: rgba(255, 200, 0, 0.25);
+}
+
+/* Tarjeta favorita - destacada con borde dorado */
+.game-card.is-favorite {
+    border-color: rgba(255, 200, 0, 0.35);
+    background: rgba(25, 22, 15, 0.95);
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 200, 0, 0.15),
+        inset 0 1px 0 rgba(255, 200, 0, 0.1);
+}
+
+.game-card.is-favorite:hover {
+    border-color: rgba(255, 200, 0, 0.5);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(255, 200, 0, 0.15),
+        0 0 0 1px rgba(255, 200, 0, 0.3);
+}
+
+/* =====================================================
+   IMAGEN DE LA TARJETA
+   ===================================================== */
+.card-image {
+    height: 180px;
+    background-color: #111;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    /* Estado de carga inicial - degradado placeholder */
+    background-image: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%);
+    transition: opacity 0.3s ease;
+}
+
+/* Imagen cargada con fade-in */
+.card-image.loaded {
+    animation: fadeInImage 0.3s ease forwards;
+}
+
+/* Cinta diagonal para utilidades */
+.utility-ribbon {
+    position: absolute;
+    top: 12px;
+    left: -35px;
+    background: linear-gradient(135deg, #ff9500, #ff6b00);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 4px 40px;
+    transform: rotate(-45deg);
+    z-index: 5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(255, 149, 0, 0.4);
+}
+
+.card-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--ease-smooth);
+}
+
+.game-card:hover .card-image::before {
+    transform: translateX(100%);
+}
+
+.card-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+/* =====================================================
+   CONTENIDO DE LA TARJETA
+   ===================================================== */
+.card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    color: white;
+    transition: color 0.3s ease;
+}
+
+.game-card:hover .card-title {
+    color: var(--primary-color);
+}
+
+.card-desc {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+/* Placeholder de poster durante carga */
+.game-poster {
+    background: linear-gradient(135deg, #111 0%, #222 100%);
+}

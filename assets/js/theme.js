@@ -1,13 +1,13 @@
 /**
- * THEME.JS - Core UI Functionality & Easter Eggs
- * Optimized Version
+ * THEME.JS - Funcionalidad Core de UI & Easter Eggs
+ * Maneja: Temas, Caché, Easter Eggs, Void Mode, Scroll-to-Top
  */
 
 (function () {
     'use strict';
 
     // ============================================================================
-    // CONFIGURATION & CONSTANTS
+    // CONFIGURACIÓN Y CONSTANTES
     // ============================================================================
     const CONFIG = {
         KEYS: {
@@ -47,9 +47,9 @@
         }
     };
 
-    // Consolidated CSS Styles
+    // Estilos CSS dinámicos (inyectados por JS porque son componentes creados dinámicamente)
     const DYNAMIC_STYLES = `
-        /* Retro Notifications */
+        /* Notificaciones Retro */
         .retro-notification {
             position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
             padding: 15px 30px; border-radius: 10px; font-weight: bold; z-index: 10000;
@@ -58,7 +58,7 @@
         @keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         @keyframes slideUp { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(-20px); } }
 
-        /* Logo Messages */
+        /* Mensajes del Logo */
         .logo-message {
             position: fixed; background: rgba(0, 0, 0, 0.9); color: #fff;
             padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 10000;
@@ -68,7 +68,7 @@
         @keyframes logoMsgIn { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         @keyframes logoMsgOut { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
 
-        /* Prime Hint */
+        /* Hint de "Prime" */
         .prime-hint {
             position: fixed; bottom: 20px; left: 20px; background: rgba(20, 20, 25, 0.95);
             border: 1px solid rgba(213, 51, 105, 0.4); border-radius: 8px; padding: 12px 16px;
@@ -79,7 +79,7 @@
         @keyframes slideInHint { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideOutHint { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-20px); } }
 
-        /* Scroll Top Button */
+        /* Botón Scroll-to-Top */
         .scroll-top-btn {
             position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px;
             background: var(--glass-bg, rgba(30, 30, 35, 0.9)); border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
@@ -90,7 +90,7 @@
         .scroll-top-btn.show { opacity: 0.7; visibility: visible; transform: translateY(0); }
         .scroll-top-btn:hover { opacity: 1; transform: translateY(-3px); background: var(--primary-color, #00f3ff); color: #fff; }
 
-        /* VOID MODE STYLES */
+        /* === ESTILOS VOID MODE (3AM) === */
         :root { --void-red: #ff3333; --void-shadow: 2px 2px 0px rgba(0,0,0,0.8); }
         [data-void="true"] { --bg-color: #050505 !important; --card-bg: #111 !important; --text-color: #aaa !important; }
         [data-void="true"] body { background-color: #050505 !important; }
@@ -127,7 +127,7 @@
     `;
 
     // ============================================================================
-    // UTILITIES
+    // UTILIDADES
     // ============================================================================
     const Utils = {
         injectStyle: (css) => {
@@ -139,12 +139,12 @@
     };
 
     // ============================================================================
-    // THEME MANAGER
+    // GESTOR DE TEMA
     // ============================================================================
     const ThemeManager = {
         init() {
             this.apply(this.getSaved());
-            // Inject styles once
+            // Inyectar estilos dinámicos una sola vez
             Utils.injectStyle(DYNAMIC_STYLES);
         },
         getSaved: () => localStorage.getItem(CONFIG.KEYS.THEME) || 'dark',
@@ -163,7 +163,7 @@
     };
 
     // ============================================================================
-    // CACHE MANAGER
+    // GESTOR DE CACHÉ
     // ============================================================================
     const CacheManager = {
         init() {
@@ -196,7 +196,7 @@
             try {
                 const cache = { timestamp: Date.now(), games: data };
                 localStorage.setItem(CONFIG.KEYS.CACHE, JSON.stringify(cache));
-            } catch (e) { console.warn('Cache error:', e); }
+            } catch (e) { console.warn('Error de caché:', e); }
         }
     };
 
@@ -215,20 +215,21 @@
 
             let retroMode = localStorage.getItem(CONFIG.KEYS.THEME) === 'retro';
 
-            // Debounced input handler for images
+            // Input con debounce para imágenes secretas
             searchInput.addEventListener('input', (e) => {
                 const val = e.target.value.toLowerCase().trim();
 
-                // 1. Reset everything immediately
+                // Limpiar estado anterior
                 this.hideImage();
                 clearTimeout(this.searchTimer);
 
-                // Retro Mode Trigger
+                // Trigger del Modo Prime (Retro)
                 if (val === 'prime') {
                     retroMode = !retroMode;
                     ThemeManager.setRetro(retroMode);
                     this.notify(retroMode ? 'Modo Prime activado' : 'Modo Prime desactivado', retroMode ? 'retro' : 'normal');
-                    // Achievement Hook
+
+                    // Logro: Prime
                     if (retroMode && typeof AchievementManager !== 'undefined') AchievementManager.unlock('prime');
 
                     setTimeout(() => {
@@ -238,7 +239,7 @@
                     return;
                 }
 
-                // 2. Secret Images Logic (Dry & Direct)
+                // Imágenes secretas — se muestran con delay
                 if (CONFIG.URLS.IMAGES[val]) {
                     if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('egg');
                     this.searchTimer = setTimeout(() => {
@@ -246,7 +247,7 @@
                     }, 1500);
                 }
 
-                // Achievement: Cochino
+                // Logro: Cochino
                 if (['sexo', 'porno', 'hentai', 'xxx'].some(w => val.includes(w))) {
                     if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('cochino');
                 }
@@ -271,22 +272,19 @@
             logo.addEventListener('click', (e) => {
                 e.preventDefault();
                 const now = Date.now();
+                // Resetear si pasaron más de 2 segundos sin click
                 if (now - lastClick > 2000) clicks = 0;
                 lastClick = now;
                 clicks++;
 
+                // Logro: Pesado (50+ clicks)
                 if (clicks >= 50 && typeof AchievementManager !== 'undefined') {
                     AchievementManager.unlock('pesado');
                 }
 
+                // Mostrar mensaje random cada 7 clicks
                 if (clicks >= 7) {
                     this.showLogoMsg(Utils.randomChoice(CONFIG.MESSAGES.LOGO));
-                    // Reset clicks only if we didn't reach 50 yet, or maybe keep counting?
-                    // User requested 50 for 'pesado'. 
-                    // Let's reset clicks after message to keep the annoying behavior,
-                    // BUT we need to track total clicks for the achievement.
-                    // Actually, let's delegate to AchievementManager.trackEvent('LOGO_CLICK')
-                    // and keep existing logic for the message.
                     if (typeof AchievementManager !== 'undefined') {
                         for (let i = 0; i < 7; i++) AchievementManager.trackEvent({ type: 'LOGO_CLICK' });
                     }
@@ -295,6 +293,7 @@
             });
         },
         showHint() {
+            // Mostrar hint solo si no fue descartado y con 10% de probabilidad
             if (localStorage.getItem(CONFIG.KEYS.HINT)) return;
             if (Math.random() > 0.9) return;
 
@@ -311,6 +310,7 @@
                 };
 
                 hint.querySelector('.prime-hint-close').addEventListener('click', close);
+                // Auto-cerrar después de 15 segundos
                 setTimeout(() => { if (hint.parentNode) close(); }, 15000);
             }, 2000);
         },
@@ -322,7 +322,7 @@
             notif.className = 'retro-notification';
             notif.textContent = msg;
             notif.style.background = type === 'retro' ? 'linear-gradient(45deg, #d53369, #daae51)' : 'var(--primary-color)';
-            notif.style.color = type === 'retro' ? '#000' : '#000';
+            notif.style.color = '#000';
 
             document.body.appendChild(notif);
             setTimeout(() => {
@@ -330,11 +330,13 @@
                 setTimeout(() => notif.remove(), 300);
             }, 2000);
         },
-        // Image logic - Simple & Direct (No State, No Transitions)
+
+        // --- Lógica de Imágenes Secretas ---
         eggContainer: null,
         searchTimer: null,
 
         showImage(url) {
+            // Crear contenedor si no existe (singleton)
             if (!this.eggContainer) {
                 this.eggContainer = document.createElement('div');
                 this.eggContainer.id = 'easter-egg-image';
@@ -347,16 +349,16 @@
 
             const img = this.eggContainer.querySelector('img');
 
-            // Ensure invisible while loading
+            // Oculto mientras carga
             this.eggContainer.style.display = 'none';
 
             img.onload = () => {
-                this.eggContainer.style.display = 'block'; // Show ONLY when ready
+                this.eggContainer.style.display = 'block';
             };
 
             img.src = url;
 
-            // Handle cached case
+            // Si la imagen ya está en caché del browser, mostrar inmediatamente
             if (img.complete && img.naturalHeight !== 0) {
                 this.eggContainer.style.display = 'block';
             }
@@ -364,9 +366,9 @@
 
         hideImage() {
             if (this.eggContainer) {
-                this.eggContainer.style.display = 'none'; // Instant hidden
+                this.eggContainer.style.display = 'none';
                 const img = this.eggContainer.querySelector('img');
-                if (img) img.src = ''; // Clear source to prevent ghosting
+                if (img) img.src = '';
             }
         },
         showLogoMsg(text) {
@@ -391,19 +393,15 @@
     };
 
     // ============================================================================
-    // VOID MODE (3AM)
+    // VOID MODE (3AM) — Modo perturbador que se activa de 3:00 a 3:59 AM
     // ============================================================================
     const VoidMode = {
         init() {
-            // Check time (3:00 - 3:59 AM)
-            // Use 3 for 3AM. 
             if (new Date().getHours() !== 3) return;
 
             console.log('🌑 VOID MODE ACTIVATED 🌑');
             document.documentElement.setAttribute('data-void', 'true');
 
-            this.createOverlay();
-            this.createUI();
             this.createOverlay();
             this.createUI();
             this.startLoop();
@@ -415,7 +413,7 @@
             document.body.appendChild(d);
         },
         createUI() {
-            // Clock
+            // Reloj estilo "cámara de seguridad"
             const clock = document.createElement('div');
             clock.className = 'void-clock-ui';
             clock.innerHTML = `<div class="void-rec-indicator"><span class="void-dot">●</span> REC</div><div class="void-time-display"></div>`;
@@ -430,17 +428,18 @@
             setInterval(updateTime, 1000);
             updateTime();
 
-            // Messages
+            // Contenedor de mensajes perturbadores
             this.msgBox = document.createElement('div');
             this.msgBox.className = 'void-message-container';
             document.body.appendChild(this.msgBox);
         },
         startLoop() {
-            // Message Loop
+            // Loop de mensajes random
             const msgLoop = () => {
                 this.msgBox.classList.remove('visible');
 
                 setTimeout(() => {
+                    // 70% de probabilidad de mostrar un mensaje
                     if (Math.random() > 0.3) {
                         this.msgBox.textContent = Utils.randomChoice(CONFIG.MESSAGES.VOID);
                         this.msgBox.classList.add('visible');
@@ -451,14 +450,14 @@
             };
             setTimeout(msgLoop, 3000);
 
-            // Hallucinations Loop
+            // Loop de alucinaciones (reemplazo de imágenes por trollface)
             const hallucinate = () => {
                 this.triggerHallucination();
                 setTimeout(hallucinate, 2000 + Math.random() * 2000);
             };
             setTimeout(hallucinate, 2000);
 
-            // Subtle Body Glitch
+            // Glitch sutil del body (filtro de color aleatorio)
             setInterval(() => {
                 if (Math.random() > 0.85) {
                     document.body.dataset.glitch = "true";
@@ -467,15 +466,15 @@
             }, 4000);
         },
         triggerHallucination() {
-            // Performance constraints
+            // Limitar alucinaciones activas para no sobrecargar
             const active = document.querySelectorAll('[data-void-active="true"]');
             if (active.length >= 12) return;
 
             const cards = Array.from(document.querySelectorAll('.card-image:not([data-void-active])'));
             if (!cards.length) return;
 
-            // Pick random batch
-            const batchSize = Math.floor(Math.random() * 4) + 3; // 3-6
+            // Reemplazar batch de 3-6 cards con trollface por ~5 segundos
+            const batchSize = Math.floor(Math.random() * 4) + 3;
             const targets = cards.sort(() => 0.5 - Math.random()).slice(0, batchSize);
 
             targets.forEach(el => {
@@ -489,7 +488,6 @@
                 setTimeout(() => {
                     if (el.dataset.voidActive) {
                         el.style.backgroundImage = originalBg;
-                        // Clean styles
                         el.style.backgroundSize = '';
                         el.style.backgroundPosition = '';
                         delete el.dataset.voidActive;
@@ -500,7 +498,7 @@
     };
 
     // ============================================================================
-    // UI ENHANCEMENTS
+    // MEJORAS DE UI
     // ============================================================================
     const UIEnhancements = {
         init() {
@@ -522,13 +520,14 @@
     };
 
     // ============================================================================
-    // INITIALIZATION
+    // INICIALIZACIÓN
     // ============================================================================
-    // Apply theme immediately to prevent flash
+
+    // Aplicar tema inmediatamente para evitar flash de contenido sin estilo
     ThemeManager.apply(ThemeManager.getSaved());
 
     document.addEventListener('DOMContentLoaded', () => {
-        ThemeManager.init(); // Re-bind buttons and inject styles
+        ThemeManager.init();
         CacheManager.init();
         EasterEggs.init();
         UIEnhancements.init();

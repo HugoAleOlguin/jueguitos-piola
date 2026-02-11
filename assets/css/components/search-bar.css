@@ -1,0 +1,35 @@
+/* =====================================================
+   BARRA DE BÚSQUEDA
+   ===================================================== */
+.search-bar {
+    position: relative;
+    width: 320px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    border-radius: 50px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: white;
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.3s ease;
+}
+
+.search-bar input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2), inset 0 0 20px rgba(0, 243, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.search-bar input:focus::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}

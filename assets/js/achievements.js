@@ -1,14 +1,15 @@
 /**
  * ACHIEVEMENTS.JS
  * Sistema de Logros "Piola"
+ * Maneja: Definiciones, Desbloqueo, Notificaciones, Speedrun, UI del Modal
  */
 
 const AchievementManager = (() => {
-    // === CONFIG ===
-    const VISIBLE_DURATION = 4000;
+    // === CONFIGURACIÓN ===
+    const VISIBLE_DURATION = 4000; // Duración del toast en milisegundos
     const STORAGE_KEY = 'jueguitos_achievements';
 
-    // === DEFINITIONS ===
+    // === DEFINICIONES DE LOGROS ===
     const ACHIEVEMENTS = [
         // Secretos
         { id: 'prime', title: 'El Prime', desc: 'Activaste el diseño original. Esta bonito :,(', icon: '📺' },
@@ -28,11 +29,11 @@ const AchievementManager = (() => {
         { id: 'ludopath', title: 'Ludópata', desc: 'Te gusta girar la ruleta eh?', icon: '🎰' },
         { id: 'window_shopper', title: 'Mirar y No Tocar', desc: 'Abriste 10 juegos sin descargar ninguno.', icon: '👀' },
 
-        // Super Secreto
+        // Súper Secreto — solo visible si se desbloquea
         { id: 'speedrunner', title: 'SPEEDRUNNER', desc: 'Completaste todos los logros en menos de 30 segundos. Tocá pasto.', icon: '⚡', secret: true }
     ];
 
-    // === STATE ===
+    // === ESTADO ===
     let unlocked = new Set();
     let stats = {
         logoClicks: 0,
@@ -47,47 +48,20 @@ const AchievementManager = (() => {
         completionTime: null
     };
 
-    // === INIT ===
+    // === INICIALIZACIÓN ===
     const init = () => {
-        loadProgress();
         loadProgress();
         setupGlobalTriggers();
         injectStyles();
         setupUI();
     };
 
+    // Inyecta CSS del card Speedrunner (no tiene equivalente en archivos CSS)
+    // Los estilos de toast están en achievements.css
     const injectStyles = () => {
         const style = document.createElement('style');
         style.textContent = `
-            .achievement-toast {
-                position: fixed;
-                bottom: 30px;
-                left: 50%;
-                transform: translateX(-50%) translateY(100px);
-                background: rgba(10, 10, 10, 0.98);
-                border: 1px solid #ffd700;
-                border-radius: 12px;
-                padding: 15px 25px;
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-                z-index: 99999;
-                opacity: 0;
-                transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                min-width: 300px;
-            }
-            .achievement-toast.toast-visible {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-            .achievement-toast .ach-icon { font-size: 2.5rem; }
-            .achievement-toast .ach-content { display: flex; flex-direction: column; }
-            .achievement-toast .ach-title { color: #ffd700; font-weight: bold; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
-            .achievement-toast .ach-desc { color: #ccc; font-size: 0.85rem; }
-            .achievement-toast .ach-desc { color: #ccc; font-size: 0.85rem; }
-
-            /* Speedrunner Special Card - Premium Design */
+            /* Card Especial del Speedrunner — diseño premium */
             .achievement-card.speedrunner {
                 grid-column: 1 / -1;
                 background: linear-gradient(135deg, rgba(10, 5, 5, 0.98), rgba(30, 0, 0, 0.95));
@@ -106,7 +80,7 @@ const AchievementManager = (() => {
                 border-color: #ffd700;
             }
             
-            /* Background Grid Effect */
+            /* Efecto de grilla de puntos en el fondo */
             .achievement-card.speedrunner::after {
                 content: '';
                 position: absolute;
@@ -153,22 +127,22 @@ const AchievementManager = (() => {
         document.head.appendChild(style);
     };
 
+    // Carga progreso guardado desde localStorage
     const loadProgress = () => {
         try {
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-            // Support for legacy array format (migration)
+            // Soporte para formato legacy (array) — migración automática
             if (Array.isArray(saved)) {
                 unlocked = new Set(saved);
             } else {
                 unlocked = new Set(saved.unlocked || []);
                 stats = { ...stats, ...(saved.stats || {}) };
-                // Session-based achievements reset
+                // Los giros de ruleta se resetean por sesión
                 stats.rouletteSpins = 0;
-
                 speedrun = { ...speedrun, ...(saved.speedrun || {}) };
             }
         } catch (e) {
-            console.error('Error loading achievements', e);
+            console.error('Error cargando logros:', e);
         }
     };
 
@@ -181,32 +155,34 @@ const AchievementManager = (() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     };
 
-    // === PUBLIC API ===
+    // === API PÚBLICA ===
+
+    // Desbloquea un logro por ID (ignora si ya fue desbloqueado)
     const unlock = (id) => {
-        if (unlocked.has(id)) return; // Ya desbloqueado
+        if (unlocked.has(id)) return;
 
         const achievement = ACHIEVEMENTS.find(a => a.id === id);
         if (!achievement) return;
 
-        // Speedrun Start Logic
+        // Speedrun: marcar inicio con el primer logro desbloqueado
         if (unlocked.size === 0) {
             speedrun.startTime = Date.now();
         }
 
         unlocked.add(id);
 
-        // Speedrun End Logic (Check against non-secret achievements)
+        // Speedrun: verificar si se completaron todos los logros no-secretos
         const nonSecretCount = ACHIEVEMENTS.filter(a => !a.secret).length;
         const unlockedNonSecret = ACHIEVEMENTS.filter(a => !a.secret && unlocked.has(a.id)).length;
 
         if (unlockedNonSecret === nonSecretCount && !speedrun.completionTime) {
             speedrun.completionTime = Date.now();
 
-            // Check for Speedrunner Achievement (< 30s displayed)
+            // Si se completó en menos de ~31s, desbloquear "Speedrunner"
+            // (31s porque la UI muestra segundos redondeados hacia abajo)
             const duration = speedrun.completionTime - speedrun.startTime;
-            // Allow up to 31000ms (30.9s) because UI floors the seconds (shows 30s)
             if (duration < 31000) {
-                setTimeout(() => unlock('speedrunner'), 1000); // Dramatic delay
+                setTimeout(() => unlock('speedrunner'), 1000); // Delay dramático
             }
         }
 
@@ -214,7 +190,9 @@ const AchievementManager = (() => {
         showNotification(achievement);
     };
 
-    // === UI ===
+    // === UI: NOTIFICACIONES ===
+
+    // Sonido sintético de "pop" al desbloquear un logro
     const playPopSound = () => {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -237,10 +215,11 @@ const AchievementManager = (() => {
             oscillator.start();
             oscillator.stop(ctx.currentTime + 0.15);
         } catch (e) {
-            // Ignore audio errors (user interact requirement etc)
+            // Ignorar errores de audio (requiere interacción del usuario)
         }
     };
 
+    // Muestra el toast de notificación de logro desbloqueado
     const showNotification = (a) => {
         playPopSound();
 
@@ -256,43 +235,39 @@ const AchievementManager = (() => {
 
         document.body.appendChild(div);
 
-        // Force Reflow
+        // Forzar reflow para que la animación de entrada funcione
         void div.offsetWidth;
-
-        // Animation Entrance
         div.classList.add('toast-visible');
 
-        // Auto Remove
+        // Auto-remover después de VISIBLE_DURATION
         setTimeout(() => {
             div.classList.remove('toast-visible');
             setTimeout(() => div.remove(), 500);
         }, VISIBLE_DURATION);
     };
 
-    // === TRIGGERS (Global) ===
+    // === TRIGGERS GLOBALES ===
     const setupGlobalTriggers = () => {
-        // 1. Footer Click (Curioso)
+        // 1. Click en footer → Logro "Curioso"
         const footer = document.querySelector('footer');
         if (footer) {
             footer.addEventListener('click', () => unlock('curious_cat'));
         }
 
-        // 2. Void Check (Time)
+        // 2. Verificar hora para Void Mode (3:XX AM)
         const checkVoidTime = () => {
-            const now = new Date();
-            const hour = now.getHours();
+            const hour = new Date().getHours();
             if (hour === 3) unlock('void');
         };
         checkVoidTime();
-        // Check every minute just in case
-        setInterval(checkVoidTime, 60000);
+        setInterval(checkVoidTime, 60000); // Re-verificar cada minuto
 
-        // 3. Konami Code (Speedrun Bypass)
-        let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        // 3. Código Konami → Desbloquea "Void"
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
         let konamiIndex = 0;
 
         document.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === konamiCode[konamiIndex].toLowerCase()) { // Case insensitive for b/a
+            if (e.key.toLowerCase() === konamiCode[konamiIndex].toLowerCase()) {
                 konamiIndex++;
                 if (konamiIndex === konamiCode.length) {
                     unlock('void');
@@ -304,7 +279,7 @@ const AchievementManager = (() => {
         });
     };
 
-    // === EXTENSIONS (For External Calls) ===
+    // === TRACKING DE EVENTOS (llamado desde otros módulos) ===
     const trackEvent = (details) => {
         switch (details.type) {
             case 'LOGO_CLICK':
@@ -313,8 +288,9 @@ const AchievementManager = (() => {
                 break;
 
             case 'COLOR_CHANGE':
+                // Contar cambios rápidos (menos de 2s entre cada uno)
                 const now = Date.now();
-                if (now - stats.lastColorChange < 2000) { // 2 seconds threshold
+                if (now - stats.lastColorChange < 2000) {
                     stats.colorChanges++;
                 } else {
                     stats.colorChanges = 1;
@@ -335,15 +311,11 @@ const AchievementManager = (() => {
 
             case 'DOWNLOAD_CLICK':
                 stats.downloadsClicked++;
-                // Reset window shopper progress if valid download happens? 
-                // Description says "Open 10 without downloading". 
-                // So if they download, maybe we shouldn't reset, but check logic. 
-                // Let's just track it.
                 break;
         }
     };
 
-    // Public API Extras
+    // Estadísticas públicas (usadas por el modal)
     const getStats = () => {
         return {
             unlockedCount: unlocked.size,
@@ -353,12 +325,12 @@ const AchievementManager = (() => {
         };
     };
 
+    // Resetear todo el progreso de logros
     const reset = () => {
         unlocked.clear();
         speedrun.startTime = null;
         speedrun.completionTime = null;
 
-        // Reset all stats manually
         stats = {
             logoClicks: 0,
             colorChanges: 0,
@@ -369,10 +341,10 @@ const AchievementManager = (() => {
         };
 
         saveProgress();
-        // Reload page to reflect changes or return true to let UI handle it
         return true;
     };
 
+    // Formatea milisegundos como "Xm YYs"
     const formatTime = (ms) => {
         if (!ms) return '--:--';
         const totalSeconds = Math.floor(ms / 1000);
@@ -381,7 +353,7 @@ const AchievementManager = (() => {
         return `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
     };
 
-    // === UI MANAGER ===
+    // === UI: MODAL DE LOGROS ===
     const setupUI = () => {
         const fab = document.getElementById('btnAchievementsFab');
         const modal = document.getElementById('achievementsModal');
@@ -411,6 +383,7 @@ const AchievementManager = (() => {
         }
     };
 
+    // Renderiza las cards de logros dentro del modal
     const renderModalContent = () => {
         const container = document.getElementById('achievementsListLarge');
         const titleCount = document.getElementById('achTitleCount');
@@ -422,22 +395,20 @@ const AchievementManager = (() => {
             const nonSecretTotal = ACHIEVEMENTS.filter(a => !a.secret).length;
             let text = `(${unlocked.size}/${nonSecretTotal})`;
 
-            // Show Speedrun Time if completed
-            // Check if all non-secrets are unlocked
+            // Mostrar tiempo de speedrun si se completaron todos
             const unlockedNonSecret = ACHIEVEMENTS.filter(a => !a.secret && unlocked.has(a.id)).length;
 
             if (unlockedNonSecret === nonSecretTotal && speedrun.startTime && speedrun.completionTime) {
                 const duration = speedrun.completionTime - speedrun.startTime;
                 text += ` <span style="color: #00ff88; font-size: 0.8em; margin-left: 10px;">⏱️ ${formatTime(duration)}</span>`;
-            } else if (speedrun.startTime) {
-                // Optional: Show current run time? No, requested "Silent Run"
             }
 
             titleCount.innerHTML = text;
         }
 
         ACHIEVEMENTS.forEach(ach => {
-            if (ach.secret && !unlocked.has(ach.id)) return; // Hide secret if locked
+            // Ocultar logros secretos si están bloqueados
+            if (ach.secret && !unlocked.has(ach.id)) return;
 
             const isUnlocked = unlocked.has(ach.id);
             const card = document.createElement('div');

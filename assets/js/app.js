@@ -1,21 +1,21 @@
 // ============================================================================
-// APP.JS (SPA VERSION)
-// Central Controller for Jueguitos Piola
-// Handles: Routing, Grid Rendering, Game Details, Search, Favorites
+// APP.JS (VERSIÓN SPA)
+// Controlador Central de Jueguitos Piola
+// Maneja: Routing, Grilla, Detalle de Juego, Búsqueda, Favoritos
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // === DOM ELEMENTS ===
+    // === ELEMENTOS DOM ===
     const gamesGrid = document.getElementById('gamesGrid');
     const gameView = document.getElementById('game-view');
     const gameContainer = document.getElementById('game-container');
     const searchInput = document.getElementById('searchInput');
-    const searchContainer = document.querySelector('.search-bar'); // To hide search in game view if desired
+    const searchContainer = document.querySelector('.search-bar');
 
-    // === STATE ===
-    let allGames = []; // Will hold gamesData
+    // === ESTADO ===
+    let allGames = [];
 
-    // === INITIALIZATION ===
+    // === INICIALIZACIÓN ===
     const init = () => {
         if (typeof gamesData === 'undefined') {
             gamesGrid.innerHTML = '<p class="error">Error: No se pudieron cargar los datos.</p>';
@@ -23,20 +23,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         allGames = gamesData;
 
-        // 1. Initial Route Check
+        // 1. Verificar ruta actual
         handleRoute();
 
-        // 2. Event Listeners
+        // 2. Bindear eventos
         bindEvents();
     };
 
     const bindEvents = () => {
-        // Popstate (Back/Forward button)
+        // Navegación (botones Atrás/Adelante del browser)
         window.addEventListener('popstate', handleRoute);
 
-        // Grid Click Delegation (Navigate to Game)
+        // Delegación de clicks en la grilla
         gamesGrid.addEventListener('click', (e) => {
-            // Handle Favorite Button separately
+            // Botón de favorito se maneja por separado
             if (e.target.closest('.favorite-btn')) {
                 handleFavoriteClick(e);
                 return;
@@ -49,27 +49,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const game = allGames.find(g => g.id === gameId);
 
                 if (game) {
-                    // Logic for external/custom links vs SPA
+                    // Links externos abren en nueva pestaña
                     if (game.externalLink && game.downloadUrl) {
                         window.open(game.downloadUrl, '_blank');
                     } else if (game.internalLink && game.downloadUrl) {
-                        window.location.href = game.downloadUrl; // Real navigation for internal HTMLs
-                    } else if (game.customPage && game.customUrl) {
-                        window.location.href = game.customUrl; // Real navigation for custom pages
+                        window.location.href = game.downloadUrl;
                     } else {
-                        // SPA Navigation
+                        // Navegación SPA interna
                         navigateTo(`?id=${gameId}`);
                     }
                 }
             }
         });
 
-        // Search Input
+        // Búsqueda
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase().trim();
 
-                // 🕵️ SECRET ADMIN ACCESS
+                // 🕵️ Acceso secreto al admin
                 if (term === 'admin') {
                     window.location.href = 'pages/admin.html';
                     return;
@@ -79,13 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Randomizer Button
+        // Botón de Ruleta Random
         const btnRandom = document.getElementById('btnRandom');
         if (btnRandom) {
             btnRandom.addEventListener('click', startRoulette);
         }
 
-        // 🕵️ HACK TRIGGER (Simple & Clean)
+        // 🕵️ Trigger secreto "HACK" — descarga trainer si existe
         let keys = [];
         window.addEventListener('keydown', (e) => {
             keys.push(e.key.toLowerCase());
@@ -103,12 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.log('⛔ No trainer found for:', gameId);
                     }
                 }
-                keys = []; // Reset buffer
+                keys = [];
             }
         });
     };
 
-    // === ROUTING LOGIC ===
+    // === ROUTING ===
     const navigateTo = (url) => {
         history.pushState(null, null, url);
         handleRoute();
@@ -126,15 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const showHome = () => {
-        // Update Title
         document.title = 'Jueguitos Piola';
 
-        // Toggle Views
+        // Alternar vistas
         gameView.style.display = 'none';
-        gamesGrid.style.display = 'grid'; // Restore grid
+        gamesGrid.style.display = 'grid';
         if (searchContainer) searchContainer.style.visibility = 'visible';
 
-        // Restore Scroll Position?
+        // Restaurar posición de scroll guardada
         const scrollPos = sessionStorage.getItem('homeScrollPos');
         if (scrollPos) {
             window.scrollTo(0, parseInt(scrollPos));
@@ -143,33 +140,29 @@ document.addEventListener('DOMContentLoaded', () => {
             window.scrollTo(0, 0);
         }
 
-        // Render Grid (if empty or needs refresh)
-        // Filter out hidden games for default view
+        // Renderizar grilla (sin juegos ocultos)
         const visibleGames = allGames.filter(g => !g.hidden);
 
         if (gamesGrid.children.length === 0) {
             renderGrid(sortGamesWithFavorites(visibleGames));
         } else {
-            // Ensure favorites are sorted correctly if returning
-            // (Optional: simple re-append to avoid flicker, or full re-render)
-            // Full re-render is safer for state consistency
-            renderGrid(sortGamesWithFavorites(visibleGames), false); // false = no animation
+            // Re-render sin animación para consistencia de estado
+            renderGrid(sortGamesWithFavorites(visibleGames), false);
         }
     };
 
     const showGame = (gameId) => {
         const game = allGames.find(g => g.id === gameId);
         if (!game) {
-            // Fix: Use location.pathname to stay in the repository/project root
-            // instead of jumping to the domain root ('/')
+            // Volver a home si el juego no existe
             navigateTo(window.location.pathname);
             return;
         }
 
-        // SEO: Dynamic Title & Meta
-        document.title = `${game.title} - Jueguitos Piola`;
+        // SEO: Título y Meta dinámicos
+        document.title = `${game.title} | Jueguitos Piola`;
 
-        // Update Meta Description
+        // Meta description
         let metaDesc = document.querySelector('meta[name="description"]');
         if (!metaDesc) {
             metaDesc = document.createElement('meta');
@@ -178,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         metaDesc.content = `Descargar ${game.title} gratis. ${game.description}`;
 
-        // Update Open Graph (Facebook/Discord/WhatsApp)
+        // Open Graph (Facebook/Discord/WhatsApp)
         const updateMeta = (prop, content) => {
             let tag = document.querySelector(`meta[property="${prop}"]`);
             if (!tag) {
@@ -194,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateMeta('og:image', game.image);
         updateMeta('og:url', window.location.href);
 
-        // Update Canonical
+        // Canonical URL
         let canonical = document.querySelector('link[rel="canonical"]');
         if (!canonical) {
             canonical = document.createElement('link');
@@ -203,33 +196,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         canonical.href = window.location.href;
 
-        // NEW: Update JSON-LD Structured Data
+        // JSON-LD (Datos estructurados para SEO)
         updateJsonLd(game);
 
-        // Save Scroll Position before switching
+        // Guardar scroll antes de cambiar vista
         if (gamesGrid.style.display !== 'none') {
             sessionStorage.setItem('homeScrollPos', window.scrollY);
         }
 
-        // Update Title
-        document.title = `${game.title} | Jueguitos Piola`;
-
-        // Toggle Views
+        // Alternar vistas
         gamesGrid.style.display = 'none';
         gameView.style.display = 'block';
         if (searchContainer) searchContainer.style.visibility = 'hidden';
 
-        // Render Game Detail
+        // Renderizar detalle
         renderGameDetail(game);
-
-        // Scroll top
         window.scrollTo(0, 0);
 
-        // Achievement: Game Open (Window Shopper tracking)
+        // Logro: Window Shopper (tracking de juegos abiertos)
         if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'GAME_OPEN' });
     };
 
-    // === RENDER LOGIC (GRID) ===
+    // === RENDERIZADO DE GRILLA ===
     const renderGrid = (games, animate = true) => {
         gamesGrid.innerHTML = '';
 
@@ -272,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Mapea tags a clases CSS para estilos diferenciados
     const getTagClass = (tag) => {
         const t = tag.toLowerCase();
         if (['coop', 'cooperativo'].includes(t)) return 'tag tag-coop';
@@ -280,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'tag';
     };
 
-    // === RENDER LOGIC (GAME DETAIL - Merged from game-loader.js) ===
+    // === RENDERIZADO DE DETALLE (vista individual del juego) ===
     const renderGameDetail = (game) => {
         const buttonsHtml = generateButtons(game);
         const tagsHtml = generateTagsRef(game.tags);
@@ -307,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Bind "Volver" button inside Game Detail to SPA back
+        // Botón "Volver" dentro del detalle → navegación SPA
         const backBtn = gameContainer.querySelector('.btn-back-spa');
         if (backBtn) {
             backBtn.addEventListener('click', (e) => {
@@ -316,19 +305,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Bind Set Background
+        // Botón "Usar como fondo"
         const bgBtn = gameContainer.querySelector('.set-bg-btn');
         if (bgBtn) {
             bgBtn.addEventListener('click', () => {
-                // Direct apply without confirmation
                 localStorage.setItem('jueguitos_settings_bg_type', 'custom');
                 localStorage.setItem('jueguitos_settings_bg_value', game.image);
                 location.reload();
             });
         }
 
-
-        // Track Downloads
+        // Tracking de descargas para logros
         const dlBtns = gameContainer.querySelectorAll('.btn-download-track');
         dlBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -337,6 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Genera los botones de acción (Descargar, links custom, Volver)
     const generateButtons = (game) => {
         let html = '';
         if (game.buttons && game.buttons.length > 0) {
@@ -354,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (game.downloadUrl) html += `<a href="${game.downloadUrl}" target="_blank" class="btn btn-primary btn-download-track">Descargar</a>`;
         }
-        // Custom SPA Back Button
+        // Botón SPA para volver a la grilla
         html += `<a href="#" class="btn btn-secondary btn-back-spa">Volver</a>`;
         return html;
     };
@@ -363,6 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return tags.map(tag => `<span class="${getTagClass(tag)}">${tag}</span>`).join('');
     };
 
+    // Genera datos estructurados JSON-LD para SEO
     const updateJsonLd = (game) => {
         let script = document.getElementById('game-json-ld');
         if (!script) {
@@ -391,19 +380,20 @@ document.addEventListener('DOMContentLoaded', () => {
         script.textContent = JSON.stringify(schema);
     };
 
-    // === UTILS (Search, Favorites) ===
+    // === UTILIDADES (Búsqueda, Favoritos) ===
+
+    // Búsqueda con debounce — incluye lógica para mostrar juegos ocultos
     const handleSearch = debounce((term) => {
         const t = term.toLowerCase();
 
-        // Logic for Hidden Games
         let filtered;
         if (t === 'oculto') {
-            // Show ONLY hidden games
+            // Mostrar SOLO juegos ocultos
             filtered = allGames.filter(g => g.hidden === true);
         } else {
-            // Normal Search (Excludes hidden)
+            // Búsqueda normal (excluye ocultos)
             filtered = allGames.filter(g => {
-                if (g.hidden) return false; // Hide hidden games by default
+                if (g.hidden) return false;
                 return g.title.toLowerCase().includes(t) ||
                     g.tags.some(tag => tag.toLowerCase().includes(t));
             });
@@ -420,7 +410,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Favorites Logic (Simplified)
+    // --- Favoritos ---
+
     const toggleFavorite = (id) => {
         let favs = JSON.parse(localStorage.getItem('jueguitosFavorites')) || [];
         const idx = favs.indexOf(id);
@@ -445,16 +436,15 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.classList.toggle('active', isFav);
         card.classList.toggle('is-favorite', isFav);
 
-        // Re-sort/Re-render if needed? Maybe just visual toggle is enough for speed.
-        // Let's re-sort after delay for animation
+        // Re-renderizar la grilla después de un breve delay para la animación
         setTimeout(() => {
-            // Only re-render if we are in Home view
             if (gameView.style.display === 'none') {
                 handleSearch(searchInput ? searchInput.value : '');
             }
         }, 300);
     };
 
+    // Ordena poniendo favoritos primero
     const sortGamesWithFavorites = (games) => {
         const favs = JSON.parse(localStorage.getItem('jueguitosFavorites')) || [];
         return [...games].sort((a, b) => {
@@ -466,42 +456,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // === RANDOMIZER ROULETTE ===
+    // === RULETA RANDOM ===
     const startRoulette = () => {
         const modal = document.getElementById('rouletteModal');
         const strip = document.getElementById('rouletteStrip');
         const title = document.getElementById('rouletteGameTitle');
-        const win = document.querySelector('.roulette-window');
+        const rouletteWindow = document.querySelector('.roulette-window');
 
         if (!modal || !strip) return;
 
-        // 1. Get Candidates
+        // 1. Obtener candidatos (sin ocultos ni utilidades)
         const candidates = allGames.filter(g => !g.hidden && !g.tags.some(t => t.toLowerCase() === 'utilidad'));
         if (candidates.length === 0) return alert('No hay juegos para sortear.');
 
-        // 2. Setup Winner
+        // 2. Elegir ganador al azar
         const winnerIndex = Math.floor(Math.random() * candidates.length);
         const winner = candidates[winnerIndex];
 
-        // 3. open Modal
+        // 3. Abrir modal
+        modal.style.display = 'flex';
+        // Force reflow
+        void modal.offsetWidth;
         modal.classList.add('active');
-        win.classList.remove('winner-pulse');
+        rouletteWindow.classList.remove('winner-pulse');
         title.innerText = "GIRANDO...";
         title.style.color = "var(--primary-color)";
 
-        // 4. Build Strip
-        // We need a long strip. Let's say 60 items.
-        // Target index for winner: 50.
-        // Format: [Random... * 49] [WINNER] [Random... * 10]
-        const CARD_WIDTH = 250; // Defined in CSS
+        // 4. Construir la tira de cards
+        // El ganador se coloca en la posición TARGET_INDEX
+        const CARD_WIDTH = 250;
         const TARGET_INDEX = 50;
         const TOTAL_ITEMS = 60;
 
         strip.innerHTML = '';
         strip.style.transition = 'none';
         strip.style.transform = 'translateX(0px)';
-
-        const stripItems = [];
 
         for (let i = 0; i < TOTAL_ITEMS; i++) {
             let game;
@@ -510,69 +499,53 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 game = candidates[Math.floor(Math.random() * candidates.length)];
             }
-            stripItems.push(game);
 
             const card = document.createElement('div');
             card.className = 'roulette-card';
             card.style.backgroundImage = `url('${game.image}')`;
             card.innerHTML = `<span>${game.title}</span>`;
-
-            // Highlight winner for debugging? No.
             strip.appendChild(card);
         }
 
-        // 5. Calculate Scroll Position
-        // Center the winner. 
-        // Window Width = ~800px (max) or 90%
-        // We need the center of the window to align with the center of the winner card.
-        // But window width varies. 
-        // Actually, the marker is at 50% of the window.
-        // So we need: (TARGET_INDEX * CARD_WIDTH) + (CARD_WIDTH/2) should be at center.
-        // But transform uses top-left.
-        // strip is inside window.
-        // center of window = windowWidth / 2.
-        // center of card = (TARGET_INDEX * w) + w/2.
-        // translateX = center_of_window - center_of_card
-
-        const windowWidth = document.querySelector('.roulette-window').offsetWidth;
+        // 5. Calcular posición de scroll para centrar el ganador en la ventana
+        const windowWidth = rouletteWindow.offsetWidth;
         const centerOfCard = (TARGET_INDEX * CARD_WIDTH) + (CARD_WIDTH / 2);
         const targetX = (windowWidth / 2) - centerOfCard;
 
-        // Add some random offset within the card to make it realistic ( +/- 40% of card width)
+        // Offset random para que no siempre caiga exacto en el centro
         const randomOffset = (Math.random() * (CARD_WIDTH * 0.8)) - (CARD_WIDTH * 0.4);
         const finalX = targetX + randomOffset;
 
-        // Force Reflow
+        // Forzar reflow antes de animar
         strip.offsetHeight;
 
-        // 6. ANIMATE
-        // Long duration cubic bezier for "Spinning" feel
+        // 6. Animar — cubic-bezier simula "giro de ruleta" (rápido al inicio, lento al final)
         setTimeout(() => {
-            strip.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0.1, 1)'; // Fast start, very slow end
+            strip.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0.1, 1)';
             strip.style.transform = `translateX(${finalX}px)`;
         }, 50);
 
-        // Achievement: Ludopath
+        // Logro: Ludópata (tracking de giros)
         if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'ROULETTE_SPIN' });
 
-        // 7. Finish
+        // 7. Finalizar — mostrar ganador y auto-navegar
         setTimeout(() => {
-            // Animation finished
-            win.classList.add('winner-pulse');
+            rouletteWindow.classList.add('winner-pulse');
             title.innerText = winner.title;
             title.style.color = "var(--secondary-color)";
 
-            // Confetti or Sound? (For now just pulse)
-
-            // Auto Navigate after delay
+            // Auto-navegar al juego ganador después de mostrarlo
             setTimeout(() => {
                 modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300); // Wait for fade out
                 showGame(winner.id);
-            }, 2500); // Wait 2.5s to see the winner
+            }, 2500);
 
-        }, 6050); // 6s duration + buffer
+        }, 6050); // 6s de animación + buffer
     };
 
-    // Run
+    // Ejecutar
     init();
 });

@@ -5,6 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jueguitos Piola</title>
+    <script>
+        // Suppress external extension errors (Live Server, etc.)
+        window.addEventListener('unhandledrejection', (event) => {
+            if (event.reason && (event.reason.toString().includes('onMessage') || event.reason.toString().includes('Extension') || event.reason.toString().includes('installHook'))) {
+                event.preventDefault();
+                console.warn('Ignored external extension error:', event.reason);
+            }
+        });
+    </script>
     <!-- SEO Meta Tags -->
     <meta name="description"
         content="Descarga los mejores juegos cooperativos, de terror y party para jugar con amigos. Enlaces directos, sin publicidad molesta y con tutoriales de instalación.">
@@ -41,6 +50,19 @@
     <!-- Botón Configuración Avanzada -->
     <style>
         /* Small fix for settings button position if needed */
+        @keyframes fadeInBody {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        body {
+            animation: fadeInBody 0.5s ease forwards;
+        }
     </style>
 </head>
 
@@ -66,7 +88,7 @@
     </header>
 
     <!-- Modal de Configuración -->
-    <div class="settings-modal-overlay" id="settingsModal">
+    <div class="settings-modal-overlay" id="settingsModal" style="display: none;">
         <div class="settings-modal">
             <div class="settings-header">
                 <h2>Configuración</h2>
@@ -172,7 +194,7 @@
     </div>
 
     <!-- Modal de Ruleta Randomizer -->
-    <div class="roulette-modal-overlay" id="rouletteModal">
+    <div class="roulette-modal-overlay" id="rouletteModal" style="display: none;">
         <div class="roulette-container">
             <div class="roulette-window">
                 <div class="roulette-strip" id="rouletteStrip">

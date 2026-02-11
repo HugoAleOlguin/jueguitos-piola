@@ -1,62 +1,62 @@
 /**
  * VERSUS.JS
  * Sistema de Torneos "Piola"
- * Maneja la lógica de enfrentamientos 1vs1
+ * Maneja: Enfrentamientos 1vs1, Bracket, Selección de Ganador
  */
 
 const VersusManager = (() => {
-    // DOM Elements
+    // === ELEMENTOS DOM ===
     const modal = document.getElementById('versusModal');
     const closeBtn = document.getElementById('btnCloseVersus');
     const openBtn = document.getElementById('btnVersus');
 
-    // Stages
+    // Etapas del torneo
     const stageSelection = document.getElementById('vsStageSelection');
     const stageDuel = document.getElementById('vsStageDuel');
     const stageWinner = document.getElementById('vsStageWinner');
 
-    // Duel Elements
+    // Elementos del duelo
     const fighter1 = document.getElementById('fighter1');
     const fighter2 = document.getElementById('fighter2');
     const roundIndicator = document.getElementById('roundIndicator');
 
-    // Winner Elements
+    // Elementos del ganador
     const winnerCard = document.getElementById('winnerCard');
     const btnPlay = document.getElementById('btnPlayWinner');
     const btnRestart = document.getElementById('btnRestartVs');
 
-    // State
-    let currentBracket = []; // Array of games in current round
-    let nextRoundBracket = []; // Winners of current round
-    let currentPairIndex = 0; // Index in currentBracket (increments by 2)
+    // === ESTADO ===
+    let currentBracket = [];    // Juegos de la ronda actual
+    let nextRoundBracket = [];  // Ganadores que pasan a la siguiente ronda
+    let currentPairIndex = 0;   // Índice actual en el bracket (avanza de a 2)
     let finalWinner = null;
     let totalRounds = 0;
     let currentRoundNum = 1;
 
-    // === INIT ===
+    // === INICIALIZACIÓN ===
     const init = () => {
         if (openBtn) openBtn.addEventListener('click', openModal);
         if (closeBtn) closeBtn.addEventListener('click', closeModal);
 
-        // Mode Selection
+        // Selección de modo
         document.querySelectorAll('.vs-mode-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 startTournament(btn.dataset.mode);
             });
         });
 
-        // Restart
+        // Reiniciar torneo
         if (btnRestart) btnRestart.addEventListener('click', () => switchStage('selection'));
 
-        // Play Winner
+        // Jugar al ganador
         if (btnPlay) btnPlay.addEventListener('click', () => {
             closeModal();
-            if (finalWinner) showGame(finalWinner.id); // Function from app.js
+            if (finalWinner) showGame(finalWinner.id); // showGame() viene de app.js
         });
     };
 
     const openModal = () => {
-        modal.classList.add('active'); // Reusing or adding new CSS class
+        modal.classList.add('active');
         modal.style.display = 'flex';
         switchStage('selection');
     };
@@ -66,6 +66,7 @@ const VersusManager = (() => {
         modal.classList.remove('active');
     };
 
+    // Cambia la etapa visible del torneo (selection → duel → winner)
     const switchStage = (stageName) => {
         stageSelection.classList.add('hidden');
         stageDuel.classList.add('hidden');
@@ -76,9 +77,10 @@ const VersusManager = (() => {
         if (stageName === 'winner') stageWinner.classList.remove('hidden');
     };
 
-    // === LOGIC ===
+    // === LÓGICA DEL TORNEO ===
+
     const startTournament = (mode) => {
-        // 1. Filter valid games (No utilities, no hidden)
+        // 1. Filtrar juegos válidos (sin utilidades ni ocultos)
         let candidates = gamesData.filter(g =>
             !g.hidden &&
             !g.tags.some(t => t.toLowerCase() === 'utilidad')
@@ -89,55 +91,50 @@ const VersusManager = (() => {
             return;
         }
 
-        // 2. Shuffle
+        // 2. Mezclar aleatoriamente
         candidates.sort(() => Math.random() - 0.5);
 
-        // 3. Select based on mode
+        // 3. Seleccionar según modo
         if (mode === 'blitz') {
-            currentBracket = candidates.slice(0, 8); // Top 8
-            // If less than 8 but more than 2, take power of 2 sized slice? 
-            // Simplifying: Just take up to 8. If odd, logic handles? 
-            // Better to force power of 2 for clean bracket? 
-            // Let's just take 8. If less, take 4.
-            if (currentBracket.length < 8 && currentBracket.length >= 4) currentBracket = currentBracket.slice(0, 4);
+            // Blitz: máximo 8 juegos (o 4 si no hay suficientes)
+            currentBracket = candidates.slice(0, 8);
+            if (currentBracket.length < 8 && currentBracket.length >= 4) {
+                currentBracket = currentBracket.slice(0, 4);
+            }
         } else {
-            // All games (Marathon)
-            // Ideally ensure even number?
-            if (candidates.length % 2 !== 0) candidates.pop(); // Remove one to make it even
+            // Maratón: todos los juegos (asegurar cantidad par)
+            if (candidates.length % 2 !== 0) candidates.pop();
             currentBracket = candidates;
         }
 
-        // 4. Setup State
+        // 4. Resetear estado
         nextRoundBracket = [];
         currentPairIndex = 0;
         currentRoundNum = 1;
-
-        // Calculate total matches/rounds estimation (Log2)
-        // Not strictly needed for UI but good for "Round X of Y"
 
         switchStage('duel');
         renderMatch();
     };
 
+    // Renderiza el enfrentamiento actual
     const renderMatch = () => {
         const game1 = currentBracket[currentPairIndex];
         const game2 = currentBracket[currentPairIndex + 1];
 
         if (!game1 || !game2) {
-            // Should not happen if logic is correct
             resolveRound();
             return;
         }
 
-        // Setup Cards
+        // Configurar cards de los peleadores
         setupFighterCard(fighter1, game1, 1);
         setupFighterCard(fighter2, game2, 2);
 
-        // Update Indicator
+        // Actualizar indicador de ronda
         const totalPairs = currentBracket.length / 2;
         const currentPair = (currentPairIndex / 2) + 1;
 
-        // Round Name
+        // Nombre de ronda según cantidad de participantes restantes
         let roundName = `Ronda ${currentRoundNum}`;
         if (currentBracket.length === 2) roundName = "GRAN FINAL";
         else if (currentBracket.length === 4) roundName = "Semifinales";
@@ -146,6 +143,7 @@ const VersusManager = (() => {
         roundIndicator.textContent = `${roundName} (${currentPair}/${totalPairs})`;
     };
 
+    // Configura visualmente una card de peleador y su handler de voto
     const setupFighterCard = (element, game, index) => {
         element.innerHTML = '';
         element.style.backgroundImage = `url('${game.image}')`;
@@ -156,21 +154,22 @@ const VersusManager = (() => {
 
         element.appendChild(overlay);
 
-        // Click Handler (Vote)
+        // Click = Voto
         element.onclick = () => vote(game, index);
 
-        // Animation reset
+        // Reiniciar animación de entrada
         element.classList.remove('slideInLeft', 'slideInRight');
-        void element.offsetWidth; // trigger reflow
+        void element.offsetWidth; // Forzar reflow
         element.classList.add(index === 1 ? 'slideInLeft' : 'slideInRight');
     };
 
+    // Registra el voto del usuario y avanza al siguiente enfrentamiento
     const vote = (winner, index) => {
-        // Visual Feedback
+        // Feedback visual
         const winnerCard = index === 1 ? fighter1 : fighter2;
         winnerCard.classList.add('winner-flash');
 
-        // Wait for animation
+        // Esperar animación y avanzar
         setTimeout(() => {
             winnerCard.classList.remove('winner-flash');
             nextRoundBracket.push(winner);
@@ -184,23 +183,23 @@ const VersusManager = (() => {
         }, 400);
     };
 
+    // Resuelve la ronda: si queda 1 ganador → final, sino → siguiente ronda
     const resolveRound = () => {
         if (nextRoundBracket.length === 1) {
-            // We have a winner!
+            // ¡Tenemos ganador!
             finalWinner = nextRoundBracket[0];
             renderWinner(finalWinner);
         } else {
-            // Next Round
+            // Siguiente ronda
             currentBracket = nextRoundBracket;
             nextRoundBracket = [];
             currentPairIndex = 0;
             currentRoundNum++;
-
-            // Render first match of new round
             renderMatch();
         }
     };
 
+    // Muestra la pantalla de ganador del torneo
     const renderWinner = (game) => {
         switchStage('winner');
 
@@ -209,8 +208,6 @@ const VersusManager = (() => {
             <h3>${game.title}</h3>
             <p>${game.description.length > 100 ? game.description.substring(0, 100) + '...' : game.description}</p>
         `;
-
-        // Confetti? (CSS based in style.css maybe)
     };
 
     return { init };

@@ -1,0 +1,125 @@
+/* =====================================================
+   RESPONSIVE & ACCESIBILIDAD
+   Media queries globales para mobile y tablet.
+   Las media queries específicas de features (RAWG,
+   Versus, etc.) están en sus respectivos módulos.
+   ===================================================== */
+
+/* =====================================================
+   ACCESIBILIDAD - REDUCED MOTION
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .game-card {
+        opacity: 1;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - MÓVILES
+   ===================================================== */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.25rem;
+    }
+
+    .logo {
+        font-size: 1.4rem;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    main {
+        padding: 1.5rem;
+    }
+
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .game-detail-container {
+        padding: 1.5rem;
+        margin: 1rem;
+        border-radius: 16px;
+    }
+
+    .game-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .game-poster {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .game-info-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .game-meta {
+        justify-content: center;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn,
+    .button,
+    .btn-secondary,
+    .button-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .game-specs {
+        grid-template-columns: 1fr;
+    }
+
+    .tabla-datos {
+        font-size: 0.8rem;
+    }
+
+    .tabla-datos th,
+    .tabla-datos td {
+        padding: 0.75rem;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - TABLETS
+   ===================================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    main {
+        padding: 2rem;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .game-poster {
+        width: 250px;
+    }
+
+    .game-info-header h1 {
+        font-size: 2rem;
+    }
+}

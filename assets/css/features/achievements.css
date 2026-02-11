@@ -1,0 +1,210 @@
+/* =====================================================
+   ACHIEVEMENTS SYSTEM
+   Toast notifications + Modal de logros + Cards
+   (Definición ÚNICA - eliminadas 2 duplicadas del
+   style.css original)
+   ===================================================== */
+
+/* =====================================================
+   TOAST NOTIFICATION
+   ===================================================== */
+.achievement-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+
+    /* Layout */
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    /* Apariencia */
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid #ffd700;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    min-width: 300px;
+    max-width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.2);
+
+    /* Comportamiento */
+    z-index: 11000;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+    opacity: 0;
+    top: auto;
+}
+
+/* Trigger classes (dos variantes usadas en el proyecto) */
+.achievement-toast.show,
+.achievement-toast.toast-visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.ach-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.ach-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.ach-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ach-desc {
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+/* Lite Mode Override for Achievements */
+body.lite-mode .achievement-toast {
+    background: #000;
+    border: 1px solid #fff;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: monospace;
+}
+
+body.lite-mode .ach-title {
+    text-shadow: none;
+    color: #fff;
+}
+
+/* =====================================================
+   ACHIEVEMENTS MODAL
+   ===================================================== */
+.achievements-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.achievements-window {
+    background: rgba(20, 20, 25, 0.95);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    animation: zoomIn 0.3s var(--ease-out-back);
+}
+
+.achievements-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.achievements-header h2 {
+    font-family: var(--font-display);
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    font-size: 1.5rem;
+}
+
+.btn-close-ach {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.btn-close-ach:hover {
+    opacity: 1;
+}
+
+.achievements-body {
+    padding: 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.achievements-grid-large {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* =====================================================
+   ACHIEVEMENT CARDS
+   ===================================================== */
+.achievement-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.achievement-card.locked {
+    opacity: 0.5;
+    filter: grayscale(1);
+}
+
+.achievement-card.unlocked {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0.2));
+    border-color: rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.achievement-card .ach-icon-large {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+}
+
+.achievement-card .ach-info h4 {
+    color: #fff;
+    margin-bottom: 0.2rem;
+    font-size: 1rem;
+}
+
+.achievement-card.unlocked .ach-info h4 {
+    color: #ffd700;
+}
+
+.achievement-card .ach-info p {
+    color: #888;
+    font-size: 0.85rem;
+    line-height: 1.3;
+}
+
+.achievements-footer {
+    padding: 1rem 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
