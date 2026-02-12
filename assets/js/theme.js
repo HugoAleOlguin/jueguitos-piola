@@ -286,7 +286,7 @@
                 if (clicks >= 7) {
                     this.showLogoMsg(Utils.randomChoice(CONFIG.MESSAGES.LOGO));
                     if (typeof AchievementManager !== 'undefined') {
-                        for (let i = 0; i < 7; i++) AchievementManager.trackEvent({ type: 'LOGO_CLICK' });
+                        AchievementManager.trackEvent({ type: 'LOGO_CLICK' });
                     }
                     clicks = 0;
                 }

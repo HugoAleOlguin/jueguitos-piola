@@ -137,8 +137,9 @@ const AchievementManager = (() => {
             } else {
                 unlocked = new Set(saved.unlocked || []);
                 stats = { ...stats, ...(saved.stats || {}) };
-                // Los giros de ruleta se resetean por sesión
+                // Los giros de ruleta y cambios de color se resetean por sesión
                 stats.rouletteSpins = 0;
+                stats.colorChanges = 0;
                 speedrun = { ...speedrun, ...(saved.speedrun || {}) };
             }
         } catch (e) {
@@ -284,24 +285,17 @@ const AchievementManager = (() => {
         switch (details.type) {
             case 'LOGO_CLICK':
                 stats.logoClicks++;
-                if (stats.logoClicks >= 50) unlock('pesado');
+                if (stats.logoClicks >= 7) unlock('pesado');
                 break;
 
             case 'COLOR_CHANGE':
-                // Contar cambios rápidos (menos de 2s entre cada uno)
-                const now = Date.now();
-                if (now - stats.lastColorChange < 2000) {
-                    stats.colorChanges++;
-                } else {
-                    stats.colorChanges = 1;
-                }
-                stats.lastColorChange = now;
+                stats.colorChanges++;
                 if (stats.colorChanges >= 5) unlock('colores');
                 break;
 
             case 'ROULETTE_SPIN':
                 stats.rouletteSpins++;
-                if (stats.rouletteSpins >= 5) unlock('ludopath');
+                if (stats.rouletteSpins >= 10) unlock('ludopath');
                 break;
 
             case 'GAME_OPEN':
