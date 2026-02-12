@@ -40,6 +40,8 @@
 
     <link rel="canonical" href="https://hugoaleolguin.github.io/jueguitos-piola/">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/features/gamedle.css">
+    <link rel="stylesheet" href="assets/css/features/minigames-modal.css">
     <link rel="icon" href="favicon.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -74,12 +76,12 @@
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="Buscar juegos...">
             </div>
-            <!-- Botón Configuración Avanzada -->
+            <!-- Botón Minijuegos -->
+            <button class="theme-toggle" id="btnMiniGames" title="Minijuegos">
+                🎮
+            </button>
             <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
                 🎲
-            </button>
-            <button class="theme-toggle" id="btnVersus" title="Torneo Versus">
-                ⚔️
             </button>
             
             <button class="theme-toggle" id="settingsToggle" title="Configuración">
@@ -293,6 +295,50 @@
         🏆
     </div>
 
+    <!-- Modal Minijuegos -->
+    <div id="miniGamesModal">
+        <button id="miniGamesCloseBtn">×</button>
+        <div id="miniGamesContainer">
+            <h2 id="miniGamesTitle">🎮 MINIJUEGOS</h2>
+            <div id="miniGamesGrid">
+                <div class="minigame-card" data-minigame="gamedle">
+                    <div class="minigame-icon">🖼️</div>
+                    <div class="minigame-title">Adivina el Juego</div>
+                    <div class="minigame-subtitle">Gamedle</div>
+                </div>
+                <div class="minigame-card" data-minigame="versus">
+                    <div class="minigame-icon">⚔️</div>
+                    <div class="minigame-title">Torneo Versus</div>
+                    <div class="minigame-subtitle">Competencia 1v1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gamedle -->
+    <div id="gamedleModal">
+        <button id="gamedleCloseBtn">×</button>
+        <div id="gamedleContainer">
+            <div id="gamedleGameTitle"></div>
+            <div id="gamedleStats" style="width: 100%; text-align: center; font-size: 12px; color: #888; margin: -10px 0 10px 0;">
+                <span id="gamedlePuntaje">Puntaje: 0</span> | <span id="gamedleJugados">Jugados: 0</span>
+            </div>
+            <canvas id="gamedleCanvas"></canvas>
+            <div id="gamedleProgress" style="width: 100%; height: 8px; background: #1a1a1a; border-radius: 4px; margin: 10px 0; overflow: hidden;">
+                <div id="gamedleProgressBar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #00ff88, #0099cc); transition: width 0.3s ease;"></div>
+            </div>
+            <div id="gamedlePercentageContainer" style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span>Pixelación: <span id="gamedlePercentage">100%</span></span>
+                <span id="gamedleAttemptCounter" style="color: #0099cc; font-weight: bold;">1 / 10</span>
+            </div>
+            <div style="position: relative; width: 100%;">
+                <input type="text" id="gamedleInput" placeholder="Escribe el nombre del juego..." autocomplete="off">
+                <div id="gamedleSuggestions"></div>
+            </div>
+            <button id="gamedleNextBtn">Siguiente (Enter)</button>
+        </div>
+    </div>
+
     <!-- Scripts con defer para no bloquear el renderizado inicial -->
     <script src="assets/js/games.js"></script>
     <script src="assets/js/app.js" defer></script>
@@ -300,6 +346,8 @@
     <script src="assets/js/settings.js" defer></script>
     <script src="assets/js/achievements.js" defer></script>
     <script src="assets/js/versus.js" defer></script>
+    <script src="assets/js/gamedle.js" defer></script>
+    <script src="assets/js/minigames-modal.js" defer></script>
 
     <noscript>
         <div style="padding: 20px; text-align: center; color: white;">

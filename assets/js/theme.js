@@ -168,7 +168,7 @@
     const CacheManager = {
         init() {
             this.checkForUpdates();
-            if (typeof gamesData !== 'undefined') {
+            if (typeof window.gamesData !== 'undefined') {
                 this.save(gamesData);
             }
         },

@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === INICIALIZACIÓN ===
     const init = () => {
-        if (typeof gamesData === 'undefined') {
+        if (typeof window.gamesData === 'undefined') {
             gamesGrid.innerHTML = '<p class="error">Error: No se pudieron cargar los datos.</p>';
             return;
         }
-        allGames = gamesData;
+        allGames = window.gamesData;
 
         // 1. Verificar ruta actual
         handleRoute();
@@ -74,6 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 handleSearch(e.target.value);
+            });
+        }
+
+        // Botón Minijuegos (abre modal selector)
+        const btnMiniGames = document.getElementById('btnMiniGames');
+        if (btnMiniGames) {
+            btnMiniGames.addEventListener('click', () => {
+                miniGamesModal?.open?.();
             });
         }
 

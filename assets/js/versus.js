@@ -210,7 +210,10 @@ const VersusManager = (() => {
         `;
     };
 
-    return { init };
+    return { init, openModal };
 })();
 
 document.addEventListener('DOMContentLoaded', VersusManager.init);
+
+// Exponer globalmente para minigames modal
+window.openVersus = () => VersusManager.openModal();

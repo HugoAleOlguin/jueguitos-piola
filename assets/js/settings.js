@@ -3,7 +3,9 @@
  * Maneja: Fondo, Blur, Color, Modo Lite, Presets de Tema
  */
 
-const SettingsManager = (() => {
+// Evitar redeclaración
+if (typeof window.SettingsManager === 'undefined') {
+    window.SettingsManager = (() => {
     // Claves de localStorage
     const STORAGE_KEYS = {
         BG_TYPE: 'jueguitos_settings_bg_type',   // 'default', 'url', 'custom', 'blob'
@@ -593,7 +595,12 @@ const SettingsManager = (() => {
     return {
         init
     };
-})();
+    })();
+}
 
 // Auto-inicializar al cargar DOM
-document.addEventListener('DOMContentLoaded', SettingsManager.init);
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof window.SettingsManager !== 'undefined') {
+        window.SettingsManager.init();
+    }
+});
