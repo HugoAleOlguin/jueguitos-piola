@@ -81,8 +81,10 @@ body.prime-mode .game-card a.jugar-ahora:hover {
 }
 
 /* Scrollbar Legacy */
-body.prime-mode ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #d53369, #daae51) !important;
+
+/* Firefox Retro Mode */
+body.prime-mode * {
+    scrollbar-color: #d53369 rgba(0, 0, 0, 0.3);
 }
 
 /* Ocultar elementos modernos si es necesario */

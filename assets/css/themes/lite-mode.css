@@ -13,6 +13,7 @@ body.lite-mode *:not(.roulette-window):not(.roulette-strip):not(.roulette-card):
     text-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
     filter: none !important;
 }
 
@@ -114,6 +115,12 @@ body.lite-mode ::-webkit-scrollbar-thumb {
     background: #444;
     border: 1px solid #fff;
     border-radius: 0;
+}
+
+/* Firefox Lite Mode */
+body.lite-mode * {
+    scrollbar-width: thin;
+    scrollbar-color: #444 #000;
 }
 
 /* Bloquear interaccion de hover en cards */
