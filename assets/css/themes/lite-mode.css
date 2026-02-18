@@ -74,7 +74,7 @@ body.lite-mode .tag {
 /* Botones estilo Windows 95 / DOS */
 body.lite-mode .btn,
 body.lite-mode .button,
-body.lite-mode input,
+body.lite-mode input:not(.toggle-input),
 body.lite-mode .modal,
 body.lite-mode .settings-modal {
     background: #000 !important;

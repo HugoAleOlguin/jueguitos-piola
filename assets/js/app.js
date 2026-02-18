@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const bgBtn = gameContainer.querySelector('.set-bg-btn');
         if (bgBtn) {
             bgBtn.addEventListener('click', () => {
-                localStorage.setItem('jueguitos_settings_bg_type', 'custom');
+                localStorage.setItem('jueguitos_settings_bg_type', 'url');
                 localStorage.setItem('jueguitos_settings_bg_value', game.image);
                 location.reload();
             });
