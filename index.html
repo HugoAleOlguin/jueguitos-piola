@@ -72,8 +72,8 @@
 
     <header>
         <h1 class="logo">JUEGUITOS PIOLA</h1>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <div class="search-bar">
+        <nav style="display: flex; gap: 1rem; align-items: center;">
+            <div class="search-bar" role="search">
                 <input type="text" id="searchInput" placeholder="Buscar juegos..." aria-label="Buscar juegos">
             </div>
             <!-- Botón Minijuegos -->
@@ -87,14 +87,15 @@
             <button class="theme-toggle" id="settingsToggle" title="Configuración">
                 ⚙️
             </button>
-        </div>
+        </nav>
     </header>
 
     <!-- Modal de Configuración -->
-    <div class="settings-modal-overlay" id="settingsModal" style="display: none;">
+    <div class="settings-modal-overlay" id="settingsModal" style="display: none;" role="dialog" aria-modal="true"
+        aria-labelledby="settingsTitle">
         <div class="settings-modal">
             <div class="settings-header">
-                <h2>Configuración</h2>
+                <h2 id="settingsTitle">Configuración</h2>
                 <button class="btn-close" id="btnCancelSettings">×</button>
             </div>
 
@@ -224,7 +225,8 @@
     </div>
 
     <!-- Modal de Ruleta Randomizer -->
-    <div class="roulette-modal-overlay" id="rouletteModal" style="display: none;">
+    <div class="roulette-modal-overlay" id="rouletteModal" style="display: none;" role="dialog" aria-modal="true"
+        aria-labelledby="rouletteGameTitle">
         <div class="roulette-container">
             <div class="roulette-window">
                 <div class="roulette-strip" id="rouletteStrip">
@@ -240,9 +242,9 @@
     </div>
 
     <main>
-        <div class="games-grid" id="gamesGrid">
+        <section class="games-grid" id="gamesGrid" aria-label="Catálogo de juegos">
             <!-- Los juegos se cargarán aquí dinámicamente -->
-        </div>
+        </section>
 
         <!-- Vista de Detalle de Juego (SPA) -->
         <div id="game-view" style="display: none; animation: fadeIn 0.5s ease;">
@@ -257,7 +259,8 @@
     </footer>
 
     <!-- Modal Versus -->
-    <div class="versus-modal-overlay" id="versusModal" style="display: none;">
+    <div class="versus-modal-overlay" id="versusModal" style="display: none;" role="dialog" aria-modal="true"
+        aria-labelledby="vsTitle">
         <div class="versus-container">
             <div class="versus-header">
                 <h2 id="vsTitle">TORNEO PIOLA</h2>
@@ -300,10 +303,11 @@
     </div>
 
     <!-- Modal Achievements -->
-    <div class="achievements-modal-overlay" id="achievementsModal" style="display: none;">
+    <div class="achievements-modal-overlay" id="achievementsModal" style="display: none;" role="dialog"
+        aria-modal="true" aria-labelledby="achTitle">
         <div class="achievements-window">
             <div class="achievements-header">
-                <h2>🏆 Logros Desbloqueados <span id="achTitleCount">(0/0)</span></h2>
+                <h2 id="achTitle">🏆 Logros Desbloqueados <span id="achTitleCount">(0/0)</span></h2>
                 <button class="btn-close-ach" id="btnCloseAchievements">×</button>
             </div>
             <div class="achievements-body">
@@ -323,7 +327,7 @@
     </div>
 
     <!-- Modal Minijuegos -->
-    <div id="miniGamesModal">
+    <div id="miniGamesModal" role="dialog" aria-modal="true" aria-labelledby="miniGamesTitle">
         <button id="miniGamesCloseBtn">×</button>
         <div id="miniGamesContainer">
             <h2 id="miniGamesTitle">🎮 MINIJUEGOS</h2>
@@ -343,7 +347,7 @@
     </div>
 
     <!-- Modal Gamedle -->
-    <div id="gamedleModal">
+    <div id="gamedleModal" role="dialog" aria-modal="true" aria-labelledby="gamedleGameTitle">
         <button id="gamedleCloseBtn">×</button>
         <div id="gamedleContainer">
             <div id="gamedleGameTitle"></div>
