@@ -339,6 +339,8 @@ function renderGamesList() {
             return `
             <div class="game-card-item" data-index="${game.originalIndex}" 
                  onclick="editGame(${game.originalIndex})"
+                 role="button" tabindex="0"
+                 onkeydown="if(event.key==='Enter'||event.key===' ') editGame(${game.originalIndex})"
                  style="${isHidden ? 'opacity: 0.6; border: 1px dashed var(--text-muted);' : ''} cursor: pointer; position: relative; overflow:hidden;">
                 
                 <div class="drag-handle" title="Arrastrar para reordenar" 
@@ -470,7 +472,7 @@ function loadTags() {
     const container = document.getElementById('tagsSelector');
 
     container.innerHTML = tags.map(tag => `
-        <span class="tag-badge" onclick="toggleTag(this, '${tag}')">${tag}</span>
+        <button type="button" class="tag-badge" onclick="toggleTag(this, '${tag}')">${tag}</button>
     `).join('');
 }
 
@@ -529,15 +531,15 @@ function addDynamicButton(data = null) {
     const div = document.createElement('div');
     div.className = 'btn-row';
     div.innerHTML = `
-        <input type="text" class="input-field input-sm d-btn-name" placeholder="Nombre" value="${label}" style="width:25%">
-        <input type="text" class="input-field input-sm d-btn-url" placeholder="URL" value="${url}" style="flex:1">
-        <select class="select-sm d-btn-style" style="width:90px">
+        <input type="text" class="input-field input-sm d-btn-name" placeholder="Nombre" value="${label}" style="width:25%" aria-label="Nombre del botón">
+        <input type="text" class="input-field input-sm d-btn-url" placeholder="URL" value="${url}" style="flex:1" aria-label="URL del botón">
+        <select class="select-sm d-btn-style" style="width:90px" aria-label="Estilo del botón">
             <option value="primary" ${style === 'primary' ? 'selected' : ''}>Azul</option>
             <option value="button" ${(!style || style === 'button') ? 'selected' : ''}>Normal</option>
             <option value="secondary" ${style === 'secondary' ? 'selected' : ''}>Gris</option>
             <option value="danger" ${style === 'danger' ? 'selected' : ''}>Rojo</option>
         </select>
-        <button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" style="color:#666; padding:0 8px">✕</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" style="color:#666; padding:0 8px" aria-label="Eliminar botón">✕</button>
     `;
     container.appendChild(div);
 }

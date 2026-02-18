@@ -286,6 +286,13 @@
             align-items: center;
             gap: 10px;
             transition: all 0.2s;
+            /* Button Reset */
+            width: 100%;
+            background: transparent;
+            border: 1px solid transparent;
+            text-align: left;
+            font-family: inherit;
+            font-size: 1rem;
         }
 
         .nav-item:hover {
@@ -424,6 +431,9 @@
             cursor: pointer;
             transition: all 0.2s;
             user-select: none;
+            /* Button Reset */
+            color: var(--text-muted);
+            font-family: inherit;
         }
 
         .tag-badge:hover {
@@ -742,7 +752,7 @@
             <h2>ACCESO ADMIN</h2>
             <div class="form-group">
                 <input type="password" id="passwordInput" class="input-field" placeholder="Contraseña de acceso"
-                    autofocus>
+                    autofocus aria-label="Contraseña de acceso">
             </div>
             <button onclick="login()" class="btn btn-primary">
                 <span>Ingresar al Sistema</span>
@@ -755,8 +765,10 @@
 
         <header>
             <div style="display:flex; align-items:center; gap:15px">
-                <h3 style="margin:0; font-family: 'Orbitron', sans-serif; color:var(--primary-color);">PANEL DE CONTROL
-                </h3>
+                <h1
+                    style="margin:0; font-family: 'Orbitron', sans-serif; color:var(--primary-color); font-size: 1.5rem;">
+                    PANEL DE CONTROL
+                </h1>
             </div>
             <button onclick="logout()" class="btn btn-ghost btn-sm" style="border-radius:20px">Cerrar Sesión</button>
         </header>
@@ -765,15 +777,15 @@
             <!-- Sidebar -->
             <aside class="sidebar">
                 <nav>
-                    <div class="nav-item active" data-tab="add">
+                    <button class="nav-item active" data-tab="add" type="button">
                         <span>➕</span> Agregar Juego
-                    </div>
-                    <div class="nav-item" data-tab="list">
+                    </button>
+                    <button class="nav-item" data-tab="list" type="button">
                         <span>📋</span> Lista de Juegos
-                    </div>
-                    <div class="nav-item" data-tab="settings">
+                    </button>
+                    <button class="nav-item" data-tab="settings" type="button">
                         <span>⚙️</span> Configuración
-                    </div>
+                    </button>
                 </nav>
             </aside>
 
@@ -795,37 +807,38 @@
                                 <form id="gameForm" onsubmit="handleFormSubmit(event)">
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label>ID Único (slug)</label>
+                                            <label for="inpId">ID Único (slug)</label>
                                             <input type="text" id="inpId" class="input-field"
                                                 placeholder="ej: lethal-company" required oninput="updatePreview()">
                                         </div>
                                         <div class="form-group">
-                                            <label>Título del Juego</label>
+                                            <label for="inpTitle">Título del Juego</label>
                                             <input type="text" id="inpTitle" class="input-field"
                                                 placeholder="ej: Lethal Company" required oninput="updatePreview()">
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Descripción Corta (Tarjeta)</label>
+                                        <label for="inpDesc">Descripción Corta (Tarjeta)</label>
                                         <input type="text" id="inpDesc" class="input-field" required
                                             oninput="updatePreview()">
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Descripción Completa (Opcional)</label>
+                                        <label for="inpFullDesc">Descripción Completa (Opcional)</label>
                                         <textarea id="inpFullDesc" class="input-field"
                                             placeholder="Detalles, instrucciones, updates..."></textarea>
                                     </div>
 
                                     <div class="form-group">
-                                        <label>URL de Imagen</label>
+                                        <label for="inpImage">URL de Imagen</label>
                                         <input type="url" id="inpImage" class="input-field" placeholder="https://..."
                                             required oninput="updatePreview()">
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Etiquetas</label>
+                                        <span class="label-text"
+                                            style="display:block; color:var(--text-muted); margin-bottom:0.5rem; font-size:0.9rem;">Etiquetas</span>
                                         <div id="tagsSelector" class="tags-wrapper"></div>
                                     </div>
 
@@ -876,7 +889,7 @@
                 <div id="listView" class="view-section hidden">
                     <div style="margin-bottom: 1rem;">
                         <input type="text" id="searchGames" class="input-field" placeholder="Buscar juego..."
-                            onkeyup="renderGamesList()">
+                            onkeyup="renderGamesList()" aria-label="Buscar juego">
                     </div>
                     <div id="gamesList">
                         <!-- Items rendered via JS -->
@@ -891,7 +904,8 @@
                         <p class="text-sm" style="margin-bottom:1rem">Token necesario para guardar cambios en GitHub.
                         </p>
                         <div class="form-group">
-                            <input type="password" id="tokenSettingsInput" class="input-field" placeholder="ghp_...">
+                            <input type="password" id="tokenSettingsInput" class="input-field" placeholder="ghp_..."
+                                aria-label="Token de GitHub">
                         </div>
                         <button onclick="saveToken()" class="btn btn-primary">Actualizar Token</button>
                     </div>
@@ -944,8 +958,8 @@
                                 </h4>
                                 <p class="text-sm" style="margin-bottom:10px">Importar un archivo JSON (Sobrescribe
                                     todo).</p>
-                                <input type="file" id="restoreInput" style="display:none"
-                                    onchange="handleRestore(this)">
+                                <input type="file" id="restoreInput" style="display:none" onchange="handleRestore(this)"
+                                    aria-label="Seleccionar archivo de respaldo">
                                 <button onclick="document.getElementById('restoreInput').click()" class="btn btn-ghost">
                                     ⬆️ Subir Archivo
                                 </button>
@@ -993,7 +1007,8 @@
             <h3>Configuración Inicial</h3>
             <p style="margin: 1rem 0; color: #aaa;">Para administrar este sitio, necesitas un <strong>GitHub Personal
                     Access Token</strong> con permisos de "repo".</p>
-            <input type="password" id="tokenInput" class="input-field" placeholder="Pega tu token aquí">
+            <input type="password" id="tokenInput" class="input-field" placeholder="Pega tu token aquí"
+                aria-label="Token de GitHub">
             <br><br>
             <button onclick="saveToken()" class="btn btn-primary">Guardar y Continuar</button>
         </div>
