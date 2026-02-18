@@ -67,11 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
             searchInput.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase().trim();
 
-                // 🕵️ Acceso secreto al admin
-                if (term === 'admin') {
-                    window.location.href = 'pages/admin.html';
-                    return;
-                }
 
                 handleSearch(e.target.value);
             });
@@ -91,27 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnRandom.addEventListener('click', startRoulette);
         }
 
-        // 🕵️ Trigger secreto "HACK" — descarga trainer si existe
-        let keys = [];
-        window.addEventListener('keydown', (e) => {
-            keys.push(e.key.toLowerCase());
-            if (keys.length > 4) keys.shift();
 
-            if (keys.join('') === 'hack') {
-                const params = new URLSearchParams(window.location.search);
-                const gameId = params.get('id');
-                if (gameId) {
-                    const game = allGames.find(g => g.id === gameId);
-                    if (game && game.hack) {
-                        console.log('💉 TRAINER DETECTED: Downloading...', game.title);
-                        window.open(game.hack, '_blank');
-                    } else {
-                        console.log('⛔ No trainer found for:', gameId);
-                    }
-                }
-                keys = [];
-            }
-        });
     };
 
     // === ROUTING ===

@@ -14,7 +14,7 @@ const AchievementManager = (() => {
         // Secretos
         { id: 'prime', title: 'El Prime', desc: 'Activaste el diseño original. Esta bonito :,(', icon: '📺' },
         { id: 'pesado', title: 'Sos Re Pesado', desc: 'Deja al pobre logo en paz.', icon: '📢' },
-        { id: 'void', title: 'No Deberías Estar Aquí', desc: '3:33 AM.', icon: '🌑' },
+
         { id: 'egg', title: '¿Qué Carajo?', desc: 'Buscaste lo que no debías.', icon: '🥚' },
         { id: 'cochino', title: 'Cochino', desc: 'Andá a buscar eso a otro lado.', icon: '🐷' },
         { id: 'curious_cat', title: 'Curioso', desc: '¿Qué esperabas encontrar acá abajo?', icon: '🐱' },
@@ -255,29 +255,7 @@ const AchievementManager = (() => {
             footer.addEventListener('click', () => unlock('curious_cat'));
         }
 
-        // 2. Verificar hora para Void Mode (3:XX AM)
-        const checkVoidTime = () => {
-            const hour = new Date().getHours();
-            if (hour === 3) unlock('void');
-        };
-        checkVoidTime();
-        setInterval(checkVoidTime, 60000); // Re-verificar cada minuto
 
-        // 3. Código Konami → Desbloquea "Void"
-        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-        let konamiIndex = 0;
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === konamiCode[konamiIndex].toLowerCase()) {
-                konamiIndex++;
-                if (konamiIndex === konamiCode.length) {
-                    unlock('void');
-                    konamiIndex = 0;
-                }
-            } else {
-                konamiIndex = 0;
-            }
-        });
     };
 
     // === TRACKING DE EVENTOS (llamado desde otros módulos) ===
