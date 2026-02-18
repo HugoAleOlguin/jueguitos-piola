@@ -133,6 +133,9 @@ if (typeof window.SettingsManager === 'undefined') {
         };
 
         const applyBackground = async (isLite) => {
+            // Si está en modo Retro (Prime), no aplicar fondo custom
+            if (document.documentElement.getAttribute('data-theme') === 'retro') return;
+
             const { bgType, bgValue } = currentSettings;
             const body = document.body;
 
@@ -167,6 +170,9 @@ if (typeof window.SettingsManager === 'undefined') {
         };
 
         const applyVisuals = (isLite) => {
+            // Si está en modo Retro, no aplicar estilos visuales custom
+            if (document.documentElement.getAttribute('data-theme') === 'retro') return;
+
             const blurVal = isLite ? '0' : (currentSettings.blur || '0');
             const colorVal = currentSettings.themeColor || DEFAULTS.THEME_COLOR;
 
@@ -490,6 +496,15 @@ if (typeof window.SettingsManager === 'undefined') {
                 localStorage.setItem(STORAGE_KEYS.CURSOR, cursor);
                 localStorage.setItem(STORAGE_KEYS.PARTICLES, particles);
 
+                // --- ACHIEVEMENTS CHECK ---
+                if (typeof AchievementManager !== 'undefined') {
+                    // Logro: No Veo Un Carajo (Max Blur)
+                    if (parseInt(blur) >= 20) AchievementManager.unlock('blur');
+
+                    // Logro: PC del Gobierno (Lite Mode)
+                    if (isLite) AchievementManager.unlock('potato');
+                }
+
                 // Update State
                 currentSettings = {
                     bgType: type, bgValue: value, blur, themeColor: color,
@@ -560,6 +575,11 @@ if (typeof window.SettingsManager === 'undefined') {
             localStorage.setItem('jueguitos_presets', JSON.stringify(list));
             loadPresetsList();
             document.getElementById('presetName').value = '';
+
+            // Logro: Aesthetic (Crear tema propio)
+            if (typeof AchievementManager !== 'undefined') {
+                AchievementManager.unlock('diseño');
+            }
         };
 
         const loadPresetsList = async () => {
@@ -650,7 +670,10 @@ if (typeof window.SettingsManager === 'undefined') {
             openModal();
         };
 
-        return { init };
+        return {
+            init,
+            applySettings
+        };
     })();
 }
 

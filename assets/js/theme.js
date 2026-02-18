@@ -35,7 +35,21 @@
             const current = this.getSaved();
             const newTheme = current === 'retro' ? 'dark' : 'retro';
             localStorage.setItem(CONFIG.KEYS.THEME, newTheme);
-            this.apply(newTheme);
+
+            if (newTheme === 'retro') {
+                // FORCE RESET INLINE STYLES so CSS wins
+                document.body.style.backgroundImage = '';
+                document.documentElement.style.removeProperty('--primary-color');
+                document.documentElement.style.removeProperty('--glass-blur');
+                this.apply('retro');
+            } else {
+                this.apply('dark');
+                // Restore User Settings
+                if (window.SettingsManager && window.SettingsManager.applySettings) {
+                    window.SettingsManager.applySettings();
+                }
+            }
+
             this.notify(`Modo ${newTheme === 'retro' ? 'Prime (Retro)' : 'Normal'} activado`);
         },
         notify(msg) {
@@ -70,7 +84,16 @@
                 // Prime Theme
                 if (val === 'prime') {
                     this.toggleRetro();
+                    if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('prime');
                     this.clearSearch(searchInput);
+                    return;
+                }
+
+                // Cochino (Naughty Words)
+                const NAUGHTY = ['hentai', 'porno', 'xxx', 'sexo', 'pene', 'puta', 'milf'];
+                if (NAUGHTY.some(word => val.includes(word))) {
+                    if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('cochino');
+                    this.clearSearch(searchInput, 1000);
                     return;
                 }
 

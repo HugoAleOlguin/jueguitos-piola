@@ -188,6 +188,8 @@ Historial de cambios estructurales y visuales del proyecto.
   - **Limpieza**: Eliminación de opciones de sonido redundantes.
 - **Interacción Logo**: Se arregló la selección de texto accidental al hacer doble click en el logo y se ajustó el logro "Sos Re Pesado" (ahora requiere 50 clicks y solo funciona en el home).
 - **Cursores 2.0 (Beta)**: Nuevo menú compacto, nuevos cursores (Wait, Texto, Mano) y opción experimentual para **subir tu propio cursor** (.png).
+- **Logros Reparados**: Se reactivaron los disparadores para "Aesthetic", "Prime", "Cochino", "PC del Gobierno" y "No Veo Un Carajo".
+- **Modo Prime Restaurado**: Se solucionó el conflicto que impedía activar el "Modo Prime" (Retro). Ahora respeta tu configuración al salir y se impone correctamente al entrar.
 
 ## Versiones Principales
 

@@ -20,11 +20,12 @@
 }
 
 [data-theme="retro"] body {
-    background-color: #050505;
+    background-color: #050505 !important;
     background-image:
         linear-gradient(0deg, transparent 24%, var(--color-grid) 25%, var(--color-grid) 26%, transparent 27%, transparent 74%, var(--color-grid) 75%, var(--color-grid) 76%, transparent 77%, transparent),
-        linear-gradient(90deg, transparent 24%, var(--color-grid) 25%, var(--color-grid) 26%, transparent 27%, transparent 74%, var(--color-grid) 75%, var(--color-grid) 76%, transparent 77%, transparent);
-    background-size: 50px 50px;
+        linear-gradient(90deg, transparent 24%, var(--color-grid) 25%, var(--color-grid) 26%, transparent 27%, transparent 74%, var(--color-grid) 75%, var(--color-grid) 76%, transparent 77%, transparent) !important;
+    background-size: 50px 50px !important;
+    background-attachment: scroll !important;
 }
 
 /* Scrollbar retro con gradiente rosa/dorado */
