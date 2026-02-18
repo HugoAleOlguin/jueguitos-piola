@@ -125,6 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const showHome = () => {
         document.title = 'Jueguitos Piola';
 
+        // Reset Canonical URL to root
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) {
+            const baseUrl = window.location.origin + window.location.pathname;
+            canonical.href = baseUrl;
+        }
+
         // Alternar vistas
         gameView.style.display = 'none';
         gamesGrid.style.display = 'grid';
@@ -161,6 +168,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // SEO: Título y Meta dinámicos
         document.title = `${game.title} | Jueguitos Piola`;
 
+        // Update Canonical URL
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.rel = 'canonical';
+            document.head.appendChild(canonical);
+        }
+        // Construct canonical URL with ID
+        const baseUrl = window.location.origin + window.location.pathname;
+        canonical.href = `${baseUrl}?id=${game.id}`;
+
         // Meta description
         let metaDesc = document.querySelector('meta[name="description"]');
         if (!metaDesc) {
@@ -185,15 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateMeta('og:description', game.fullDescription || game.description);
         updateMeta('og:image', game.image);
         updateMeta('og:url', window.location.href);
-
-        // Canonical URL
-        let canonical = document.querySelector('link[rel="canonical"]');
-        if (!canonical) {
-            canonical = document.createElement('link');
-            canonical.rel = 'canonical';
-            document.head.appendChild(canonical);
-        }
-        canonical.href = window.location.href;
 
         // JSON-LD (Datos estructurados para SEO)
         updateJsonLd(game);
