@@ -803,234 +803,203 @@
                                     <button onclick="resetForm()" class="btn btn-ghost"
                                         style="padding:4px 8px">Limpiar</button>
                                 </div>
-                                <!-- ... -->
-                                <!-- View: Settings -->
-                                <div id="settingsView" class="view-section hidden">
-                                    <!-- GitHub Token -->
+
+                                <form id="gameForm" onsubmit="handleFormSubmit(event)">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="inpId">ID Único (slug)</label>
+                                            <input type="text" id="inpId" class="input-field"
+                                                placeholder="ej: lethal-company" required oninput="updatePreview()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="inpTitle">Título del Juego</label>
+                                            <input type="text" id="inpTitle" class="input-field"
+                                                placeholder="ej: Lethal Company" required oninput="updatePreview()">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inpDesc">Descripción Corta (Tarjeta)</label>
+                                        <input type="text" id="inpDesc" class="input-field" required
+                                            oninput="updatePreview()">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inpFullDesc">Descripción Completa
+                                            (Opcional)</label>
+                                        <textarea id="inpFullDesc" class="input-field"
+                                            placeholder="Detalles, instrucciones, updates..."></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inpImage">URL de Imagen</label>
+                                        <input type="url" id="inpImage" class="input-field" placeholder="https://..."
+                                            required oninput="updatePreview()">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <span class="label-text"
+                                            style="display:block; color:var(--text-muted); margin-bottom:0.5rem; font-size:0.9rem;">Etiquetas</span>
+                                        <div id="tagsSelector" class="tags-wrapper"></div>
+                                    </div>
+
                                     <div class="form-section">
-                                        <h2>🔑 Credenciales</h2>
-                                        <!-- ... -->
-                                        <!-- Tools Section -->
-                                        <div class="form-section">
-                                            <h2>🛠️ Herramientas de Mantenimiento</h2>
-                                            <!-- ... -->
-                                            <!-- Data Management -->
-                                            <div class="form-section">
-                                                <h2>💾 Gestión de Datos</h2>
-                                                <!-- ... -->
-                                                <!-- Danger Zone -->
-                                                <div class="form-section"
-                                                    style="border-color: rgba(255, 71, 87, 0.3); background: rgba(255, 71, 87, 0.05);">
-                                                    <h2 style="color:var(--danger)">⚠️ Zona de Peligro</h2>
-
-                                                    <form id="gameForm" onsubmit="handleFormSubmit(event)">
-                                                        <div class="form-row">
-                                                            <div class="form-group">
-                                                                <label for="inpId">ID Único (slug)</label>
-                                                                <input type="text" id="inpId" class="input-field"
-                                                                    placeholder="ej: lethal-company" required
-                                                                    oninput="updatePreview()">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="inpTitle">Título del Juego</label>
-                                                                <input type="text" id="inpTitle" class="input-field"
-                                                                    placeholder="ej: Lethal Company" required
-                                                                    oninput="updatePreview()">
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="inpDesc">Descripción Corta (Tarjeta)</label>
-                                                            <input type="text" id="inpDesc" class="input-field" required
-                                                                oninput="updatePreview()">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="inpFullDesc">Descripción Completa
-                                                                (Opcional)</label>
-                                                            <textarea id="inpFullDesc" class="input-field"
-                                                                placeholder="Detalles, instrucciones, updates..."></textarea>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="inpImage">URL de Imagen</label>
-                                                            <input type="url" id="inpImage" class="input-field"
-                                                                placeholder="https://..." required
-                                                                oninput="updatePreview()">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <span class="label-text"
-                                                                style="display:block; color:var(--text-muted); margin-bottom:0.5rem; font-size:0.9rem;">Etiquetas</span>
-                                                            <div id="tagsSelector" class="tags-wrapper"></div>
-                                                        </div>
-
-                                                        <div class="form-section">
-                                                            <div
-                                                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                                                <h4 style="margin:0; font-size:0.9rem; color:#888;">
-                                                                    Botones del Juego</h4>
-                                                                <button type="button" onclick="addDynamicButton()"
-                                                                    class="btn btn-ghost btn-sm"
-                                                                    style="font-size:0.8rem; padding: 4px 8px; background: rgba(255,255,255,0.05)">+
-                                                                    Agregar Otro</button>
-                                                            </div>
-                                                            <div id="dynamicButtonsList"
-                                                                style="display:flex; flex-direction:column; gap:6px;">
-                                                                <!-- Buttons dynamic rows -->
-                                                            </div>
-                                                        </div>
-
-                                                        <button type="submit" class="btn btn-primary"
-                                                            id="finalSubmitBtn">
-                                                            <span id="submitBtnText">Agregar a la lista</span>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <!-- Preview Column -->
-                                            <div class="preview-column">
-                                                <div class="preview-sticky">
-                                                    <h4 style="margin-bottom: 1rem; color: var(--text-muted)">Vista
-                                                        Previa</h4>
-                                                    <div class="preview-card">
-                                                        <div class="preview-img-container">
-                                                            <img id="previewImgEl" style="display:none" alt="Preview">
-                                                        </div>
-                                                        <div class="preview-content">
-                                                            <h3 id="previewTitleEl" class="card-title">Título del Juego
-                                                            </h3>
-                                                            <p id="previewDescEl" class="card-desc">Descripción corta
-                                                                del juego...</p>
-                                                            <div id="previewTagsEl" class="preview-tags">
-                                                                <!-- Tags -->
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div
+                                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                            <h4 style="margin:0; font-size:0.9rem; color:#888;">
+                                                Botones del Juego</h4>
+                                            <button type="button" onclick="addDynamicButton()"
+                                                class="btn btn-ghost btn-sm"
+                                                style="font-size:0.8rem; padding: 4px 8px; background: rgba(255,255,255,0.05)">+
+                                                Agregar Otro</button>
+                                        </div>
+                                        <div id="dynamicButtonsList"
+                                            style="display:flex; flex-direction:column; gap:6px;">
+                                            <!-- Buttons dynamic rows -->
                                         </div>
                                     </div>
 
-                                    <!-- View: List -->
-                                    <div id="listView" class="view-section hidden">
-                                        <div style="margin-bottom: 1rem;">
-                                            <input type="text" id="searchGames" class="input-field"
-                                                placeholder="Buscar juego..." onkeyup="renderGamesList()"
-                                                aria-label="Buscar juego">
-                                        </div>
-                                        <div id="gamesList">
-                                            <!-- Items rendered via JS -->
+                                    <button type="submit" class="btn btn-primary" id="finalSubmitBtn">
+                                        <span id="submitBtnText">Agregar a la lista</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Preview Column -->
+                        <div class="preview-column">
+                            <div class="preview-sticky">
+                                <h4 style="margin-bottom: 1rem; color: var(--text-muted)">Vista
+                                    Previa</h4>
+                                <div class="preview-card">
+                                    <div class="preview-img-container">
+                                        <img id="previewImgEl" style="display:none" alt="Preview">
+                                    </div>
+                                    <div class="preview-content">
+                                        <h3 id="previewTitleEl" class="card-title">Título del Juego
+                                        </h3>
+                                        <p id="previewDescEl" class="card-desc">Descripción corta
+                                            del juego...</p>
+                                        <div id="previewTagsEl" class="preview-tags">
+                                            <!-- Tags -->
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                    <!-- View: Settings -->
-                                    <div id="settingsView" class="view-section hidden">
-                                        <!-- GitHub Token -->
-                                        <div class="form-section">
-                                            <h3>🔑 Credenciales</h3>
-                                            <p class="text-sm" style="margin-bottom:1rem">Token necesario para guardar
-                                                cambios en GitHub.
-                                            </p>
-                                            <div class="form-group">
-                                                <input type="password" id="tokenSettingsInput" class="input-field"
-                                                    placeholder="ghp_..." aria-label="Token de GitHub">
-                                            </div>
-                                            <button onclick="saveToken()" class="btn btn-primary">Actualizar
-                                                Token</button>
-                                        </div>
+                <!-- View: List -->
+                <div id="listView" class="view-section hidden">
+                    <div style="margin-bottom: 1rem;">
+                        <input type="text" id="searchGames" class="input-field" placeholder="Buscar juego..."
+                            onkeyup="renderGamesList()" aria-label="Buscar juego">
+                    </div>
+                    <div id="gamesList">
+                        <!-- Items rendered via JS -->
+                    </div>
+                </div>
 
-                                        <!-- Tools Section -->
-                                        <div class="form-section">
-                                            <h3>🛠️ Herramientas de Mantenimiento</h3>
-                                            <div class="form-row"
-                                                style="margin-top:1rem; grid-template-columns: 1fr 1fr;">
-                                                <!-- Health Check -->
-                                                <div>
-                                                    <h4
-                                                        style="color:var(--text-main); font-size:1rem; margin-bottom:5px">
-                                                        🔍 Diagnóstico
-                                                    </h4>
-                                                    <p class="text-sm" style="margin-bottom:10px">Busca imágenes rotas y
-                                                        enlaces vacíos.</p>
-                                                    <button onclick="runHealthCheck()" class="btn btn-ghost">
-                                                        Ejecutar Diagnóstico
-                                                    </button>
-                                                </div>
+                <!-- View: Settings -->
+                <div id="settingsView" class="view-section hidden">
+                    <!-- GitHub Token -->
+                    <div class="form-section">
+                        <h2>🔑 Credenciales</h2>
+                        <p class="text-sm" style="margin-bottom:1rem">Token necesario para guardar
+                            cambios en GitHub.
+                        </p>
+                        <div class="form-group">
+                            <input type="password" id="tokenSettingsInput" class="input-field" placeholder="ghp_..."
+                                aria-label="Token de GitHub">
+                        </div>
+                        <button onclick="saveToken()" class="btn btn-primary">Actualizar
+                            Token</button>
+                    </div>
 
-                                                <!-- Stats -->
-                                                <div>
-                                                    <h4
-                                                        style="color:var(--text-main); font-size:1rem; margin-bottom:5px">
-                                                        📊 Estadísticas
-                                                    </h4>
-                                                    <p class="text-sm" style="margin-bottom:10px">Ver resumen del
-                                                        catálogo.</p>
-                                                    <button onclick="showStats()" class="btn btn-ghost">
-                                                        Ver Reporte
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <!-- Console Output for Tools -->
-                                            <div id="toolsOutput" class="hidden"
-                                                style="margin-top:1rem; background:rgba(0,0,0,0.3); padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem; max-height:200px; overflow-y:auto; border:1px solid var(--border)">
-                                            </div>
-                                        </div>
+                    <!-- Tools Section -->
+                    <div class="form-section">
+                        <h2>🛠️ Herramientas de Mantenimiento</h2>
+                        <div class="form-row" style="margin-top:1rem; grid-template-columns: 1fr 1fr;">
+                            <!-- Health Check -->
+                            <div>
+                                <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:5px">
+                                    🔍 Diagnóstico
+                                </h4>
+                                <p class="text-sm" style="margin-bottom:10px">Busca imágenes rotas y
+                                    enlaces vacíos.</p>
+                                <button onclick="runHealthCheck()" class="btn btn-ghost">
+                                    Ejecutar Diagnóstico
+                                </button>
+                            </div>
 
-                                        <!-- Data Management -->
-                                        <div class="form-section">
-                                            <h3>💾 Gestión de Datos</h3>
-                                            <div class="form-row" style="margin-top:1rem">
-                                                <div>
-                                                    <h4
-                                                        style="color:var(--text-main); font-size:1rem; margin-bottom:5px">
-                                                        Copia de Seguridad
-                                                    </h4>
-                                                    <p class="text-sm" style="margin-bottom:10px">Descarga todo el
-                                                        catálogo en formato JSON.
-                                                    </p>
-                                                    <button onclick="downloadBackup()" class="btn btn-ghost">
-                                                        ⬇️ Descargar Backup
-                                                    </button>
-                                                </div>
-                                                <div>
-                                                    <h4
-                                                        style="color:var(--text-main); font-size:1rem; margin-bottom:5px">
-                                                        Restaurar Datos
-                                                    </h4>
-                                                    <p class="text-sm" style="margin-bottom:10px">Importar un archivo
-                                                        JSON (Sobrescribe
-                                                        todo).</p>
-                                                    <input type="file" id="restoreInput" style="display:none"
-                                                        onchange="handleRestore(this)"
-                                                        aria-label="Seleccionar archivo de respaldo">
-                                                    <button onclick="document.getElementById('restoreInput').click()"
-                                                        class="btn btn-ghost">
-                                                        ⬆️ Subir Archivo
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                            <!-- Stats -->
+                            <div>
+                                <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:5px">
+                                    📊 Estadísticas
+                                </h4>
+                                <p class="text-sm" style="margin-bottom:10px">Ver resumen del
+                                    catálogo.</p>
+                                <button onclick="showStats()" class="btn btn-ghost">
+                                    Ver Reporte
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Console Output for Tools -->
+                        <div id="toolsOutput" class="hidden"
+                            style="margin-top:1rem; background:rgba(0,0,0,0.3); padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem; max-height:200px; overflow-y:auto; border:1px solid var(--border)">
+                        </div>
+                    </div>
 
-                                        <!-- Danger Zone -->
-                                        <div class="form-section"
-                                            style="border-color: rgba(255, 71, 87, 0.3); background: rgba(255, 71, 87, 0.05);">
-                                            <h3 style="color:var(--danger)">⚠️ Zona de Peligro</h3>
-                                            <p class="text-sm" style="margin-bottom:1rem">Acciones destructivas o de
-                                                cierre de sesión.</p>
+                    <!-- Data Management -->
+                    <div class="form-section">
+                        <h2>💾 Gestión de Datos</h2>
+                        <div class="form-row" style="margin-top:1rem">
+                            <div>
+                                <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:5px">
+                                    Copia de Seguridad
+                                </h4>
+                                <p class="text-sm" style="margin-bottom:10px">Descarga todo el
+                                    catálogo en formato JSON.
+                                </p>
+                                <button onclick="downloadBackup()" class="btn btn-ghost">
+                                    ⬇️ Descargar Backup
+                                </button>
+                            </div>
+                            <div>
+                                <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:5px">
+                                    Restaurar Datos
+                                </h4>
+                                <p class="text-sm" style="margin-bottom:10px">Importar un archivo
+                                    JSON (Sobrescribe
+                                    todo).</p>
+                                <input type="file" id="restoreInput" style="display:none" onchange="handleRestore(this)"
+                                    aria-label="Seleccionar archivo de respaldo">
+                                <button onclick="document.getElementById('restoreInput').click()" class="btn btn-ghost">
+                                    ⬆️ Subir Archivo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                                            <div style="display:flex; gap:10px; flex-wrap:wrap">
-                                                <button onclick="clearCache()" class="btn btn-danger">
-                                                    🗑️ Borrar Caché Local
-                                                </button>
-                                                <button onclick="logout()" class="btn btn-ghost"
-                                                    style="color:var(--danger); border-color:var(--danger)">
-                                                    🚪 Cerrar Sesión Global
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <!-- Danger Zone -->
+                    <div class="form-section"
+                        style="border-color: rgba(255, 71, 87, 0.3); background: rgba(255, 71, 87, 0.05);">
+                        <h2 style="color:var(--danger)">⚠️ Zona de Peligro</h2>
+                        <p class="text-sm" style="margin-bottom:1rem">Acciones destructivas o de
+                            cierre de sesión.</p>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap">
+                            <button onclick="clearCache()" class="btn btn-danger">
+                                🗑️ Borrar Caché Local
+                            </button>
+                            <button onclick="logout()" class="btn btn-ghost"
+                                style="color:var(--danger); border-color:var(--danger)">
+                                🚪 Cerrar Sesión Global
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
             </main>
         </div>
