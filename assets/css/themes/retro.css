@@ -16,12 +16,14 @@ body.prime-mode {
     --glass-blur: 5px !important;
     /* Valor fijo del legacy */
 
-    /* Fondo Grid (Legacy) */
-    background-color: var(--retro-bg) !important;
-    background-image:
+    /* Fondo Grid (Legacy) - USANDO SHORTHAND PARA OVERRIDE TOTAL */
+    background:
         linear-gradient(0deg, transparent 24%, var(--retro-grid-color) 25%, var(--retro-grid-color) 26%, transparent 27%, transparent 74%, var(--retro-grid-color) 75%, var(--retro-grid-color) 76%, transparent 77%, transparent),
-        linear-gradient(90deg, transparent 24%, var(--retro-grid-color) 25%, var(--retro-grid-color) 26%, transparent 27%, transparent 74%, var(--retro-grid-color) 75%, var(--retro-grid-color) 76%, transparent 77%, transparent) !important;
+        linear-gradient(90deg, transparent 24%, var(--retro-grid-color) 25%, var(--retro-grid-color) 26%, transparent 27%, transparent 74%, var(--retro-grid-color) 75%, var(--retro-grid-color) 76%, transparent 77%, transparent),
+        var(--retro-bg) !important;
+
     background-size: 50px 50px !important;
+    background-repeat: repeat !important;
     background-attachment: scroll !important;
     /* Evitar fixed si causa problemas */
 

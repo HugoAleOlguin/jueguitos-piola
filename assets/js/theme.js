@@ -8,6 +8,10 @@
 (function () {
     'use strict';
 
+    // NUCLEAR IDEMPOTENCY CHECK
+    if (window.JueguitosThemeInitialized) return;
+    window.JueguitosThemeInitialized = true;
+
     const CONFIG = {
         KEYS: { THEME: 'jueguitosTheme' },
         ICONS: {
@@ -31,6 +35,17 @@
             const body = document.body;
             body.classList.toggle('prime-mode');
             const isActive = body.classList.contains('prime-mode');
+
+            if (isActive) {
+                // FAILSAFE: Proactively remove custom background
+                body.style.backgroundImage = 'none';
+                body.style.backgroundColor = '#050505';
+            } else {
+                // Restore settings
+                if (window.SettingsManager && window.SettingsManager.applySettings) {
+                    window.SettingsManager.applySettings();
+                }
+            }
 
             localStorage.setItem('jueguitos_prime_mode', isActive);
             this.notify(isActive ? 'Modo Prime ACTIVADO 🕹️' : 'Modo Prime DESACTIVADO');
@@ -65,6 +80,7 @@
 
             searchInput.addEventListener('input', (e) => {
                 const val = e.target.value.toLowerCase().trim();
+                console.log('[Theme] Input:', val); // DEBUG
 
                 // Prime Theme (CSS Override Implementation)
                 if (val === 'prime') {

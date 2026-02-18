@@ -190,7 +190,7 @@ Historial de cambios estructurales y visuales del proyecto.
 - **Cursores 2.0 (Beta)**: Nuevo menú compacto, nuevos cursores (Wait, Texto, Mano) y opción experimentual para **subir tu propio cursor** (.png).
 - **Logros Reparados**: Se reactivaron los disparadores para "Aesthetic", "Prime", "Cochino", "PC del Gobierno" y "No Veo Un Carajo".
 - **Logros Reparados**: Se reactivaron los disparadores para "Aesthetic", "Prime", "Cochino", "PC del Gobierno" y "No Veo Un Carajo".
-- **Modo Prime Eliminado**: A petición del usuario, se eliminó el "Modo Prime" visual para evitar conflictos. El logro "Prime" sigue siendo obtenible al escribir "prime".
+- **Modo Prime 2.0**: ¡Ha vuelto! Se re-implementó el modo "Prime" usando una nueva arquitectura de estilos que garantiza que funcione siempre, respetando la estética original al 100%. Escribe "prime" en el buscador para activarlo.
 
 ## Versiones Principales
 
