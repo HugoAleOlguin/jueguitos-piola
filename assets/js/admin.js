@@ -344,13 +344,16 @@ function renderGamesList() {
                  style="${isHidden ? 'opacity: 0.6; border: 1px dashed var(--text-muted);' : ''} cursor: pointer; position: relative; overflow:hidden;">
                 
                 <div class="drag-handle" title="Arrastrar para reordenar" 
+                     role="button" tabindex="0" aria-label="Arrastrar para reordenar"
                      onpointerdown="initSortable(event, this)" 
                      onclick="event.stopPropagation()"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){ event.stopPropagation(); }"
                      style="padding: 10px; cursor: grab; color: var(--text-muted);">
                      ${ICONS.DRAG}
                 </div>
 
                 <img src="${game.image}" class="game-thumb" width="120" height="68" 
+                     alt="${game.title}"
                      onerror="this.src='../favicon.png'" 
                      style="${isHidden ? 'filter:grayscale(100%)' : ''}; pointer-events:none;">
                 
