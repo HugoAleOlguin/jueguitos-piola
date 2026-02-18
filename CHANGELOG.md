@@ -164,7 +164,7 @@ Historial de cambios estructurales y visuales del proyecto.
     - Logro "Ludópata" rebalanceado a 5 giros (Session-based).
     - `Reset` ahora limpia correctamente todos los stats internos.
 
-**17-18 de Febrero**
+**17-20 de Febrero**
 - **Simplificación Masiva del Código **:
   - Eliminación de **Void Mode** y **Konami Code**.
   - Eliminación de **cheats ocultos** ("hack", "admin") y código legacy.
@@ -189,8 +189,7 @@ Historial de cambios estructurales y visuales del proyecto.
 - **Interacción Logo**: Se arregló la selección de texto accidental al hacer doble click en el logo y se ajustó el logro "Sos Re Pesado" (ahora requiere 50 clicks y solo funciona en el home).
 - **Cursores 2.0 (Beta)**: Nuevo menú compacto, nuevos cursores (Wait, Texto, Mano) y opción experimentual para **subir tu propio cursor** (.png).
 - **Logros Reparados**: Se reactivaron los disparadores para "Aesthetic", "Prime", "Cochino", "PC del Gobierno" y "No Veo Un Carajo".
-- **Logros Reparados**: Se reactivaron los disparadores para "Aesthetic", "Prime", "Cochino", "PC del Gobierno" y "No Veo Un Carajo".
-- **Modo Prime 2.0**: ¡Ha vuelto! Se re-implementó el modo "Prime" usando una nueva arquitectura de estilos que garantiza que funcione siempre, respetando la estética original al 100%. Escribe "prime" en el buscador para activarlo.
+- **Modo Prime 2.0**: Se re-implementó el modo "Prime". Escribe "prime" en el buscador para activarlo.
 
 ## Versiones Principales
 
