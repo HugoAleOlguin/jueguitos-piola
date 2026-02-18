@@ -164,6 +164,22 @@ Historial de cambios estructurales y visuales del proyecto.
     - Logro "Ludópata" rebalanceado a 5 giros (Session-based).
     - `Reset` ahora limpia correctamente todos los stats internos.
 
+**17-18 de Febrero**
+- **Simplificación Masiva del Código **:
+  - Eliminación de **Void Mode** y **Konami Code**.
+  - Eliminación de **cheats ocultos** ("hack", "admin") y código legacy.
+  - Eliminación de gestor de caché manual (ahora nativo del navegador).
+  - Archivo `theme.js` reducido de ~540 a ~100 líneas.
+  - Eliminación de páginas muertas (`schedule.html`).
+- **Mejoras en Panel Admin**:
+  - **Nueva UI Pro**: Íconos SVG, tarjetas clickeables para editar.
+  - **Drag & Drop Seguro**: Manija de arrastre separada para evitar errores.
+  - **Fix de Carga**: Solucionado error de formato al leer `games.js`.
+- **Extras Restaurados (Simplificados)**:
+  - **Easter Eggs Visuales**
+  - **Acceso Admin**
+  - **Estilos Modulares**
+
 ## Versiones Principales
 
 | Versión | Fecha | Cambio Principal |
