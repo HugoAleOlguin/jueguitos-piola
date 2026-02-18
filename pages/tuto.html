@@ -107,7 +107,7 @@
             align-items: center;
             gap: 10px;
             background: var(--primary);
-            color: #000;
+            color: #000000 !important;
             padding: 14px 32px;
             border-radius: 50px;
             text-decoration: none;
@@ -184,9 +184,9 @@
         }
 
         .back-home-btn {
-            position: absolute;
-            top: 2rem;
-            left: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             background: rgba(255, 255, 255, 0.1);
             color: var(--text-muted);
             padding: 10px 20px;
@@ -194,11 +194,9 @@
             text-decoration: none;
             font-size: 0.9rem;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(5px);
+            margin-bottom: 2rem;
         }
 
         .back-home-btn:hover {
@@ -224,7 +222,9 @@
 <body>
     <header>
         <div class="logo">
-            <a href="../index.html" style="text-decoration:none; color:inherit;">JUEGUITOS PIOLA</a>
+            <span
+                style="font-size: 1.5rem; font-weight: 700; color: inherit; font-family: 'Orbitron', sans-serif;">JUEGUITOS
+                PIOLA</span>
             <span style="font-size: 0.5em; color: var(--secondary-color); vertical-align: super;">BETA</span>
         </div>
     </header>
