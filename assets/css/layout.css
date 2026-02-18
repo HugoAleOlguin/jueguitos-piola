@@ -62,6 +62,7 @@ header::after {
     letter-spacing: 3px;
     transition: all 0.3s var(--ease-smooth);
     cursor: pointer;
+    user-select: none;
 }
 
 .logo:hover {
