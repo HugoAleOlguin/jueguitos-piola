@@ -179,7 +179,7 @@ Historial de cambios estructurales y visuales del proyecto.
   - **Easter Eggs Visuales**
   - **Acceso Admin**
   - **Estilos Modulares**
-- **Settings Menu Revamp (v2.0)**:
+- **Settings Menu (v2.0)**:
   - **Nueva Interfaz**: Estilo Glassmorphism profundo, mejor organización.
   - **Cursores Personalizados**: Default, Retro (Pixel), Crosshair (FPS).
   - **Efectos Visuales**: Partículas flotantes activables.
