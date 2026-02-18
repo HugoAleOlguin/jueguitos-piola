@@ -99,16 +99,16 @@
             </div>
 
             <div class="settings-body">
-                <!-- Sección Fondo -->
+                <!-- 1. APARIENCIA (Fondo) -->
                 <div class="settings-section">
-                    <h3>🎨 Apariencia</h3>
+                    <h3>🎨 Fondo & Ambiente</h3>
                     <div class="form-group">
-                        <label for="settingBgUrl">Fondo Personalizado (URL)</label>
-                        <input type="text" id="settingBgUrl" placeholder="https://ejemplo.com/imagen.jpg">
+                        <label for="settingBgUrl">Imagen de Fondo (URL)</label>
+                        <input type="text" id="settingBgUrl" class="settings-input" placeholder="https://...">
                     </div>
                     <div class="form-group">
                         <label for="settingBgFile" class="custom-file-upload">
-                            📂 Subir imagen
+                            📂 Subir Archivo Local
                         </label>
                         <input type="file" id="settingBgFile" accept="image/*" style="display:none;">
                     </div>
@@ -117,81 +117,104 @@
                     </div>
                 </div>
 
-                <!-- Sección Estilo Visual -->
+                <!-- 2. ESTILO (Blur & Color) -->
                 <div class="settings-section">
-                    <h3>✨ Estilo Visual</h3>
+                    <h3>✨ Estética Neon</h3>
                     <div class="form-group">
-                        <label for="settingBlur">Intensidad de Desenfoque (Blur)</label>
-                        <input type="range" id="settingBlur" min="0" max="20" step="1" value="0" style="width: 100%;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888;">
-                            <span>Nítido</span>
-                            <span>Muy Borroso</span>
-                        </div>
+                        <label for="settingBlur">Nivel de Desenfoque (Glass)</label>
+                        <input type="range" id="settingBlur" min="0" max="20" step="1" value="0"
+                            style="width: 100%; accent-color: var(--primary-color);">
                     </div>
 
                     <div class="form-group">
-                        <label>Color de Acento (Neon)</label>
+                        <label>Color del Sistema</label>
                         <div class="color-presets">
-                            <!-- Presets -->
                             <button class="color-btn" style="--bg: #00f3ff" data-color="#00f3ff"
-                                title="Cyan Cyberpunk"></button>
+                                title="Cyber Cyan"></button>
                             <button class="color-btn" style="--bg: #bc13fe" data-color="#bc13fe"
-                                title="Magenta Neon"></button>
+                                title="Neon Purple"></button>
                             <button class="color-btn" style="--bg: #00ff88" data-color="#00ff88"
-                                title="Verde Matrix"></button>
+                                title="Matrix Green"></button>
                             <button class="color-btn" style="--bg: #ff9500" data-color="#ff9500"
-                                title="Naranja Ámbar"></button>
+                                title="Sunset Orange"></button>
                             <button class="color-btn" style="--bg: #ff4757" data-color="#ff4757"
-                                title="Rojo Glitch"></button>
+                                title="Error Red"></button>
+                            <button class="color-btn" style="--bg: #ffffff" data-color="#ffffff"
+                                title="Pure White"></button>
 
-                            <!-- Custom -->
-                            <div class="custom-color-wrapper" title="Color Personalizado">
+                            <div class="custom-color-wrapper" title="Personalizado">
                                 <input type="color" id="settingColor" value="#00f3ff">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Sección Temas Guardados -->
+                <!-- 3. EFECTOS (Cursores & Partículas) - NEW -->
+                <div class="settings-section">
+                    <h3>🖱️ Cursores & FX</h3>
+
+                    <div class="form-group">
+                        <label>Estilo de Cursor</label>
+                        <div class="options-grid" id="cursorGrid">
+                            <div class="option-card active" data-cursor="default">
+                                <span class="option-icon">default</span>
+                                Default
+                            </div>
+                            <div class="option-card" data-cursor="retro">
+                                <span class="option-icon">👆</span>
+                                Retro
+                            </div>
+                            <div class="option-card" data-cursor="crosshair">
+                                <span class="option-icon">✛</span>
+                                Crosshair
+                            </div>
+                        </div>
+                        <!-- Hidden input to store value -->
+                        <input type="hidden" id="settingCursor" value="default">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="toggle-switch">
+                            <span>Partículas de Fondo</span>
+                            <input type="checkbox" id="settingParticles" class="toggle-input">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 4. PRESETS -->
                 <div class="settings-section">
                     <h3>💾 Temas Guardados</h3>
                     <div class="form-group" style="display: flex; gap: 10px;">
-                        <input type="text" id="presetName" placeholder="Nombre del tema..." style="flex: 1;">
-                        <button class="button" id="btnSavePreset" style="padding: 0.5rem 1rem;">Guardar</button>
+                        <input type="text" id="presetName" class="settings-input" placeholder="Nuevo tema..."
+                            style="flex: 1;">
+                        <button class="btn-save" id="btnSavePreset"
+                            style="padding: 10px 15px; font-size: 0.8rem;">+</button>
                     </div>
                     <div class="presets-grid" id="presetsGrid">
-                        <!-- Los presets se generarán aquí -->
-                        <div class="preset-empty"
-                            style="text-align: center; padding: 20px; color: #666; font-style: italic;">
-                            No hay temas guardados
-                        </div>
+                        <!-- Presets injected here -->
                     </div>
                 </div>
 
-
-
-                <!-- Toggle Modo Lite (Moved to Bottom) -->
-                <div class class="settings-section lite-section-container"
-                    style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 10px;">
-                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <label for="settingLiteMode"
-                                style="margin: 0; cursor: pointer; color: #ff9500; font-weight: bold;">Modo
-                                Lite</label>
-                            <div style="font-size: 0.8em; color: #888;">Más FPS, menos facha.</div>
-                        </div>
-                        <input type="checkbox" id="settingLiteMode"
-                            style="width: auto; transform: scale(1.5); cursor: pointer;">
+                <!-- 5. RENDIMIENTO -->
+                <div class="settings-section lite-section-container" style="border-color: rgba(255, 149, 0, 0.3);">
+                    <h3>🚀 Rendimiento</h3>
+                    <div class="form-group">
+                        <label class="toggle-switch">
+                            <div>
+                                <span style="color: #ff9500; font-weight: bold;">Modo Lite (Bajo Recursos)</span>
+                                <div style="font-size: 0.8em; color: #888; font-weight: normal;">Desactiva Blur,
+                                    Partículas y Animaciones pesadas.</div>
+                            </div>
+                            <input type="checkbox" id="settingLiteMode" class="toggle-input">
+                        </label>
                     </div>
                 </div>
-
-
             </div>
 
             <div class="settings-footer">
-                <button class="btn-text" id="btnResetSettings">Restaurar</button>
+                <button class="btn-ghost" id="btnResetSettings">Restaurar</button>
                 <div style="flex: 1;"></div>
-                <button class="button" id="btnSaveSettings">Guardar Cambios</button>
+                <button class="btn-save" id="btnSaveSettings">Guardar Cambios</button>
             </div>
         </div>
     </div>
@@ -285,8 +308,7 @@
                 </div>
             </div>
             <div class="achievements-footer">
-                <button class="btn-text" id="btnResetAchievementsModal"
-                    style="color: #ff4757; font-size: 0.8rem;">Resetear Progreso</button>
+                <button class="btn-ghost danger" id="btnResetAchievementsModal">Resetear Progreso</button>
             </div>
         </div>
     </div>

@@ -1,6 +1,7 @@
 /**
- * THEME.JS - Core UI Logic (Simplified)
- * Handles: Theme Toggling (Prime/Retro), Scroll-to-Top, and basic UI hints.
+ * THEME.JS - Easter Eggs & Retro Features
+ * Note: Core settings (colors, wallpapers) are handled by settings.js.
+ * This file handles specific "Prime/Retro" modes and secret easter eggs.
  * "Readability > Speed"
  */
 

@@ -1,606 +1,599 @@
 /**
- * SETTINGS.JS - Gestor de Configuración
- * Maneja: Fondo, Blur, Color, Modo Lite, Presets de Tema
+ * SETTINGS.JS - Gestor de Configuración (v2.0)
+ * Maneja: Fondo, Blur, Color, Cursores, Partículas y Modo Lite
  */
 
-// Evitar redeclaración
 if (typeof window.SettingsManager === 'undefined') {
     window.SettingsManager = (() => {
-    // Claves de localStorage
-    const STORAGE_KEYS = {
-        BG_TYPE: 'jueguitos_settings_bg_type',   // 'default', 'url', 'custom', 'blob'
-        BG_VALUE: 'jueguitos_settings_bg_value', // URL string o 'indexeddb'
-        BLUR: 'jueguitos_settings_blur',         // Intensidad de blur
-        THEME_COLOR: 'jueguitos_settings_color', // Color primario personalizado
-        LITE_MODE: 'jueguitos_settings_lite'     // Modo Lite (true/false)
-    };
 
-    const DEFAULTS = {
-        BG_TYPE: 'default',
-        BG_VALUE: '',
-        BLUR: '0',
-        THEME_COLOR: '#00f3ff',
-        LITE_MODE: 'false'
-    };
-
-    // ========================================================================
-    // INDEXED DB (Almacenamiento de archivos grandes como imágenes/GIFs)
-    // ========================================================================
-    const ImageCacheStore = {
-        dbName: 'JueguitosDB',
-        storeName: 'backgrounds',
-        dbVersion: 1,
-
-        async open() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(this.dbName, this.dbVersion);
-                request.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains(this.storeName)) {
-                        db.createObjectStore(this.storeName);
-                    }
-                };
-                request.onsuccess = (e) => resolve(e.target.result);
-                request.onerror = (e) => reject(e.target.error);
-            });
-        },
-
-        async saveBlob(key, blob) {
-            const db = await this.open();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(this.storeName, 'readwrite');
-                const store = tx.objectStore(this.storeName);
-                const req = store.put(blob, key);
-                req.onsuccess = () => resolve(true);
-                req.onerror = () => reject(req.error);
-                tx.oncomplete = () => db.close();
-            });
-        },
-
-        async getBlob(key) {
-            const db = await this.open();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(this.storeName, 'readonly');
-                const store = tx.objectStore(this.storeName);
-                const req = store.get(key);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-                tx.oncomplete = () => db.close();
-            });
-        },
-
-        async deleteBlob(key) {
-            const db = await this.open();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(this.storeName, 'readwrite');
-                const store = tx.objectStore(this.storeName);
-                const req = store.delete(key);
-                req.onsuccess = () => resolve(true);
-                req.onerror = () => reject(req.error);
-                tx.oncomplete = () => db.close();
-            });
-        }
-    };
-
-    // Elementos DOM (se cachean en init)
-    let modal, btnOpen, btnSave, btnReset, btnCancel;
-    let inputBgUrl, inputBgFile, previewBg, inputBlur, inputColor, inputLite;
-
-    // Estado actual
-    let currentSettings = {};
-
-    // ========================================================================
-    // INICIALIZACIÓN
-    // ========================================================================
-    const init = () => {
-        loadSettings();
-        cacheDOM();
-        bindEvents();
-        applySettings();
-    };
-
-    const cacheDOM = () => {
-        modal = document.getElementById('settingsModal');
-        btnOpen = document.getElementById('settingsToggle');
-        btnSave = document.getElementById('btnSaveSettings');
-        btnReset = document.getElementById('btnResetSettings');
-        btnCancel = document.getElementById('btnCancelSettings');
-
-        inputBgUrl = document.getElementById('settingBgUrl');
-        inputBgFile = document.getElementById('settingBgFile');
-        previewBg = document.getElementById('settingBgPreview');
-        inputBlur = document.getElementById('settingBlur');
-        inputColor = document.getElementById('settingColor');
-        inputLite = document.getElementById('settingLiteMode');
-    };
-
-    const bindEvents = () => {
-        if (!btnOpen) return;
-
-        // Modal: Abrir / Cerrar
-        btnOpen.addEventListener('click', openModal);
-        btnCancel.addEventListener('click', closeModal);
-
-        // Guardar y Resetear
-        btnSave.addEventListener('click', saveFromUI);
-        btnReset.addEventListener('click', resetDefaults);
-
-        // Inputs de fondo
-        inputBgUrl.addEventListener('input', updatePreviewFromUrl);
-        inputBgFile.addEventListener('change', updatePreviewFromFile);
-
-        // Vista previa en vivo: Blur
-        if (inputBlur) {
-            inputBlur.addEventListener('input', (e) => {
-                updateLivePreview('blur', e.target.value);
-            });
-        }
-
-        // Vista previa en vivo: Color
-        if (inputColor) {
-            inputColor.addEventListener('input', (e) => {
-                updateLivePreview('color', e.target.value);
-                highlightActivePreset(e.target.value);
-                if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'COLOR_CHANGE' });
-            });
-        }
-
-        // Botones de colores predefinidos
-        document.querySelectorAll('.color-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const color = e.target.dataset.color;
-                if (inputColor && color) {
-                    inputColor.value = color;
-                    updateLivePreview('color', color);
-                    highlightActivePreset(color);
-                    if (typeof AchievementManager !== 'undefined') AchievementManager.trackEvent({ type: 'COLOR_CHANGE' });
-                }
-            });
-        });
-
-        // Guardar Preset de Tema
-        const btnSavePreset = document.getElementById('btnSavePreset');
-        if (btnSavePreset) {
-            btnSavePreset.addEventListener('click', savePreset);
-        }
-
-        // Reset de Logros
-        const btnResetAch = document.getElementById('btnResetAchievements');
-        if (btnResetAch) {
-            btnResetAch.addEventListener('click', () => {
-                if (confirm('¿Seguro que querés borrar todos los logros? No hay vuelta atrás.')) {
-                    if (typeof AchievementManager !== 'undefined') {
-                        AchievementManager.reset();
-                        renderAchievements();
-                    }
-                }
-            });
-        }
-    };
-
-    // ========================================================================
-    // LÓGICA PRINCIPAL
-    // ========================================================================
-    const loadSettings = () => {
-        currentSettings = {
-            bgType: localStorage.getItem(STORAGE_KEYS.BG_TYPE) || DEFAULTS.BG_TYPE,
-            bgValue: localStorage.getItem(STORAGE_KEYS.BG_VALUE) || DEFAULTS.BG_VALUE,
-            blur: localStorage.getItem(STORAGE_KEYS.BLUR) || DEFAULTS.BLUR,
-            themeColor: localStorage.getItem(STORAGE_KEYS.THEME_COLOR) || DEFAULTS.THEME_COLOR,
-            liteMode: localStorage.getItem(STORAGE_KEYS.LITE_MODE) || DEFAULTS.LITE_MODE
+        // Configuración y Defaults
+        const STORAGE_KEYS = {
+            BG_TYPE: 'jueguitos_settings_bg_type',
+            BG_VALUE: 'jueguitos_settings_bg_value',
+            BLUR: 'jueguitos_settings_blur',
+            THEME_COLOR: 'jueguitos_settings_color',
+            LITE_MODE: 'jueguitos_settings_lite',
+            CURSOR: 'jueguitos_settings_cursor',     // Nuevo
+            PARTICLES: 'jueguitos_settings_particles' // Nuevo
         };
-    };
 
-    /**
-     * Aplica el fondo al body.
-     * Usa setProperty con 'important' para ganarle a reglas CSS como
-     * lite-mode.css y retro.css que usan !important en background.
-     */
-    const setBodyBg = (imageValue, size, attachment, position) => {
-        const body = document.body;
-        body.style.setProperty('background-image', imageValue, 'important');
-        body.style.setProperty('background-size', size || '', 'important');
-        body.style.setProperty('background-attachment', attachment || '');
-        body.style.setProperty('background-position', position || '');
-    };
+        const DEFAULTS = {
+            BG_TYPE: 'default',
+            BG_VALUE: '',
+            BLUR: '0',
+            THEME_COLOR: '#00f3ff',
+            LITE_MODE: 'false',
+            CURSOR: 'default',
+            PARTICLES: 'false'
+        };
 
-    const applySettings = async () => {
-        // Modo Lite primero (bloquea efectos pesados)
-        const isLite = currentSettings.liteMode === 'true';
-        if (isLite) {
-            document.body.classList.add('lite-mode');
-        } else {
-            document.body.classList.remove('lite-mode');
-        }
+        // Estado actual
+        let currentSettings = {};
+        let particleAnimationId = null; // Para detener la animación
 
-        // Aplicar fondo
-        const { bgType, bgValue } = currentSettings;
+        // ========================================================================
+        // INDEXED DB (Mismo de antes - optimizado)
+        // ========================================================================
+        const ImageCacheStore = {
+            dbName: 'JueguitosDB',
+            storeName: 'backgrounds',
+            dbVersion: 1,
 
-        if (isLite) {
-            // En Modo Lite, forzar fondo sólido
-            setBodyBg('none', '', '', '');
-        } else {
+            async open() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.dbVersion);
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(this.storeName)) {
+                            db.createObjectStore(this.storeName);
+                        }
+                    };
+                    request.onsuccess = (e) => resolve(e.target.result);
+                    request.onerror = (e) => reject(e.target.error);
+                });
+            },
+
+            async saveBlob(key, blob) {
+                const db = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(this.storeName, 'readwrite');
+                    const store = tx.objectStore(this.storeName);
+                    store.put(blob, key);
+                    tx.oncomplete = () => db.close();
+                    resolve(true); // Optimistic resolve
+                });
+            },
+
+            async getBlob(key) {
+                const db = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(this.storeName, 'readonly');
+                    const store = tx.objectStore(this.storeName);
+                    const req = store.get(key);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                    tx.oncomplete = () => db.close();
+                });
+            },
+
+            async deleteBlob(key) {
+                const db = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(this.storeName, 'readwrite');
+                    const store = tx.objectStore(this.storeName);
+                    store.delete(key);
+                    tx.oncomplete = () => db.close();
+                    resolve(true);
+                });
+            }
+        };
+
+        // ========================================================================
+        // CORE FUNCTIONS
+        // ========================================================================
+
+        const init = () => {
+            loadSettings();
+            // Force clear file input on init
+            const fileInput = document.getElementById('settingBgFile');
+            if (fileInput) fileInput.value = '';
+            bindGlobalEvents();
+            applySettings();
+        };
+
+
+
+        const loadSettings = () => {
+            currentSettings = {
+                bgType: localStorage.getItem(STORAGE_KEYS.BG_TYPE) || DEFAULTS.BG_TYPE,
+                bgValue: localStorage.getItem(STORAGE_KEYS.BG_VALUE) || DEFAULTS.BG_VALUE,
+                blur: localStorage.getItem(STORAGE_KEYS.BLUR) || DEFAULTS.BLUR,
+                themeColor: localStorage.getItem(STORAGE_KEYS.THEME_COLOR) || DEFAULTS.THEME_COLOR,
+                liteMode: localStorage.getItem(STORAGE_KEYS.LITE_MODE) || DEFAULTS.LITE_MODE,
+                cursor: localStorage.getItem(STORAGE_KEYS.CURSOR) || DEFAULTS.CURSOR,
+                particles: localStorage.getItem(STORAGE_KEYS.PARTICLES) || DEFAULTS.PARTICLES
+            };
+        };
+
+        const applySettings = async () => {
+            const isLite = currentSettings.liteMode === 'true';
+            document.body.classList.toggle('lite-mode', isLite);
+
+            // 1. FONDO
+            await applyBackground(isLite);
+
+            // 2. EFECTOS VISUALES (Blur & Color)
+            applyVisuals(isLite);
+
+            // 3. CURSOR
+            applyCursor(currentSettings.cursor);
+
+            // 4. PARTÍCULAS (Disable in Lite Mode)
+            applyParticles(currentSettings.particles === 'true' && !isLite);
+        };
+
+        const applyBackground = async (isLite) => {
+            const { bgType, bgValue } = currentSettings;
+            const body = document.body;
+
+            // Reset props
+            body.style.removeProperty('background-image');
+            body.style.removeProperty('background-size');
+            body.style.removeProperty('background-attachment');
+            body.style.removeProperty('background-position');
+
+            if (isLite) return; // Lite mode = default dark bg
+
             if (bgType === 'blob') {
                 try {
                     const key = (bgValue && bgValue !== 'indexeddb') ? bgValue : 'custom_bg';
                     const blob = await ImageCacheStore.getBlob(key);
                     if (blob) {
                         const url = URL.createObjectURL(blob);
-                        setBodyBg(`url('${url}')`, 'cover', 'fixed', 'center');
-                    } else {
-                        // Blob no encontrado — volver a default
-                        console.warn('[Settings] Blob no encontrado para key:', key);
-                        setBodyBg('', '', '', '');
+                        body.style.setProperty('background-image', `url('${url}')`, 'important');
+                        body.style.backgroundSize = 'cover';
+                        body.style.backgroundAttachment = 'fixed';
+                        body.style.backgroundPosition = 'center';
                     }
                 } catch (e) {
-                    console.error('[Settings] Error cargando fondo blob:', e);
-                    setBodyBg('', '', '', '');
+                    console.error('Err bg blob:', e);
                 }
-            } else if (bgType === 'url' || bgType === 'custom') {
-                setBodyBg(`url('${bgValue}')`, 'cover', 'fixed', 'center');
-            } else {
-                // Modo default — quitar overrides inline para que se vean los gradientes CSS
-                document.body.style.removeProperty('background-image');
-                document.body.style.removeProperty('background-size');
-                document.body.style.removeProperty('background-attachment');
-                document.body.style.removeProperty('background-position');
+            } else if (bgType === 'url' && bgValue) {
+                body.style.setProperty('background-image', `url('${bgValue}')`, 'important');
+                body.style.backgroundSize = 'cover';
+                body.style.backgroundAttachment = 'fixed';
+                body.style.backgroundPosition = 'center';
             }
-        }
+        };
 
-        // Aplicar Blur (en Modo Lite siempre es 0)
-        const blurVal = isLite ? '0' : (currentSettings.blur || '0');
-        document.documentElement.style.setProperty('--glass-blur', `${blurVal}px`);
+        const applyVisuals = (isLite) => {
+            const blurVal = isLite ? '0' : (currentSettings.blur || '0');
+            const colorVal = currentSettings.themeColor || DEFAULTS.THEME_COLOR;
 
-        const elementsToBlur = document.querySelectorAll('.game-card, .game-detail-container, header');
-        elementsToBlur.forEach(el => {
-            el.style.backdropFilter = isLite ? 'none' : `blur(${blurVal}px)`;
-            el.style.webkitBackdropFilter = isLite ? 'none' : `blur(${blurVal}px)`;
-        });
+            document.documentElement.style.setProperty('--glass-blur', `${blurVal}px`);
+            document.documentElement.style.setProperty('--primary-color', colorVal);
 
-        // Aplicar color primario
-        const colorVal = currentSettings.themeColor || DEFAULTS.THEME_COLOR;
-        document.documentElement.style.setProperty('--primary-color', colorVal);
-    };
+            // Apply blur to cards
+            const elements = document.querySelectorAll('.game-card, .game-detail-container, header');
+            elements.forEach(el => {
+                el.style.backdropFilter = isLite ? 'none' : `blur(${blurVal}px)`;
+            });
+        };
 
-    const openModal = () => {
-        // Poblar UI con valores actuales
-        inputBgUrl.value = currentSettings.bgType === 'url' ? currentSettings.bgValue : '';
-        if (inputBlur) inputBlur.value = parseInt(currentSettings.blur || 0);
-        if (inputColor) {
-            inputColor.value = currentSettings.themeColor || DEFAULTS.THEME_COLOR;
-            highlightActivePreset(inputColor.value);
-        }
-        if (inputLite) {
-            inputLite.checked = currentSettings.liteMode === 'true';
-        }
-
-        loadPresetsList();
-
-        // Vista previa del fondo actual
-        if (currentSettings.bgType === 'url') {
-            previewBg.style.backgroundImage = `url('${currentSettings.bgValue}')`;
-        } else {
-            previewBg.style.backgroundImage = '';
-        }
-
-        modal.style.display = 'flex';
-        // Force reflow
-        void modal.offsetWidth;
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    };
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 300); // Wait for transition
-    };
-
-    const saveFromUI = async () => {
-        const btnSave = document.getElementById('btnSaveSettings');
-        const originalText = btnSave.innerText;
-        btnSave.innerText = 'Guardando...';
-        btnSave.disabled = true;
-
-        try {
-            const blur = inputBlur ? inputBlur.value : '0';
-            const themeColor = inputColor ? inputColor.value : DEFAULTS.THEME_COLOR;
-            const isLite = inputLite ? inputLite.checked : false;
-            let type = 'default';
-            let value = '';
-
-            // Prioridad: 1) Archivo subido, 2) URL ingresada, 3) Mantener actual
-            if (inputBgFile.files && inputBgFile.files[0]) {
-                const file = inputBgFile.files[0];
-                await ImageCacheStore.saveBlob('custom_bg', file);
-                type = 'blob';
-                value = 'indexeddb';
-            } else if (inputBgUrl.value.trim()) {
-                type = 'url';
-                value = inputBgUrl.value.trim();
-            } else if (currentSettings.bgType !== 'default') {
-                type = currentSettings.bgType;
-                value = currentSettings.bgValue;
+        const applyCursor = (type) => {
+            document.body.classList.remove('cursor-retro', 'cursor-crosshair', 'cursor-neon');
+            if (type && type !== 'default') {
+                document.body.classList.add(`cursor-${type}`);
             }
+        };
 
-            // Guardar en localStorage
-            localStorage.setItem(STORAGE_KEYS.BG_TYPE, type);
-            localStorage.setItem(STORAGE_KEYS.BG_VALUE, value);
-            localStorage.setItem(STORAGE_KEYS.BLUR, blur);
-            localStorage.setItem(STORAGE_KEYS.THEME_COLOR, themeColor);
-            localStorage.setItem(STORAGE_KEYS.LITE_MODE, isLite);
+        // ========================================================================
+        // SISTEMA DE PARTÍCULAS (Canvas Lightweight)
+        // ========================================================================
+        const applyParticles = (enabled) => {
+            const canvasId = 'particles-canvas';
+            let canvas = document.getElementById(canvasId);
 
-            // Logros condicionales
-            if (isLite && typeof AchievementManager !== 'undefined') AchievementManager.unlock('potato');
-            if (blur >= 18 && typeof AchievementManager !== 'undefined') AchievementManager.unlock('blur');
-
-            // Actualizar estado y aplicar
-            currentSettings = { bgType: type, bgValue: value, blur, themeColor, liteMode: String(isLite) };
-
-            await applySettings();
-            closeModal();
-        } catch (err) {
-            console.error(err);
-            alert('Error al guardar configuración: ' + err.message);
-        } finally {
-            btnSave.innerText = originalText;
-            btnSave.disabled = false;
-        }
-    };
-
-    const resetDefaults = () => {
-        localStorage.removeItem(STORAGE_KEYS.BG_TYPE);
-        localStorage.removeItem(STORAGE_KEYS.BG_VALUE);
-        localStorage.removeItem(STORAGE_KEYS.BLUR);
-        localStorage.removeItem(STORAGE_KEYS.THEME_COLOR);
-        localStorage.removeItem(STORAGE_KEYS.LITE_MODE);
-        location.reload();
-    };
-
-    // ========================================================================
-    // PRESETS DE TEMA
-    // ========================================================================
-    const getPresets = () => JSON.parse(localStorage.getItem('jueguitos_presets') || '[]');
-
-    const savePreset = async () => {
-        const nameInput = document.getElementById('presetName');
-        const name = nameInput.value.trim();
-        if (!name) return alert('Escribe un nombre para el tema.');
-
-        const btn = document.getElementById('btnSavePreset');
-        btn.disabled = true;
-        btn.innerText = '...';
-
-        try {
-            const presets = getPresets();
-
-            // Obtener valores actuales de la UI
-            const blur = inputBlur ? inputBlur.value : '0';
-            const themeColor = inputColor ? inputColor.value : DEFAULTS.THEME_COLOR;
-            let type = 'default';
-            let value = '';
-
-            // Determinar tipo de fondo para el preset
-            if (inputBgFile.files && inputBgFile.files[0]) {
-                // Nuevo archivo subido — guardarlo con key única
-                const file = inputBgFile.files[0];
-                const key = `preset_${Date.now()}`;
-                await ImageCacheStore.saveBlob(key, file);
-                type = 'blob';
-                value = key;
-            } else if (currentSettings.bgType === 'blob' && !inputBgUrl.value.trim()) {
-                // Copiar el blob actual al preset
-                const currentKey = (currentSettings.bgValue && currentSettings.bgValue !== 'indexeddb') ? currentSettings.bgValue : 'custom_bg';
-                const currentBlob = await ImageCacheStore.getBlob(currentKey);
-                if (currentBlob) {
-                    const key = `preset_${Date.now()}`;
-                    await ImageCacheStore.saveBlob(key, currentBlob);
-                    type = 'blob';
-                    value = key;
-                } else {
-                    type = 'default';
+            if (!enabled) {
+                if (canvas) {
+                    canvas.classList.remove('active');
+                    setTimeout(() => canvas.remove(), 1000); // Remove after fade out
                 }
-            } else if (inputBgUrl.value.trim()) {
-                type = 'url';
-                value = inputBgUrl.value.trim();
-            } else if (currentSettings.bgType !== 'default') {
-                type = currentSettings.bgType;
-                value = currentSettings.bgValue;
+                if (particleAnimationId) cancelAnimationFrame(particleAnimationId);
+                return;
             }
 
-            const newPreset = {
+            if (!canvas) {
+                canvas = document.createElement('canvas');
+                canvas.id = canvasId;
+                document.body.appendChild(canvas);
+            }
+
+            // Init Canvas
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            const resize = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Create Particles
+            const particleCount = 50; // Keep it low for performance
+            const color = currentSettings.themeColor || '#00f3ff';
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = Math.random() * 0.5 - 0.25;
+                    this.speedY = Math.random() * 0.5 - 0.25;
+                    this.alpha = Math.random();
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.y > canvas.height) this.y = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                }
+                draw() {
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+            const animate = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                // Connect particles (optional, maybe too expensive? lets keep it simple)
+                particleAnimationId = requestAnimationFrame(animate);
+            };
+
+            canvas.classList.add('active');
+            animate();
+        };
+
+        // ========================================================================
+        // UI HANDLERS (Modal)
+        // ========================================================================
+        const bindGlobalEvents = () => {
+            const btnOpen = document.getElementById('settingsToggle');
+            if (btnOpen) btnOpen.addEventListener('click', openModal);
+        };
+
+        const bindModalEvents = () => {
+            // Guardar
+            document.getElementById('btnSaveSettings').onclick = saveFromUI;
+            document.getElementById('btnResetSettings').onclick = resetDefaults;
+            document.getElementById('btnCancelSettings').onclick = closeModal;
+
+            // Inputs Live Preview
+            const inputs = {
+                url: document.getElementById('settingBgUrl'),
+                file: document.getElementById('settingBgFile'),
+                blur: document.getElementById('settingBlur'),
+                color: document.getElementById('settingColor'),
+                presets: document.querySelectorAll('.color-btn'),
+                cursorCards: document.querySelectorAll('.option-card'), // Cursors
+                particles: document.getElementById('settingParticles') // Particles Toggle
+            };
+
+            if (inputs.url) inputs.url.oninput = (e) => updatePreviewLocally(e.target.value);
+            if (inputs.file) inputs.file.onchange = (e) => updatePreviewLocally(null, e.target.files[0]);
+
+            if (inputs.blur) inputs.blur.oninput = (e) => document.documentElement.style.setProperty('--glass-blur', `${e.target.value}px`);
+
+            if (inputs.color) inputs.color.oninput = (e) => updateColor(e.target.value);
+            inputs.presets.forEach(btn => btn.onclick = () => updateColor(btn.dataset.color, btn));
+
+            // Cursor Selector Logic
+            inputs.cursorCards.forEach(card => card.onclick = () => {
+                document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                document.getElementById('settingCursor').value = card.dataset.cursor;
+                // Optional: Apply immediately? No, wait for save. But we can preview.
+                applyCursor(card.dataset.cursor);
+            });
+
+            // Presets Logic
+            document.getElementById('btnSavePreset').onclick = savePreset;
+            loadPresetsList();
+        };
+
+        const updateColor = (color, btnElement = null) => {
+            document.documentElement.style.setProperty('--primary-color', color);
+            if (document.getElementById('settingColor')) document.getElementById('settingColor').value = color;
+
+            // Update active state in preset buttons
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+
+            // Track for Achievements (Indeciso)
+            if (typeof AchievementManager !== 'undefined') {
+                AchievementManager.trackEvent({ type: 'COLOR_CHANGE' });
+            }
+        };
+
+        const updatePreviewLocally = (url, file) => {
+            const preview = document.getElementById('settingBgPreview');
+            if (file) {
+                const tempUrl = URL.createObjectURL(file);
+                preview.style.backgroundImage = `url('${tempUrl}')`;
+            } else if (url) {
+                preview.style.backgroundImage = `url('${url}')`;
+            }
+        };
+
+        // ========================================================================
+        // MODAL STATE
+        // ========================================================================
+        const openModal = () => {
+            const modal = document.getElementById('settingsModal');
+            if (!modal) return;
+
+            // Reload settings to get latest changes (e.g. "Use as Background" from app.js)
+            loadSettings();
+
+            // Force Clear file input to prevent "revert to blob"
+            const fileInput = document.getElementById('settingBgFile');
+            if (fileInput) fileInput.value = '';
+
+            // Populate UI
+            document.getElementById('settingBgUrl').value = currentSettings.bgType === 'url' ? currentSettings.bgValue : '';
+            document.getElementById('settingBlur').value = currentSettings.blur;
+            document.getElementById('settingColor').value = currentSettings.themeColor;
+            document.getElementById('settingLiteMode').checked = currentSettings.liteMode === 'true';
+            document.getElementById('settingParticles').checked = currentSettings.particles === 'true';
+
+            // Set Active Cursor Card
+            document.querySelectorAll('.option-card').forEach(c => {
+                c.classList.toggle('active', c.dataset.cursor === currentSettings.cursor);
+            });
+            document.getElementById('settingCursor').value = currentSettings.cursor;
+
+            // Visual Init
+            const isUrl = currentSettings.bgType === 'url';
+            document.getElementById('settingBgPreview').style.backgroundImage = isUrl ? `url('${currentSettings.bgValue}')` : '';
+
+            bindModalEvents(); // Re-bind to ensure fresh logic
+            modal.style.display = 'flex';
+            void modal.offsetWidth;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        const closeModal = () => {
+            const modal = document.getElementById('settingsModal');
+            modal.classList.remove('active');
+
+            // Clear inputs for safety
+            const fileInput = document.getElementById('settingBgFile');
+            if (fileInput) fileInput.value = '';
+
+            document.body.style.overflow = '';
+            setTimeout(() => modal.style.display = 'none', 300);
+
+            // Re-apply saved settings (cancel preview changes)
+            // applySettings(); // actually, better not to reset everything if user just cancels, but ideally yes.
+        };
+
+        const saveFromUI = async () => {
+            const btn = document.getElementById('btnSaveSettings');
+            btn.innerHTML = 'Guardando...';
+            btn.disabled = true;
+
+            try {
+                // Get values
+                const bgFile = document.getElementById('settingBgFile').files[0];
+                const bgUrl = document.getElementById('settingBgUrl').value.trim();
+                const blur = document.getElementById('settingBlur').value;
+                const color = document.getElementById('settingColor').value;
+                const isLite = document.getElementById('settingLiteMode').checked;
+                const cursor = document.getElementById('settingCursor').value;
+                const particles = document.getElementById('settingParticles').checked;
+
+                let type = 'default';
+                let value = '';
+
+                // Handle Background Priority
+                if (bgFile) {
+                    await ImageCacheStore.saveBlob('custom_bg', bgFile);
+                    type = 'blob'; // 'indexeddb'
+                    value = 'indexeddb';
+                } else if (bgUrl) {
+                    type = 'url';
+                    value = bgUrl;
+                } else if (currentSettings.bgType !== 'default') {
+                    type = currentSettings.bgType;
+                    value = currentSettings.bgValue;
+                }
+
+                // Save
+                localStorage.setItem(STORAGE_KEYS.BG_TYPE, type);
+                localStorage.setItem(STORAGE_KEYS.BG_VALUE, value);
+                localStorage.setItem(STORAGE_KEYS.BLUR, blur);
+                localStorage.setItem(STORAGE_KEYS.THEME_COLOR, color);
+                localStorage.setItem(STORAGE_KEYS.LITE_MODE, isLite);
+                localStorage.setItem(STORAGE_KEYS.CURSOR, cursor);
+                localStorage.setItem(STORAGE_KEYS.PARTICLES, particles);
+
+                // Update State
+                currentSettings = {
+                    bgType: type, bgValue: value, blur, themeColor: color,
+                    liteMode: String(isLite), cursor, particles: String(particles)
+                };
+
+                await applySettings();
+                closeModal();
+
+            } catch (e) {
+                console.error(e);
+                alert('Error al guardar.');
+            } finally {
+                btn.innerHTML = 'Guardar Cambios';
+                btn.disabled = false;
+            }
+        };
+
+        const resetDefaults = () => {
+            if (confirm('¿Restaurar todo a fábrica?')) {
+                Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
+                location.reload();
+            }
+        };
+
+        // ========================================================================
+        // PRESETS LOGIC (Simplificada)
+        // ========================================================================
+        const getPresets = () => JSON.parse(localStorage.getItem('jueguitos_presets') || '[]');
+
+        const savePreset = async () => {
+            const name = document.getElementById('presetName').value.trim();
+            if (!name) return;
+
+            // Current UI values as source of truth for preset
+            const bgFile = document.getElementById('settingBgFile').files[0];
+            const bgUrl = document.getElementById('settingBgUrl').value.trim();
+
+            let type = currentSettings.bgType;
+            let value = currentSettings.bgValue;
+
+            // Priority: File > URL > Current Saved
+            if (bgFile) {
+                // Generate a unique key for this preset's background to ensure persistence
+                // and avoid overwriting the main 'custom_bg' or other presets.
+                const uniqueKey = `preset_bg_${Date.now()}`;
+
+                await ImageCacheStore.saveBlob(uniqueKey, bgFile);
+                type = 'blob';
+                value = uniqueKey; // Store the unique key as the value
+            } else if (bgUrl) {
+                type = 'url';
+                value = bgUrl;
+            }
+
+            const preset = {
                 id: Date.now(),
                 name,
                 bgType: type,
                 bgValue: value,
-                blur,
-                themeColor
+                blur: document.getElementById('settingBlur').value,
+                themeColor: document.getElementById('settingColor').value,
+                cursor: document.getElementById('settingCursor').value
             };
 
-            presets.push(newPreset);
-            localStorage.setItem('jueguitos_presets', JSON.stringify(presets));
-
-            // Logro: Diseño (Crear un preset personalizado)
-            if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('diseño');
-
-            nameInput.value = '';
+            const list = getPresets();
+            list.push(preset);
+            localStorage.setItem('jueguitos_presets', JSON.stringify(list));
             loadPresetsList();
+            document.getElementById('presetName').value = '';
+        };
 
-        } catch (e) {
-            console.error(e);
-            alert('Error al guardar preset');
-        } finally {
-            btn.disabled = false;
-            btn.innerText = 'Guardar';
-        }
-    };
+        const loadPresetsList = async () => {
+            const container = document.getElementById('presetsGrid');
+            const list = getPresets();
+            container.innerHTML = '';
 
-    const loadPresetsList = async () => {
-        const container = document.getElementById('presetsGrid');
-        if (!container) return;
-
-        const presets = getPresets();
-        container.innerHTML = '';
-
-        if (presets.length === 0) {
-            container.innerHTML = '<div class="preset-empty" style="text-align: center; padding: 20px; color: #666; font-style: italic; grid-column: 1/-1;">No hay temas guardados</div>';
-            return;
-        }
-
-        for (const p of presets) {
-            const card = document.createElement('div');
-            card.className = 'preset-card';
-
-            // Marcar preset activo
-            const isActive = p.bgType === currentSettings.bgType &&
-                p.bgValue === currentSettings.bgValue &&
-                p.themeColor === currentSettings.themeColor;
-
-            if (isActive) card.classList.add('active-preset');
-
-            // Vista previa del fondo
-            let bgStyle = 'background-color: #222;';
-            if (p.bgType === 'url') {
-                bgStyle = `background-image: url('${p.bgValue}');`;
-            } else if (p.bgType === 'blob') {
-                try {
-                    const blob = await ImageCacheStore.getBlob(p.bgValue);
-                    if (blob) {
-                        const url = URL.createObjectURL(blob);
-                        bgStyle = `background-image: url('${url}');`;
-                    }
-                } catch (e) { }
+            if (list.length === 0) {
+                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#666; font-style:italic; padding:10px;">Sin temas guardados</div>';
+                return;
             }
 
-            card.innerHTML = `
-                <div class="preset-preview" style="${bgStyle}">
-                    <div class="preset-color-dot" style="background-color: ${p.themeColor}"></div>
+            for (const p of list) {
+                const div = document.createElement('div');
+                div.className = 'preset-card';
+
+                let bgStyle = '#333';
+                if (p.bgType === 'url') {
+                    bgStyle = `url('${p.bgValue}')`;
+                } else if (p.bgType === 'blob') {
+                    // Try to get blob for preview
+                    try {
+                        const blob = await ImageCacheStore.getBlob(p.bgValue);
+                        if (blob) {
+                            const url = URL.createObjectURL(blob);
+                            bgStyle = `url('${url}')`;
+                        }
+                    } catch (e) {
+                        console.warn('Error loading preset preview:', e);
+                    }
+                }
+
+                div.innerHTML = `
+                <div class="preset-preview" style="background-color: #222;">
+                    <div style="width:100%; height:100%; background: ${bgStyle} center/cover no-repeat;"></div>
+                    <div style="position:absolute; bottom:5px; left:5px; width:15px; height:15px; background:${p.themeColor}; border-radius:50%; border:1px solid #fff;"></div>
                 </div>
                 <div class="preset-info">
-                    <span class="preset-name" title="${p.name}">${p.name}</span>
-                    <button class="preset-delete" title="Borrar">x</button>
+                    <span>${p.name}</span>
+                    <span class="preset-delete" style="color:red; cursor:pointer;" title="Borrar">&times;</span>
                 </div>
             `;
 
-            // Click: Aplicar preset
-            card.addEventListener('click', (e) => {
-                if (e.target.classList.contains('preset-delete')) return;
-                applyPreset(p);
-            });
+                // Apply Click
+                div.onclick = (e) => {
+                    if (e.target.classList.contains('preset-delete')) return;
+                    applyPreset(p);
+                };
 
-            // Click: Borrar preset
-            card.querySelector('.preset-delete').addEventListener('click', (e) => {
-                e.stopPropagation();
-                deletePreset(p.id);
-            });
+                // Delete Click
+                div.querySelector('.preset-delete').onclick = async () => {
+                    if (!confirm('¿Borrar este tema?')) return;
 
-            container.appendChild(card);
-        }
-    };
+                    // If it's a blob, delete from DB to save space
+                    if (p.bgType === 'blob') {
+                        await ImageCacheStore.deleteBlob(p.bgValue);
+                    }
 
-    const applyPreset = async (p) => {
-        currentSettings = {
-            bgType: p.bgType,
-            bgValue: p.bgValue,
-            blur: p.blur,
-            themeColor: p.themeColor,
-            liteMode: currentSettings.liteMode // Modo Lite es preferencia global, no del preset
+                    const newList = getPresets().filter(item => item.id !== p.id);
+                    localStorage.setItem('jueguitos_presets', JSON.stringify(newList));
+                    loadPresetsList();
+                };
+
+                container.appendChild(div);
+            }
         };
 
-        // Guardar en localStorage principal
-        localStorage.setItem(STORAGE_KEYS.BG_TYPE, p.bgType);
-        localStorage.setItem(STORAGE_KEYS.BG_VALUE, p.bgValue);
-        localStorage.setItem(STORAGE_KEYS.BLUR, p.blur);
-        localStorage.setItem(STORAGE_KEYS.THEME_COLOR, p.themeColor);
+        const applyPreset = async (p) => {
+            // Update State
+            currentSettings = {
+                ...currentSettings,
+                bgType: p.bgType,
+                bgValue: p.bgValue,
+                blur: p.blur,
+                themeColor: p.themeColor,
+                cursor: p.cursor || 'default'
+            };
 
-        await applySettings();
+            // Save to Storage
+            localStorage.setItem(STORAGE_KEYS.BG_TYPE, p.bgType);
+            localStorage.setItem(STORAGE_KEYS.BG_VALUE, p.bgValue);
+            localStorage.setItem(STORAGE_KEYS.BLUR, p.blur);
+            localStorage.setItem(STORAGE_KEYS.THEME_COLOR, p.themeColor);
+            localStorage.setItem(STORAGE_KEYS.CURSOR, p.cursor || 'default');
 
-        // Actualizar inputs del modal
-        if (inputBgUrl) inputBgUrl.value = (p.bgType === 'url') ? p.bgValue : '';
-        if (inputBlur) inputBlur.value = p.blur;
-        if (inputColor) inputColor.value = p.themeColor;
+            // Apply & Refresh UI
+            await applySettings();
+            openModal();
+        };
 
-        closeModal();
-    };
-
-    const deletePreset = async (id) => {
-        let presets = getPresets();
-        const target = presets.find(p => p.id === id);
-
-        if (target) {
-            // Si el preset usa blob, borrar el blob de IndexedDB
-            // (pero no si es el fondo activo actual)
-            if (target.bgType === 'blob') {
-                const activeKey = (currentSettings.bgValue && currentSettings.bgValue !== 'indexeddb') ? currentSettings.bgValue : 'custom_bg';
-                if (activeKey === target.bgValue) {
-                    console.warn('[Settings] No se borra el blob porque es el fondo activo');
-                } else {
-                    try {
-                        await ImageCacheStore.deleteBlob(target.bgValue);
-                    } catch (e) { console.error(e); }
-                }
-            }
-        }
-
-        presets = presets.filter(p => p.id !== id);
-        localStorage.setItem('jueguitos_presets', JSON.stringify(presets));
-        loadPresetsList();
-    };
-
-    // ========================================================================
-    // HELPERS
-    // ========================================================================
-
-    // Aplicación en vivo de blur y color mientras se ajustan los sliders
-    const updateLivePreview = (type, value) => {
-        if (type === 'blur') {
-            document.documentElement.style.setProperty('--glass-blur', `${value}px`);
-        }
-        if (type === 'color') {
-            document.documentElement.style.setProperty('--primary-color', value);
-        }
-    };
-
-    // Resalta el botón de color activo
-    const highlightActivePreset = (color) => {
-        document.querySelectorAll('.color-btn').forEach(btn => {
-            if (btn.dataset.color.toLowerCase() === color.toLowerCase()) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-    };
-
-    // Actualizar vista previa al escribir URL
-    const updatePreviewFromUrl = (e) => {
-        const url = e.target.value;
-        if (url) previewBg.style.backgroundImage = `url('${url}')`;
-    };
-
-    // Actualizar vista previa al subir archivo
-    const updatePreviewFromFile = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const tempUrl = URL.createObjectURL(file);
-            previewBg.style.backgroundImage = `url('${tempUrl}')`;
-            const label = document.querySelector('label[for="settingBgFile"]');
-            if (label) label.innerHTML = `📄 ${file.name}`;
-        }
-    };
-
-    // API Pública
-    return {
-        init
-    };
+        return { init };
     })();
 }
 
-// Auto-inicializar al cargar DOM
 document.addEventListener('DOMContentLoaded', () => {
-    if (typeof window.SettingsManager !== 'undefined') {
-        window.SettingsManager.init();
-    }
+    if (window.SettingsManager) window.SettingsManager.init();
 });
