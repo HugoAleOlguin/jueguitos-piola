@@ -32,8 +32,9 @@
 @import url('features/extras.css');
 
 /* === Temas === */
-@import url('themes/retro.css');
 @import url('themes/lite-mode.css');
+@import url('themes/retro.css');
+/* Prime Mode (Override) */
 
 /* === Responsive & Accesibilidad === */
 @import url('responsive.css');

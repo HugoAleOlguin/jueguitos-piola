@@ -20,38 +20,22 @@
     // ============================================================================
     const ThemeManager = {
         init() {
-            this.apply(this.getSaved());
+            // Restore Prime Mode if saved
+            if (localStorage.getItem('jueguitos_prime_mode') === 'true') {
+                document.body.classList.add('prime-mode');
+            }
             this.setupSearchTrigger();
         },
-        getSaved: () => localStorage.getItem(CONFIG.KEYS.THEME) || 'dark',
-        apply(theme) {
-            if (theme === 'retro') {
-                document.documentElement.setAttribute('data-theme', 'retro');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-            }
-        },
-        toggleRetro() {
-            const current = this.getSaved();
-            const newTheme = current === 'retro' ? 'dark' : 'retro';
-            localStorage.setItem(CONFIG.KEYS.THEME, newTheme);
 
-            if (newTheme === 'retro') {
-                // FORCE RESET INLINE STYLES so CSS wins
-                document.body.style.backgroundImage = '';
-                document.documentElement.style.removeProperty('--primary-color');
-                document.documentElement.style.removeProperty('--glass-blur');
-                this.apply('retro');
-            } else {
-                this.apply('dark');
-                // Restore User Settings
-                if (window.SettingsManager && window.SettingsManager.applySettings) {
-                    window.SettingsManager.applySettings();
-                }
-            }
+        togglePrimeMode() {
+            const body = document.body;
+            body.classList.toggle('prime-mode');
+            const isActive = body.classList.contains('prime-mode');
 
-            this.notify(`Modo ${newTheme === 'retro' ? 'Prime (Retro)' : 'Normal'} activado`);
+            localStorage.setItem('jueguitos_prime_mode', isActive);
+            this.notify(isActive ? 'Modo Prime ACTIVADO 🕹️' : 'Modo Prime DESACTIVADO');
         },
+
         notify(msg) {
             const existing = document.querySelector('.retro-notification');
             if (existing) existing.remove();
@@ -75,16 +59,17 @@
                 'vecina': 'https://i.ibb.co/HTtGBHVq/vecina.png',
                 'tormenta': 'https://i.ibb.co/LWw3SJc/tormenta.png',
                 'rem': 'https://i.ibb.co/HfQ63z7M/rem.png',
-                'jesse': 'https://i.ibb.co/6cXbs5nx/jesse.png'
+                'jesse': 'https://i.ibb.co/6cXbs5nx/jesse.png',
+                'milf': 'https://images.steamusercontent.com/ugc/889882349869764993/D4D2A7BF8CE74CB368F9DC1C395A8595484E02AB/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'
             };
 
             searchInput.addEventListener('input', (e) => {
                 const val = e.target.value.toLowerCase().trim();
 
-                // Prime Theme
+                // Prime Theme (CSS Override Implementation)
                 if (val === 'prime') {
-                    this.toggleRetro();
                     if (typeof AchievementManager !== 'undefined') AchievementManager.unlock('prime');
+                    this.togglePrimeMode();
                     this.clearSearch(searchInput);
                     return;
                 }

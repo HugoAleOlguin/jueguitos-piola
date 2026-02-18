@@ -117,6 +117,8 @@ if (typeof window.SettingsManager === 'undefined') {
 
         const applySettings = async () => {
             const isLite = currentSettings.liteMode === 'true';
+
+            // Si es Retro, forzamos desactivar lite-mode para que se vea el grid
             document.body.classList.toggle('lite-mode', isLite);
 
             // 1. FONDO
@@ -133,9 +135,6 @@ if (typeof window.SettingsManager === 'undefined') {
         };
 
         const applyBackground = async (isLite) => {
-            // Si está en modo Retro (Prime), no aplicar fondo custom
-            if (document.documentElement.getAttribute('data-theme') === 'retro') return;
-
             const { bgType, bgValue } = currentSettings;
             const body = document.body;
 
@@ -170,9 +169,6 @@ if (typeof window.SettingsManager === 'undefined') {
         };
 
         const applyVisuals = (isLite) => {
-            // Si está en modo Retro, no aplicar estilos visuales custom
-            if (document.documentElement.getAttribute('data-theme') === 'retro') return;
-
             const blurVal = isLite ? '0' : (currentSettings.blur || '0');
             const colorVal = currentSettings.themeColor || DEFAULTS.THEME_COLOR;
 
