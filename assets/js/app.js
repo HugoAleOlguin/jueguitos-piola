@@ -86,7 +86,23 @@ document.addEventListener('DOMContentLoaded', () => {
             btnRandom.addEventListener('click', startRoulette);
         }
 
+        // Logo Click (Achievement / Easter Egg)
+        const logo = document.querySelector('.logo');
+        if (logo) {
+            logo.addEventListener('click', () => {
+                const isHomePage = !new URLSearchParams(window.location.search).has('id');
 
+                if (!isHomePage) {
+                    // Si estamos en un juego, volver al inicio
+                    navigateTo(window.location.pathname);
+                } else {
+                    // Si estamos en el inicio, farmear logro
+                    if (typeof AchievementManager !== 'undefined') {
+                        AchievementManager.trackEvent({ type: 'LOGO_CLICK' });
+                    }
+                }
+            });
+        }
     };
 
     // === ROUTING ===

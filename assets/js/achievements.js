@@ -263,7 +263,7 @@ const AchievementManager = (() => {
         switch (details.type) {
             case 'LOGO_CLICK':
                 stats.logoClicks++;
-                if (stats.logoClicks >= 7) unlock('pesado');
+                if (stats.logoClicks >= 50) unlock('pesado');
                 break;
 
             case 'COLOR_CHANGE':

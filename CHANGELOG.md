@@ -183,8 +183,10 @@ Historial de cambios estructurales y visuales del proyecto.
   - **Nueva Interfaz**: Estilo Glassmorphism profundo, mejor organización.
   - **Cursores Personalizados**: Default, Retro (Pixel), Crosshair (FPS).
   - **Efectos Visuales**: Partículas flotantes activables.
+  - **Pérdida de Datos**: Se evitó que los temas sobrescribieran una única clave `custom_bg`. Cada tema ahora almacena su propio blob de imagen único.
   - **Presets Mejorados**: Gestión de temas más fluida.
   - **Limpieza**: Eliminación de opciones de sonido redundantes.
+- **Interacción Logo**: Se arregló la selección de texto accidental al hacer doble click en el logo y se ajustó el logro "Sos Re Pesado" (ahora requiere 50 clicks y solo funciona en el home).
 
 ## Versiones Principales
 
