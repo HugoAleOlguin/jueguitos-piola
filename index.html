@@ -71,10 +71,10 @@
 <body>
 
     <header>
-        <div class="logo">JUEGUITOS PIOLA</div>
+        <h1 class="logo">JUEGUITOS PIOLA</h1>
         <div style="display: flex; gap: 1rem; align-items: center;">
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Buscar juegos...">
+                <input type="text" id="searchInput" placeholder="Buscar juegos..." aria-label="Buscar juegos">
             </div>
             <!-- Botón Minijuegos -->
             <button class="theme-toggle" id="btnMiniGames" title="Minijuegos">
@@ -110,7 +110,8 @@
                         <label for="settingBgFile" class="custom-file-upload">
                             📂 Subir Archivo Local
                         </label>
-                        <input type="file" id="settingBgFile" accept="image/*" style="display:none;">
+                        <input type="file" id="settingBgFile" accept="image/*" style="display:none;"
+                            aria-label="Subir archivo de fondo">
                     </div>
                     <div class="preview-box" id="settingBgPreview">
                         <span>Vista Previa</span>
@@ -143,7 +144,7 @@
                                 title="Pure White"></button>
 
                             <div class="custom-color-wrapper" title="Personalizado">
-                                <input type="color" id="settingColor" value="#00f3ff">
+                                <input type="color" id="settingColor" value="#00f3ff" aria-label="Color personalizado">
                             </div>
                         </div>
                     </div>
@@ -172,7 +173,8 @@
 
                         <!-- Inputs Hidden -->
                         <input type="hidden" id="settingCursor" value="default">
-                        <input type="file" id="settingCursorFile" accept="image/png" style="display: none;">
+                        <input type="file" id="settingCursorFile" accept="image/png" style="display: none;"
+                            aria-label="Subir cursor personalizado">
                     </div>
 
                     <div class="form-group">
@@ -188,7 +190,7 @@
                     <h3>💾 Temas Guardados</h3>
                     <div class="form-group" style="display: flex; gap: 10px;">
                         <input type="text" id="presetName" class="settings-input" placeholder="Nuevo tema..."
-                            style="flex: 1;">
+                            style="flex: 1;" aria-label="Nombre del nuevo tema">
                         <button class="btn-save" id="btnSavePreset"
                             style="padding: 10px 15px; font-size: 0.8rem;">+</button>
                     </div>
@@ -362,7 +364,8 @@
                 <span id="gamedleAttemptCounter" style="color: #0099cc; font-weight: bold;">1 / 10</span>
             </div>
             <div style="position: relative; width: 100%;">
-                <input type="text" id="gamedleInput" placeholder="Escribe el nombre del juego..." autocomplete="off">
+                <input type="text" id="gamedleInput" placeholder="Escribe el nombre del juego..." autocomplete="off"
+                    aria-label="Nombre del juego">
                 <div id="gamedleSuggestions"></div>
             </div>
             <button id="gamedleNextBtn">Siguiente (Enter)</button>
