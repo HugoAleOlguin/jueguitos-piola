@@ -77,7 +77,15 @@
 /* =====================================================
    BODY Y FONDO
    ===================================================== */
+html {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
+    margin: 0;
+    padding: 0;
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--font-main);
@@ -106,25 +114,8 @@ img {
 /* =====================================================
    CURSORES PERSONALIZADOS
    ===================================================== */
-.cursor-retro {
-    cursor: help !important;
-    /* Retro vibe */
-}
-
 .cursor-crosshair {
     cursor: crosshair !important;
-}
-
-.cursor-wait {
-    cursor: wait !important;
-}
-
-.cursor-text {
-    cursor: text !important;
-}
-
-.cursor-pointer {
-    cursor: pointer !important;
 }
 
 /* =====================================================

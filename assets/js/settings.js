@@ -184,12 +184,16 @@ if (typeof window.SettingsManager === 'undefined') {
 
         const applyCursor = async (type) => {
             // Limpiar clases anteriores
-            document.body.classList.remove('cursor-retro', 'cursor-crosshair', 'cursor-neon', 'cursor-wait', 'cursor-text', 'cursor-pointer');
+            // Limpiar clases anteriores
+            document.body.classList.remove('cursor-crosshair', 'static-cursor');
 
             // Limpiar inline style si existe (para custom)
             document.body.style.cursor = '';
 
             if (!type || type === 'default') return;
+
+            // Para cualquier cursor personalizado, aplicamos 'static-cursor'
+            document.body.classList.add('static-cursor');
 
             if (type === 'custom') {
                 try {
@@ -203,6 +207,7 @@ if (typeof window.SettingsManager === 'undefined') {
                     console.error('Error loading custom cursor:', e);
                 }
             } else {
+
                 // Para los tipos predefinidos (clases CSS)
                 document.body.classList.add(`cursor-${type}`);
             }

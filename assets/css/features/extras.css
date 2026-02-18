@@ -169,17 +169,24 @@
 
 /* --- 2. CURSORES PERSONALIZADOS --- */
 
-/* Retro (Pixel Arrow) */
-body.cursor-retro,
-body.cursor-retro a,
-body.cursor-retro button {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M2 2l0 16 4.5-4 4 7 3-1.5-4.5-7 7 0z"/></svg>'), auto !important;
-}
-
-body.cursor-retro .pointer,
-body.cursor-retro a:hover,
-body.cursor-retro button:hover {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%2300f3ff" stroke="black" stroke-width="1.5"><path d="M10 2l-2 5 3 0-2 6 6-8-3 0 2-3z"/></svg>'), pointer !important;
+/* 
+   CLASE DE UTILIDAD: STATIC CURSOR 
+   Fuerza que el cursor NO cambie al hacer hover en enlaces/botones.
+   Se aplica cuando el usuario elige un cursor personalizado o retro.
+*/
+/* 
+   CLASE DE UTILIDAD: STATIC CURSOR 
+   Fuerza que el cursor NO cambie al hacer hover en enlaces/botones.
+   Se aplica cuando el usuario elige un cursor personalizado o retro.
+*/
+body.static-cursor a,
+body.static-cursor button,
+body.static-cursor input,
+body.static-cursor textarea,
+body.static-cursor select,
+body.static-cursor label,
+body.static-cursor .pointer {
+    cursor: inherit !important;
 }
 
 /* Crosshair (FPS style) */

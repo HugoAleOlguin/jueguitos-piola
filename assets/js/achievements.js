@@ -277,8 +277,14 @@ const AchievementManager = (() => {
                 break;
 
             case 'GAME_OPEN':
+                // Debounce: Evitar doble conteo si el evento se dispara dos veces (ej. router)
+                const now = Date.now();
+                if (stats.lastGameOpen && (now - stats.lastGameOpen < 500)) return;
+                stats.lastGameOpen = now;
+
                 stats.gamesOpened++;
-                if (stats.gamesOpened >= 10 && stats.downloadsClicked === 0) unlock('window_shopper');
+                // Logro: Mirar y No Tocar (10 juegos, 0 descargas)
+                if (stats.gamesOpened === 10 && stats.downloadsClicked === 0) unlock('window_shopper');
                 break;
 
             case 'DOWNLOAD_CLICK':

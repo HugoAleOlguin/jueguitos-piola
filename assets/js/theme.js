@@ -80,7 +80,6 @@
 
             searchInput.addEventListener('input', (e) => {
                 const val = e.target.value.toLowerCase().trim();
-                console.log('[Theme] Input:', val); // DEBUG
 
                 // Prime Theme (CSS Override Implementation)
                 if (val === 'prime') {
