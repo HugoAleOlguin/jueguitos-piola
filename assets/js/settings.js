@@ -180,9 +180,28 @@ if (typeof window.SettingsManager === 'undefined') {
             });
         };
 
-        const applyCursor = (type) => {
-            document.body.classList.remove('cursor-retro', 'cursor-crosshair', 'cursor-neon');
-            if (type && type !== 'default') {
+        const applyCursor = async (type) => {
+            // Limpiar clases anteriores
+            document.body.classList.remove('cursor-retro', 'cursor-crosshair', 'cursor-neon', 'cursor-wait', 'cursor-text', 'cursor-pointer');
+
+            // Limpiar inline style si existe (para custom)
+            document.body.style.cursor = '';
+
+            if (!type || type === 'default') return;
+
+            if (type === 'custom') {
+                try {
+                    const blob = await ImageCacheStore.getBlob('custom_cursor');
+                    if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        // Fallback to auto if image fails or is loading
+                        document.body.style.cursor = `url('${url}'), auto`;
+                    }
+                } catch (e) {
+                    console.error('Error loading custom cursor:', e);
+                }
+            } else {
+                // Para los tipos predefinidos (clases CSS)
                 document.body.classList.add(`cursor-${type}`);
             }
         };
@@ -300,13 +319,46 @@ if (typeof window.SettingsManager === 'undefined') {
             inputs.presets.forEach(btn => btn.onclick = () => updateColor(btn.dataset.color, btn));
 
             // Cursor Selector Logic
-            inputs.cursorCards.forEach(card => card.onclick = () => {
+            const cursorCards = document.querySelectorAll('.option-card[data-cursor]');
+            cursorCards.forEach(card => card.onclick = () => {
                 document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
-                document.getElementById('settingCursor').value = card.dataset.cursor;
-                // Optional: Apply immediately? No, wait for save. But we can preview.
-                applyCursor(card.dataset.cursor);
+
+                const cursorVal = card.dataset.cursor;
+                document.getElementById('settingCursor').value = cursorVal;
+
+                // Preview immediately (except custom, which needs save)
+                if (cursorVal !== 'custom') applyCursor(cursorVal);
             });
+
+            // Custom Cursor Upload
+            const btnCustom = document.getElementById('btnCustomCursor');
+            const fileInput = document.getElementById('settingCursorFile');
+
+            if (btnCustom && fileInput) {
+                btnCustom.onclick = () => fileInput.click();
+
+                fileInput.onchange = (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        // Visually select the custom card
+                        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+                        btnCustom.classList.add('active');
+
+                        // We use a special value 'custom' to denote we want to load from DB
+                        document.getElementById('settingCursor').value = 'custom';
+
+                        // Optional: Preview locally? 
+                        // It's complex because we need to save to DB first or create blob url. 
+                        // Let's just create blob URL for preview.
+                        const tempUrl = URL.createObjectURL(e.target.files[0]);
+                        document.documentElement.style.cursor = `url('${tempUrl}'), auto`;
+                        document.body.style.cursor = `url('${tempUrl}'), auto`;
+
+                        // Make sure we denote this card has data
+                        btnCustom.dataset.cursor = 'custom';
+                    }
+                };
+            }
 
             // Presets Logic
             document.getElementById('btnSavePreset').onclick = savePreset;
@@ -411,7 +463,7 @@ if (typeof window.SettingsManager === 'undefined') {
                 // Handle Background Priority
                 if (bgFile) {
                     await ImageCacheStore.saveBlob('custom_bg', bgFile);
-                    type = 'blob'; // 'indexeddb'
+                    type = 'blob';
                     value = 'indexeddb';
                 } else if (bgUrl) {
                     type = 'url';
@@ -419,6 +471,14 @@ if (typeof window.SettingsManager === 'undefined') {
                 } else if (currentSettings.bgType !== 'default') {
                     type = currentSettings.bgType;
                     value = currentSettings.bgValue;
+                }
+
+                // Handle Custom Cursor Upload
+                // If user selected 'custom' via the UI flow (file input)
+                const cursorFile = document.getElementById('settingCursorFile').files[0];
+                if (cursorFile) {
+                    await ImageCacheStore.saveBlob('custom_cursor', cursorFile);
+                    // We don't change 'cursor' variable here because it's already 'custom' from the UI selection
                 }
 
                 // Save

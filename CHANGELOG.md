@@ -187,6 +187,7 @@ Historial de cambios estructurales y visuales del proyecto.
   - **Presets Mejorados**: Gestión de temas más fluida.
   - **Limpieza**: Eliminación de opciones de sonido redundantes.
 - **Interacción Logo**: Se arregló la selección de texto accidental al hacer doble click en el logo y se ajustó el logro "Sos Re Pesado" (ahora requiere 50 clicks y solo funciona en el home).
+- **Cursores 2.0 (Beta)**: Nuevo menú compacto, nuevos cursores (Wait, Texto, Mano) y opción experimentual para **subir tu propio cursor** (.png).
 
 ## Versiones Principales
 

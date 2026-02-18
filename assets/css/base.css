@@ -104,6 +104,30 @@ img {
 }
 
 /* =====================================================
+   CURSORES PERSONALIZADOS
+   ===================================================== */
+.cursor-retro {
+    cursor: help !important;
+    /* Retro vibe */
+}
+
+.cursor-crosshair {
+    cursor: crosshair !important;
+}
+
+.cursor-wait {
+    cursor: wait !important;
+}
+
+.cursor-text {
+    cursor: text !important;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
+/* =====================================================
    CONTENEDORES GENÉRICOS (LEGACY SUPPORT)
    ===================================================== */
 .container {

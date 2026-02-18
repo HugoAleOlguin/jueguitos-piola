@@ -155,22 +155,35 @@
 
                     <div class="form-group">
                         <label>Estilo de Cursor</label>
-                        <div class="options-grid" id="cursorGrid">
-                            <div class="option-card active" data-cursor="default">
-                                <span class="option-icon">default</span>
-                                Default
+                        <div class="options-grid" id="cursorGrid"
+                            style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
+                            <div class="option-card active" data-cursor="default" title="Default">
+                                <span class="option-icon" style="font-size: 1.2rem;">⚡</span>
                             </div>
-                            <div class="option-card" data-cursor="retro">
-                                <span class="option-icon">👆</span>
-                                Retro
+                            <div class="option-card" data-cursor="retro" title="Retro">
+                                <span class="option-icon" style="font-size: 1.2rem;">👾</span>
                             </div>
-                            <div class="option-card" data-cursor="crosshair">
-                                <span class="option-icon">✛</span>
-                                Crosshair
+                            <div class="option-card" data-cursor="crosshair" title="FPS">
+                                <span class="option-icon" style="font-size: 1.2rem;">✛</span>
+                            </div>
+                            <div class="option-card" data-cursor="wait" title="Wait">
+                                <span class="option-icon" style="font-size: 1.2rem;">⏳</span>
+                            </div>
+                            <div class="option-card" data-cursor="text" title="Text">
+                                <span class="option-icon" style="font-size: 1.2rem;">I</span>
+                            </div>
+                            <div class="option-card" data-cursor="pointer" title="Hand">
+                                <span class="option-icon" style="font-size: 1.2rem;">👆</span>
+                            </div>
+                            <!-- Custom Upload Option -->
+                            <div class="option-card" id="btnCustomCursor" title="Subir PNG">
+                                <span class="option-icon" style="font-size: 1.2rem;">📂</span>
                             </div>
                         </div>
-                        <!-- Hidden input to store value -->
+
+                        <!-- Inputs Hidden -->
                         <input type="hidden" id="settingCursor" value="default">
+                        <input type="file" id="settingCursorFile" accept="image/png" style="display: none;">
                     </div>
 
                     <div class="form-group">
