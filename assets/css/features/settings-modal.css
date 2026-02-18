@@ -145,7 +145,8 @@
 }
 
 /* --- Form Controls --- */
-.form-group label {
+.form-group label,
+.form-group .group-label {
     display: block;
     margin-bottom: 0.8rem;
     font-size: 0.95rem;
