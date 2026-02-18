@@ -114,7 +114,7 @@ async function loadData() {
 
         // Parse JS content safely
         const content = decodeBase64(data.content);
-        const match = content.match(/const gamesData = \[([\s\S]*)\];/);
+        const match = content.match(/(?:window\.|const\s+)gamesData\s*=\s*\[([\s\S]*)\];/);
 
         if (match) {
             state.games = new Function(`return [${match[1]}]`)();
@@ -189,7 +189,7 @@ async function commitChanges() {
                 return `    { ${props.join(', ')} }`;
             });
 
-            return `const gamesData = [\n${lines.join(',\n')}\n];\n`;
+            return `window.gamesData = [\n${lines.join(',\n')}\n];\n`;
         }
 
         const gamesContent = serializeGames(state.games);
@@ -317,6 +317,15 @@ function switchTab(tabId) {
     }
 }
 
+
+// ICOTNS (SVGs)
+const ICONS = {
+    DRAG: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>',
+    VISIBLE: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+    HIDDEN: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/></svg>',
+    DELETE: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>'
+};
+
 function renderGamesList() {
     const container = document.getElementById('gamesList');
     const filter = document.getElementById('searchGames').value.toLowerCase();
@@ -328,22 +337,44 @@ function renderGamesList() {
         .map((game, visibleIndex) => {
             const isHidden = game.hidden === true;
             return `
-            <div class="game-card-item" data-index="${game.originalIndex}" style="${isHidden ? 'opacity: 0.6; border: 1px dashed var(--text-muted);' : ''}">
-                <div class="drag-handle" title="Arrastrar para reordenar" onpointerdown="initSortable(event, this)">☰</div>
-                <img src="${game.image}" class="game-thumb" width="120" height="68" onerror="this.src='../favicon.png'" style="${isHidden ? 'filter:grayscale(100%)' : ''}">
-                <div style="flex:1">
-                    <h4>${game.title} ${isHidden ? '<small style="color:var(--warning); font-size:0.7em">(OCULTO)</small>' : ''}</h4>
-                    <p class="text-sm">${game.id}</p>
+            <div class="game-card-item" data-index="${game.originalIndex}" 
+                 onclick="editGame(${game.originalIndex})"
+                 style="${isHidden ? 'opacity: 0.6; border: 1px dashed var(--text-muted);' : ''} cursor: pointer; position: relative; overflow:hidden;">
+                
+                <div class="drag-handle" title="Arrastrar para reordenar" 
+                     onpointerdown="initSortable(event, this)" 
+                     onclick="event.stopPropagation()"
+                     style="padding: 10px; cursor: grab; color: var(--text-muted);">
+                     ${ICONS.DRAG}
                 </div>
-                <div class="tags-wrapper">
-                    ${(game.tags || []).map(t => `<span class="tag-badge" style="cursor:default">${t}</span>`).join('')}
+
+                <img src="${game.image}" class="game-thumb" width="120" height="68" 
+                     onerror="this.src='../favicon.png'" 
+                     style="${isHidden ? 'filter:grayscale(100%)' : ''}; pointer-events:none;">
+                
+                <div style="flex:1; pointer-events:none;"> <!-- Pointer events none to prevent misclicks on text selecting -->
+                    <h4 style="margin:0;">${game.title} ${isHidden ? '<small style="color:var(--warning); font-size:0.7em">(OCULTO)</small>' : ''}</h4>
+                    <p class="text-sm" style="margin:2px 0 0 0;">${game.id}</p>
                 </div>
-                <div>
-                    <button class="btn btn-ghost" onclick="toggleVisibility(${game.originalIndex})" title="${isHidden ? 'Mostrar juego' : 'Ocultar juego'}">
-                        ${isHidden ? '👁️' : '👁️‍🗨️'}
+
+                <div class="tags-wrapper" style="pointer-events:none;">
+                    ${(game.tags || []).map(t => `<span class="tag-badge">${t}</span>`).join('')}
+                </div>
+
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <button class="btn btn-ghost" 
+                            onclick="event.stopPropagation(); toggleVisibility(${game.originalIndex})" 
+                            title="${isHidden ? 'Mostrar juego' : 'Ocultar juego'}"
+                            style="padding: 8px;">
+                        ${isHidden ? ICONS.HIDDEN : ICONS.VISIBLE}
                     </button>
-                    <button class="btn btn-ghost" onclick="editGame(${game.originalIndex})">✏️</button>
-                    <button class="btn btn-ghost" onclick="deleteGame(${game.originalIndex})" style="color:var(--danger)">🗑️</button>
+                    <!-- Edit button removed as per request (click card to edit) -->
+                    <button class="btn btn-ghost" 
+                            onclick="event.stopPropagation(); deleteGame(${game.originalIndex})" 
+                            style="color:var(--danger); padding: 8px;"
+                            title="Eliminar juego">
+                        ${ICONS.DELETE}
+                    </button>
                 </div>
             </div>
         `}).join('');
