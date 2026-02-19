@@ -167,18 +167,32 @@
                             <div class="option-card" data-cursor="crosshair" title="FPS">
                                 <span class="option-icon" style="font-size: 1.2rem;">✛</span>
                             </div>
-                            <!-- Options Removed: Wait, Text, Pointer -->
+
+                            <!-- Troll Cursor -->
+                            <div class="option-card" data-cursor="troll" title="Troll">
+                                <img src="assets/css/features/null_.png" alt="Troll" style="width: 20px; height: auto;">
+                            </div>
+
                             <!-- Custom Upload Option BETA-->
                             <div class="option-card" id="btnCustomCursor" title="Subir PNG">
                                 <span class="option-icon" style="font-size: 1.2rem;">📂</span>
                             </div>
                         </div>
 
-                        <!-- Inputs Hidden -->
-                        <input type="hidden" id="settingCursor" value="default">
-                        <input type="file" id="settingCursorFile" accept="image/png" style="display: none;"
-                            aria-label="Subir cursor personalizado">
+                        <!-- Help / Limitations -->
+                        <div
+                            style="margin-top: 5px; font-size: 0.75rem; color: #888; display: flex; gap: 5px; align-items: center;">
+                            <span>ℹ️</span>
+                            <span>
+                                <strong>Limitaciones:</strong> Máx 128x128px (ideal 32x32), PNG transparente, < 100KB.
+                                    </span>
+                        </div>
                     </div>
+
+                    <!-- Inputs Hidden -->
+                    <input type="hidden" id="settingCursor" value="default">
+                    <input type="file" id="settingCursorFile" accept="image/png" style="display: none;"
+                        aria-label="Subir cursor personalizado">
 
                     <div class="form-group">
                         <label class="toggle-switch">

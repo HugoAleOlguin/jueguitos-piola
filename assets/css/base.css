@@ -118,6 +118,11 @@ img {
     cursor: crosshair !important;
 }
 
+/* Force static cursor (no pointer/text change) */
+body.static-cursor * {
+    cursor: inherit !important;
+}
+
 /* =====================================================
    CONTENEDORES GENÉRICOS (LEGACY SUPPORT)
    ===================================================== */

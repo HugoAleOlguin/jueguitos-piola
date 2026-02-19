@@ -184,15 +184,14 @@ if (typeof window.SettingsManager === 'undefined') {
 
         const applyCursor = async (type) => {
             // Limpiar clases anteriores
-            // Limpiar clases anteriores
-            document.body.classList.remove('cursor-crosshair', 'static-cursor');
+            document.body.classList.remove('cursor-crosshair', 'cursor-troll', 'static-cursor');
 
-            // Limpiar inline style si existe (para custom)
+            // Limpiar inline style si existe (para custom/troll)
             document.body.style.cursor = '';
 
             if (!type || type === 'default') return;
 
-            // Para cualquier cursor personalizado, aplicamos 'static-cursor'
+            // Para cualquier cursor personalizado, aplicamos 'static-cursor' para forzar la herencia
             document.body.classList.add('static-cursor');
 
             if (type === 'custom') {
@@ -200,14 +199,15 @@ if (typeof window.SettingsManager === 'undefined') {
                     const blob = await ImageCacheStore.getBlob('custom_cursor');
                     if (blob) {
                         const url = URL.createObjectURL(blob);
-                        // Fallback to auto if image fails or is loading
                         document.body.style.cursor = `url('${url}'), auto`;
                     }
                 } catch (e) {
                     console.error('Error loading custom cursor:', e);
                 }
+            } else if (type === 'troll') {
+                // Force inline style using local hidden asset (moved to css/features as requested)
+                document.body.style.cursor = "url('assets/css/features/null_.png'), auto";
             } else {
-
                 // Para los tipos predefinidos (clases CSS)
                 document.body.classList.add(`cursor-${type}`);
             }
