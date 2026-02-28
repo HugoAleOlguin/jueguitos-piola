@@ -1,9 +1,196 @@
 # Changelog
 
-Todos los cambios notables de este proyecto están documentados aquí.
-Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
+Historial de cambios estructurales y visuales del proyecto.
 
 ---
+
+## Enero 2025 — Lanzamiento Inicial
+
+**25-26 de Enero**
+- Creación de la página inicial
+- Estructura base del proyecto
+- Soporte multilenguaje
+
+**28 de Enero**
+- Integración con Radmin VPN (v1, v2, v3)
+
+---
+
+## Febrero 2025
+
+- Sistema de íconos inicial
+
+---
+
+## Marzo 2025
+
+**4 de Marzo**
+- Implementación del favicon
+
+**25-26 de Marzo**
+- **Modo Oscuro** implementado
+- Múltiples mejoras de layout y viewport
+- Eliminación del footer
+- Optimizaciones de altura (100vh, max-height)
+
+**27 de Marzo**
+- **Rediseño completo (v2.0)**
+- Sistema de descargas (v2.5)
+- **Diseño responsive** (v2.6 → v2.9 final)
+
+---
+
+## Abril 2025
+
+- Sistema de tablas informativas
+- Recursos de imagen adicionales
+
+---
+
+## Junio 2025
+
+- Sistema de música implementado
+
+---
+
+## Julio 2025
+
+- **Rediseño visual significativo**
+- Nuevos estilos globales
+
+---
+
+## Octubre 2025
+
+- **Sistema de categorías** para organización
+- Sección "Próximos" agregada
+- Sistema de disponibilidad (contenido no disponible)
+- Optimización de imágenes
+
+---
+
+## Diciembre 2025
+
+**15-16 de Diciembre**
+- **Versión Beta lanzada**
+  - Nueva arquitectura de páginas
+  - Estilos globales y específicos
+  - Efectos JavaScript
+  - Recursos optimizados
+- Optimización de la página principal
+- Corrección de enlaces rotos
+
+---
+
+## Enero 2026
+
+**1 de Enero**
+- Actualización del README
+
+**13 de Enero**
+- **Mejoras en la versión Beta**
+  - Sistema de temas mejorado
+  - Mejoras de UI y modal
+- Limpieza y reorganización de código
+
+**14 de Enero**
+- Sistema de caché offline
+- Eliminación de archivos innecesarios
+- **Modo Prime mejorado** — más fiel al estilo legacy original
+
+**15 de Enero**
+- **Tema de Aniversario** — efectos especiales para el 1er año
+- **Página 404** — diseño con efecto glitch
+- **Sistema de versiones** — actualización automática de caché
+- Mejoras visuales generales
+
+**16 de Enero**
+- **Tutorial de Mods** — guía para instalar mods con Gale
+- **Música de fondo** — opcional, con YouTube
+- **Cinta de Utilidad** — distintivo para herramientas
+- Mejoras de interfaz y rendimiento
+
+---
+
+**30 de Enero**
+- **Lanzamiento Oficial v3.0**
+  - La versión Beta ahora es la **Oficial** (Antigua versión archivada en `/old`).
+  - **SPA (Single Page Application)**: Navegación instantánea sin recargas.
+  - **Configuración Avanzada**:
+    - Selectores de Color Neon y Blur en tiempo real.
+    - Personalización de fondo persistente.
+  - **Sistema de Música v2**: Reescrito con YouTube IFrame API (más estable).
+  - **Fixes**: Corrección del "Void Mode" (3AM) y optimizaciones de caché.
+
+**31 de Enero**
+- **Sistema de Temas (Presets)**:
+  - Guardado de configuraciones personalizadas con nombre.
+  - **Persistencia Avanzada**: Soporte para fondos grandes (GIFs) usando IndexedDB.
+  - **UX/UI Mejorada**: Indicadores de "Tema Activo", gestión instantánea sin alertas intrusivas.
+- **Admin Panel Smart Save**: Formato compacto e inteligente para la base de datos de juegos.
+
+---
+
+## Febrero 2026
+
+**1 de Febrero**
+- **Randomizer (Ruleta)**:
+  - Botón de dado 🎲 para elegir juego al azar.
+  - Animación de ruleta visual con ganadores.
+  - Exclusión automática de herramientas ("Utilidad").
+- **Modo Lite**:
+  - Opción de "Alto Rendimiento" en configuración.
+  - Fuente Monospace global y alto contraste (B/N).
+  - Eliminación total de bordes redondeados, sombras, brillos y gradientes.
+  - Cero animaciones y transiciones.
+  - Ocultación de configuraciones irrelevantes (Fondos, Blur, Color) al activarlo.
+
+**2-3 de Febrero**
+- **Sistema de Logros (beta)**:
+  - 12 Logros desbloqueables con notificaciones.
+  - Persistencia de progreso en LocalStorage.
+- **Modo Versus (Torneo beta)**:
+  - Sistema de torneo eliminatorio (Bracket de 8 o Todos contra Todos).
+  - **Torneo Rápido**: 8 juegos al azar para partidas rápidas.
+  - **Torneo Completo**: Enfrentamiento total de todo el catálogo.
+    
+**3 de Febrero (noche)**
+- **Revisión del Sistema de Logros**:
+  - **Modal Dedicado**: Nueva interfaz con FAB flotante para ver progreso.
+  - **Modo Speedrun (Silent Run)**: Timer secreto que trackea tu tiempo de platino (Start: 1er logro, End: Último logro).
+  - **Bypass Konami**: Código `↑↑↓↓←→←→BA` para desbloquear el logro Void.
+  - **Fixes Críticos**:
+    - Notificaciones ahora usan estilos inyectados por JS para garantizar visibilidad al 100%.
+    - Logro "Ludópata" rebalanceado a 5 giros (Session-based).
+    - `Reset` ahora limpia correctamente todos los stats internos.
+
+**17-20 de Febrero**
+- **Simplificación Masiva del Código **:
+  - Eliminación de **Void Mode** y **Konami Code**.
+  - Eliminación de **cheats ocultos** ("hack", "admin") y código legacy.
+  - Eliminación de gestor de caché manual (ahora nativo del navegador).
+  - Archivo `theme.js` reducido de ~540 a ~100 líneas.
+  - Eliminación de páginas muertas (`schedule.html`).
+- **Mejoras en Panel Admin**:
+  - **Nueva UI Pro**: Íconos SVG, tarjetas clickeables para editar.
+  - **Drag & Drop Seguro**: Manija de arrastre separada para evitar errores.
+  - **Fix de Carga**: Solucionado error de formato al leer `games.js`.
+- **Extras Restaurados (Simplificados)**:
+  - **Easter Eggs Visuales**
+  - **Acceso Admin**
+  - **Estilos Modulares**
+- **Settings Menu (v2.0)**:
+  - **Nueva Interfaz**: Estilo Glassmorphism profundo, mejor organización.
+  - **Cursores Personalizados**: Default, Retro (Pixel), Crosshair (FPS).
+  - **Efectos Visuales**: Partículas flotantes activables.
+  - **Pérdida de Datos**: Se evitó que los temas sobrescribieran una única clave `custom_bg`. Cada tema ahora almacena su propio blob de imagen único.
+  - **Presets Mejorados**: Gestión de temas más fluida.
+  - **Limpieza**: Eliminación de opciones de sonido redundantes.
+- **Interacción Logo**: Se arregló la selección de texto accidental al hacer doble click en el logo y se ajustó el logro "Sos Re Pesado" (ahora requiere 50 clicks y solo funciona en el home).
+- **Cursores 2.0 (Beta)**: Nuevo menú compacto, nuevos cursores (Wait, Texto, Mano) y opción experimentual para **subir tu propio cursor** (.png).
+- **Logros Reparados**: Se reactivaron los disparadores para "Aesthetic", "Prime", "Cochino", "PC del Gobierno" y "No Veo Un Carajo".
+- **Modo Prime 2.0**: Se re-implementó el modo "Prime". Escribe "prime" en el buscador para activarlo.
+
 
 ## [3.2.0] - 2026-02-28
 
@@ -29,73 +216,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
 - Header de la sección con fondo oscuro opaco para legibilidad sobre cualquier fondo de página
 - Timeout de proxies reducido de 8s a 5s para fallback más rápido
 
----
+## Versiones Principales
 
-## [3.1.1] - 2026-02-24
-
-### Added
-- Modo Prime desbloqueable vía Easter Egg
-
-### Fixed
-- Sistema de logros (Achievements) reparado tras conflicto con refactor de scripts
-- Modo Lite restaurado correctamente al desactivar Modo Prime
-
----
-
-## [3.1.0] - 2026-02-19
-
-### Added
-- Selector de cursores personalizados (`settings.js`)
-- Opción de cursor PNG custom subido por el usuario
-- Modo "troll cursor" 🐟
-
-### Fixed
-- Cursor custom ahora cubre correctamente los bordes derecho e inferior de la pantalla
+| Versión | Fecha | Cambio Principal |
+|---------|-------|------------------|
+| **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
+| **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
+| **2.9** | Mar 2025 | Responsive final |
+| **2.0** | Mar 2025 | Rediseño completo |
+| **1.0** | Ene 2025 | Lanzamiento inicial |
 
 ---
 
-## [3.0.1] - 2026-02-18
-
-### Fixed
-- Canonical tags ahora se actualizan dinámicamente con el ID del juego en la URL (`?id=game-id`)
-- Reset del canonical al navegar de vuelta al home
-- Contraste de texto mejorado para cumplir WCAG AA en badges y descripciones
-- Código duplicado de inicialización limpiado
-
-### Added
-- Google Site Verification meta tag
-- AIM Score integrado (métricas de accesibilidad inline)
-
----
-
-## [3.0.0] - 2026-01-25
-
-### Added
-- **Arquitectura SPA** completa — navegación sin recarga de página vía `history.pushState`
-- Router central en `app.js` con soporte de URL por juego (`?id=`)
-- Vista de detalle individual por juego con metadata dinámica (SEO, Open Graph, JSON-LD)
-- Sistema de **Favoritos** persistente en `localStorage`
-- **Ruleta aleatoria** con animación `cubic-bezier`
-- Sistema de **Logros/Achievements** con tracking de eventos
-- Sistema de Configuración Avanzada: blur, colores de acento, imagen de fondo custom
-
-### Changed
-- Migración completa de HTML estático a JavaScript dinámico
-- CSS modularizado en archivos separados por sección
-
----
-
-## [2.0.0] - 2025-11-26
-
-### Added
-- Rediseño completo con estética Cyberpunk / Glassmorphism
-- Grid de tarjetas con animaciones de entrada
-- Soporte de tags por juego
-
----
-
-## [1.0.0] - 2025-01-01
-
-### Added
-- Lanzamiento inicial: lista estática de juegos con links de descarga
-- Deploy en GitHub Pages
+**230+ commits** | **Ene 2025 → Feb 2026**

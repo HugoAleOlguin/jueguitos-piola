@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  > Un proyecto personal para compartir juegos con los pibes y descubrir giveaways gratis.
+  > Un proyecto personal para compartir juegos con los pibes y descubrir Juegos gratis.
   <br> Hosteado 100% en GitHub Pages. Sin backend, sin frameworks.
 
   ![Status](https://img.shields.io/badge/Estado-Activo-success?style=for-the-badge&logo=github)
@@ -21,9 +21,9 @@
 | 🟢 Sitio Oficial |
 |:---:|
 | [![Sitio Oficial](https://img.shields.io/badge/🌐-Jugar_Ahora-2ea44f?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/) |
-| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/?v=3.2&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=800&refresh=true" alt="Vista previa oficial"></a> |
+| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/?v=3.2&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=200&refresh=true" alt="Vista previa oficial"></a> |
 
-> *La versión antigua está archivada en [/old](https://hugoaleolguin.github.io/jueguitos-piola/old).*
+> *La versión antigua ha sido archivada en [/old](https://hugoaleolguin.github.io/jueguitos-piola/old) para la posteridad.*
 
 ---
 
@@ -64,71 +64,13 @@ Sin frameworks pesados — HTML, CSS y JavaScript vanilla para aprender cómo fu
 
 </details>
 
----
-
-## 📅 Devlog — Historia del Proyecto
-
-### 🗓️ Semana 1 — Noviembre 2025: Lanzamiento inicial
-
-El proyecto arrancó como una lista simple de juegos para compartir con amigos. Sin backend, sin base de datos — solo un `index.html` con links de descarga.
-
-- Estructura básica del sitio
-- Grid de tarjetas de juegos
-- Deploy inicial en GitHub Pages
-
----
-
-### 🗓️ Semana 2 — Enero 2026: Refactor a SPA
-
-El HTML estático se volvió imposible de mantener. Refactoreé todo a una arquitectura SPA (Single Page Application) pura en JavaScript vanilla.
-
-- `app.js` centraliza toda la navegación y el routing por URL (`?id=game`)
-- Animaciones de entrada por tarjeta con `animation-delay` escalonado
-- Vista de detalle de juego individual sin recargar la página
-- Sistema de Favoritos con `localStorage`
-
----
-
-### 🗓️ Semana 3 — Febrero 2026 (18/02): Pulido Visual y SEO
-
-Con la arquitectura estable, me enfoqué en el aspecto visual y la indexación de Google.
-
-- **Cursores personalizados**: opción de PNG custom y modo "troll" 🐟
-- **Sistema de logros**: tracking de clicks del logo, spin de ruleta, descargas
-- **Canonical tags dinámicos**: cada juego tiene su URL única para SEO
-- **Contraste WCAG**: mejoras de accesibilidad en textos y badges
-- **Ruleta aleatoria**: selector animado con `cubic-bezier` para elegir un juego al azar
-
----
-
-### 🗓️ Día 24 — 24/02/2026: Modo Prime y Logros
-
-- Implementé el **Modo Prime** (desbloqueable con Easter Egg)
-- Reparé sistema de logros que dejó de funcionar por conflicto de scripts
-
----
-
-### 🗓️ Días 27-28 — 27-28/02/2026: Sección de Giveaways 🎁
-
-La feature más compleja hasta ahora: integrar una API externa para mostrar juegos gratuitos en tiempo real.
-
-**El problema CORS:**
-Las APIs de juegos gratuitos (FreeToGame, GamerPower) bloquean peticiones directas desde el navegador por política CORS. Solución: deployé un **Cloudflare Worker** gratuito como proxy serverless que agrega los headers necesarios.
-
-**Lo que se construyó:**
-- Nueva sección `🎁 Juegos Gratis Limitados` en el header de la SPA
-- Integración con [GamerPower API](https://www.gamerpower.com/api-read) para giveaways en tiempo real
-- Agrupación visual por plataforma: **Steam → Epic Games → GOG → Itch.io**
-- Logos reales de plataforma via [simpleicons.org](https://cdn.simpleicons.org)
-- Badge de expiración en rojo con hora Argentina (UTC-3)
-- Sistema de fallback de proxies CORS: si el Worker propio falla, intenta proxies públicos
-- Integración correcta con el router SPA (la ruleta y el logo cierran la vista correctamente)
-
----
+-
 
 ## 🧠 Roadmap
 
-![Progreso](https://img.shields.io/badge/Progreso-85%25-green)
+![Progreso](https://img.shields.io/badge/Progreso-77%25-green)
+
+Esto es un side-project, así que avanzo a mi ritmo:
 
 ### ✅ Completado
 - [x] Lanzamiento v3.0 SPA
