@@ -2,10 +2,11 @@
 
 <div align="center">
 
-  > Un proyecto personal simple para compartir juegos con los pibes.
-  <br> hosteado 100% en GitHub Pages. Solo descargar y jugar.
+  > Un proyecto personal para compartir juegos con los pibes y descubrir giveaways gratis.
+  <br> Hosteado 100% en GitHub Pages. Sin backend, sin frameworks.
 
   ![Status](https://img.shields.io/badge/Estado-Activo-success?style=for-the-badge&logo=github)
+  ![Version](https://img.shields.io/badge/Versión-3.2.0-blue?style=for-the-badge)
 
 </div>
 
@@ -14,18 +15,15 @@
 ## 🚀 Demo en vivo
 
 <p align="center">
-  <img src="https://media.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="10" height="10" /> 
-  <b>Versión 3.0 Oficial (SPA) - Más rápida, más fluida y totalmente personalizable.</b>
-  <img src="https://media.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="10" height="10" /> 
+  <b>Versión 3.2 — SPA con Giveaways en tiempo real</b>
 </p>
 
 | 🟢 Sitio Oficial |
 |:---:|
-| **Nuevo Diseño Cyberpunk / SPA** |
 | [![Sitio Oficial](https://img.shields.io/badge/🌐-Jugar_Ahora-2ea44f?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/) |
-| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/?v=3.1&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=800&refresh=true" alt="Vista previa oficial"></a> |
+| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/?v=3.2&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=800&refresh=true" alt="Vista previa oficial"></a> |
 
-> *La versión antigua ha sido archivada en [/old](https://hugoaleolguin.github.io/jueguitos-piola/old) para la posteridad.*
+> *La versión antigua está archivada en [/old](https://hugoaleolguin.github.io/jueguitos-piola/old).*
 
 ---
 
@@ -38,21 +36,20 @@
   <img src="https://avatars.githubusercontent.com/u/44036562?s=280&v=4" width="48" alt="GitHub Actions">
 </p>
 
-Nada de frameworks pesados, todo puro y simple para aprender cómo funciona la web:
+Sin frameworks pesados — HTML, CSS y JavaScript vanilla para aprender cómo funciona la web real:
 
-*   **HTML5** 📄
-*   **CSS3** 🎨 (Variables, Glassmorphism, Animations)
-*   **JavaScript** (Vanilla ES6+, SPA Architecture)
-*   **GitHub Actions** (Para el deploy automático)
+- **HTML5** — Estructura semántica y SEO
+- **CSS3** — Variables, Glassmorphism, Animaciones, CSS Modules
+- **JavaScript ES6+** — SPA Architecture, Fetch API, LocalStorage
+- **Cloudflare Workers** — Proxy CORS serverless para APIs externas
+- **GitHub Pages** — Deploy automático desde `gh-pages`
 
 ---
 
 ## 📥 Instalación Local
 
 <details>
-  <summary><b>👇 Clic para ver instrucciones de instalación</b></summary>
-
-  Si querés clonar esto:
+  <summary><b>👇 Clic para ver instrucciones</b></summary>
 
   ```bash
   # 1. Cloná el repo
@@ -61,32 +58,96 @@ Nada de frameworks pesados, todo puro y simple para aprender cómo funciona la w
   # 2. Entrá a la carpeta
   cd jueguitos-piola
 
-  # 3. Abrí el index.html en tu navegador.
-  # Recomendado: Usar "Live Server" en VS Code para la navegación SPA correcta.
+  # 3. Abrí con Live Server en VS Code
+  # La navegación SPA requiere un servidor local para funcionar correctamente.
   ```
 
 </details>
 
 ---
 
-## 🧠 Estado del Proyecto (Roadmap)
+## 📅 Devlog — Historia del Proyecto
 
-![Progreso](https://img.shields.io/badge/Progreso-77%25-green)
+### 🗓️ Semana 1 — Noviembre 2025: Lanzamiento inicial
 
-Esto es un side-project, así que avanzo a mi ritmo:
+El proyecto arrancó como una lista simple de juegos para compartir con amigos. Sin backend, sin base de datos — solo un `index.html` con links de descarga.
 
-### ✅ Hecho
-- [x] **Lanzamiento v3.0 Oficial (SPA)**.
-- [x] Migración completa de Beta a Main.
-- [x] Sistema de Configuración Avanzada (Blur, Colores).
-
-### 🚧 En Progreso / Pendiente
-- [ ] Más easter eggs y secretos.
-- [ ] Optimizar tiempos de carga y assets.
+- Estructura básica del sitio
+- Grid de tarjetas de juegos
+- Deploy inicial en GitHub Pages
 
 ---
 
-## 👨‍💻 Sobre el Autor
+### 🗓️ Semana 2 — Enero 2026: Refactor a SPA
+
+El HTML estático se volvió imposible de mantener. Refactoreé todo a una arquitectura SPA (Single Page Application) pura en JavaScript vanilla.
+
+- `app.js` centraliza toda la navegación y el routing por URL (`?id=game`)
+- Animaciones de entrada por tarjeta con `animation-delay` escalonado
+- Vista de detalle de juego individual sin recargar la página
+- Sistema de Favoritos con `localStorage`
+
+---
+
+### 🗓️ Semana 3 — Febrero 2026 (18/02): Pulido Visual y SEO
+
+Con la arquitectura estable, me enfoqué en el aspecto visual y la indexación de Google.
+
+- **Cursores personalizados**: opción de PNG custom y modo "troll" 🐟
+- **Sistema de logros**: tracking de clicks del logo, spin de ruleta, descargas
+- **Canonical tags dinámicos**: cada juego tiene su URL única para SEO
+- **Contraste WCAG**: mejoras de accesibilidad en textos y badges
+- **Ruleta aleatoria**: selector animado con `cubic-bezier` para elegir un juego al azar
+
+---
+
+### 🗓️ Día 24 — 24/02/2026: Modo Prime y Logros
+
+- Implementé el **Modo Prime** (desbloqueable con Easter Egg)
+- Reparé sistema de logros que dejó de funcionar por conflicto de scripts
+
+---
+
+### 🗓️ Días 27-28 — 27-28/02/2026: Sección de Giveaways 🎁
+
+La feature más compleja hasta ahora: integrar una API externa para mostrar juegos gratuitos en tiempo real.
+
+**El problema CORS:**
+Las APIs de juegos gratuitos (FreeToGame, GamerPower) bloquean peticiones directas desde el navegador por política CORS. Solución: deployé un **Cloudflare Worker** gratuito como proxy serverless que agrega los headers necesarios.
+
+**Lo que se construyó:**
+- Nueva sección `🎁 Juegos Gratis Limitados` en el header de la SPA
+- Integración con [GamerPower API](https://www.gamerpower.com/api-read) para giveaways en tiempo real
+- Agrupación visual por plataforma: **Steam → Epic Games → GOG → Itch.io**
+- Logos reales de plataforma via [simpleicons.org](https://cdn.simpleicons.org)
+- Badge de expiración en rojo con hora Argentina (UTC-3)
+- Sistema de fallback de proxies CORS: si el Worker propio falla, intenta proxies públicos
+- Integración correcta con el router SPA (la ruleta y el logo cierran la vista correctamente)
+
+---
+
+## 🧠 Roadmap
+
+![Progreso](https://img.shields.io/badge/Progreso-85%25-green)
+
+### ✅ Completado
+- [x] Lanzamiento v3.0 SPA
+- [x] Sistema de Configuración Avanzada (temas, blur, colores)
+- [x] Cursores personalizados
+- [x] Ruleta de juego aleatorio
+- [x] Sistema de Logros/Achievements
+- [x] Canonical URLs dinámicos (SEO)
+- [x] **Sección de Giveaways en tiempo real** (v3.2)
+- [x] Agrupación por plataforma con logos reales
+
+### 🚧 Pendiente
+- [ ] Más easter eggs
+- [ ] Lazy loading para imágenes
+- [ ] Modo offline / Service Worker
+
+---
+
+## 👨‍💻 Autor
 
 <table border="0">
   <tr>
@@ -97,13 +158,13 @@ Esto es un side-project, así que avanzo a mi ritmo:
       <b><a href="https://github.com/HugoAleOlguin">HugoAleOlguin</a></b><br>
       <i>Estudiante de Desarrollo de Software</i>
       <br><br>
-      Me gusta diseñar en css y optimizar la experiencia de usuario. Hago cosas sencillas pero funcionales, y este proyecto es la prueba de eso. <br>
-      Siempre estoy aprendiendo algo nuevo, ya sea Frontend, Backend o jugando con el diseño.
+      Me gusta diseñar en CSS y optimizar la experiencia de usuario. Hago cosas sencillas pero funcionales.
+      Siempre estoy aprendiendo algo nuevo — Frontend, Backend, o jugando con el diseño.
       <br><br>
       <ul>
-        <li> 🔗 <b>GitHub:</b> <a href="https://github.com/HugoAleOlguin">Perfil</a></li>
-        <li> 🛠️ <b>Tech:</b> HTML, CSS, JS.</li>
-        <li> 🎮 <b>Intereses:</b> Desarrollo Web, diseño y Videojuegos.</li>
+        <li>🔗 <b>GitHub:</b> <a href="https://github.com/HugoAleOlguin">Perfil</a></li>
+        <li>🛠️ <b>Tech:</b> HTML, CSS, JS, Cloudflare Workers.</li>
+        <li>🎮 <b>Intereses:</b> Desarrollo Web, diseño y Videojuegos.</li>
       </ul>
     </td>
   </tr>
