@@ -132,6 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
             canonical.href = baseUrl;
         }
 
+        // Ocultar sección de juegos gratis si estaba visible
+        if (typeof window.hideFreeGamesView === 'function') window.hideFreeGamesView();
+
         // Alternar vistas
         gameView.style.display = 'none';
         gamesGrid.style.display = 'grid';
@@ -211,6 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gamesGrid.style.display !== 'none') {
             sessionStorage.setItem('homeScrollPos', window.scrollY);
         }
+
+        // Ocultar sección de juegos gratis si estaba visible (evita superposición)
+        if (typeof window.hideFreeGamesView === 'function') window.hideFreeGamesView();
 
         // Alternar vistas
         gamesGrid.style.display = 'none';
