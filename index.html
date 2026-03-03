@@ -42,6 +42,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/features/gamedle.css">
     <link rel="stylesheet" href="assets/css/features/minigames-modal.css">
+    <link rel="stylesheet" href="assets/css/features/theme-gallery.css">
     <link rel="stylesheet" href="assets/css/pages/free-games.css">
     <link rel="icon" href="favicon.png">
     <!-- Google Fonts -->
@@ -231,8 +232,14 @@
 
                 <!-- 4. PRESETS -->
                 <div class="settings-section">
-                    <h3><i data-lucide="bookmark" style="width:16px;height:16px;vertical-align:middle;"></i> Temas
-                        Guardados</h3>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                        <h3 style="margin-bottom: 0;"><i data-lucide="bookmark"
+                                style="width:16px;height:16px;vertical-align:middle;"></i> Temas Guardados</h3>
+                        <button onclick="if(window.ThemeGallery) ThemeGallery.openGallery()" class="gallery-toggle-btn"
+                            title="Ver Galeria Compartida"><i data-lucide="globe" style="width:14px;height:14px;"></i>
+                            Explorar Temas <span class="badge-beta">BETA</span></button>
+                    </div>
                     <div class="form-group" style="display: flex; gap: 10px;">
                         <input type="text" id="presetName" class="settings-input" placeholder="Nuevo tema..."
                             style="flex: 1;" aria-label="Nombre del nuevo tema">
@@ -252,7 +259,7 @@
                             <span style="display: flex; flex-direction: column;">
                                 <span style="color: #ff9500; font-weight: bold;">Modo Lite (Bajo Recursos)</span>
                                 <span style="font-size: 0.8em; color: #888; font-weight: normal;">Desactiva Blur,
-                                    Partículas y Animaciones pesadas, En parte hasta es mas fachero.</span>
+                                    Partículas y Animaciones, En parte hasta es mas fachero.</span>
                             </span>
                             <input type="checkbox" id="settingLiteMode" class="toggle-input">
                         </label>
@@ -505,6 +512,10 @@
     <script src="assets/js/games.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/settings.js"></script>
+    <!-- Firebase SDK (compat) para ThemeGallery -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="assets/js/theme-gallery.js"></script>
     <!-- Inicializa los iconos Lucide una vez que el DOM está completo -->
     <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
 </body>

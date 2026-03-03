@@ -833,6 +833,17 @@ if (typeof window.SettingsManager === 'undefined') {
                     }
                 }
 
+                // Botón "Compartir" solo disponible en temas con fondo de URL (portables)
+                const canShare = p.bgType === 'url' && p.bgValue;
+                let shareBtnHtml = '';
+                if (canShare) {
+                    if (p.isShared) {
+                        shareBtnHtml = `<button class="btn-share-preset shared" title="Ya está en la galería" disabled>✓ Compartido</button>`;
+                    } else {
+                        shareBtnHtml = `<button class="btn-share-preset" title="Compartir en galería">⬆ Compartir</button>`;
+                    }
+                }
+
                 div.innerHTML = `
                 <div class="preset-preview" style="background-color: #222;">
                     <div style="width:100%; height:100%; background: ${bgStyle} center/cover no-repeat;"></div>
@@ -840,15 +851,33 @@ if (typeof window.SettingsManager === 'undefined') {
                 </div>
                 <div class="preset-info">
                     <span>${p.name}</span>
-                    <span class="preset-delete" style="color:red; cursor:pointer;" title="Borrar">&times;</span>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        ${shareBtnHtml}
+                        <button class="preset-delete" title="Borrar">&times;</button>
+                    </div>
                 </div>
             `;
 
-                // Apply Click
+                // Apply Click (ignora clicks en botones de control)
                 div.onclick = (e) => {
                     if (e.target.classList.contains('preset-delete')) return;
+                    if (e.target.classList.contains('btn-share-preset')) return;
                     applyPreset(p);
                 };
+
+                // Share Click — delega en ThemeGallery si está disponible
+                if (canShare) {
+                    const shareBtn = div.querySelector('.btn-share-preset');
+                    if (shareBtn) {
+                        shareBtn.onclick = () => {
+                            if (typeof ThemeGallery !== 'undefined') {
+                                ThemeGallery.shareTheme(p, shareBtn);
+                            } else {
+                                alert('Módulo de galería no disponible.');
+                            }
+                        };
+                    }
+                }
 
                 // Delete Click
                 div.querySelector('.preset-delete').onclick = async () => {
@@ -891,9 +920,15 @@ if (typeof window.SettingsManager === 'undefined') {
             openModal();
         };
 
+        const loadAndApply = async () => {
+            loadSettings();
+            await applySettings();
+        };
+
         return {
             init,
-            applySettings
+            applySettings,
+            loadAndApply
         };
     })();
 }

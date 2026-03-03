@@ -469,7 +469,8 @@
 .presets-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 15px;
+    gap: 12px;
+    margin-top: 10px;
 }
 
 .preset-card {
@@ -477,16 +478,18 @@
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.3);
-    transition: all 0.3s;
+    transition: all 0.25s ease;
+    cursor: pointer;
 }
 
 .preset-card:hover {
     border-color: var(--primary-color);
     transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .preset-preview {
-    height: 70px;
+    height: 75px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -494,11 +497,50 @@
 }
 
 .preset-info {
-    padding: 8px 12px;
-    font-size: 0.85rem;
+    padding: 8px 10px;
+    font-size: 0.8rem;
     display: flex;
-    justify-content: space-between;
-    background: rgba(20, 20, 25, 0.9);
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(15, 15, 20, 0.95);
+}
+
+.preset-info>span:first-child {
+    font-weight: 600;
+    color: #ddd;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.preset-info>div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.preset-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 50, 50, 0.15);
+    color: #ff5555;
+    border: 1px solid rgba(255, 50, 50, 0.3);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.preset-delete:hover {
+    background: rgba(255, 50, 50, 0.8);
+    color: #fff;
+    border-color: #ff5555;
 }
 
 /* --- Background Preview Box (Pro Max) --- */
