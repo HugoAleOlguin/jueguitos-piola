@@ -216,6 +216,22 @@ Historial de cambios estructurales y visuales del proyecto.
 - Header de la sección con fondo oscuro opaco para legibilidad sobre cualquier fondo de página
 - Timeout de proxies reducido de 8s a 5s para fallback más rápido
 
+## [3.3.0] - 2026-03-03
+
+### Added
+- **Galería de Temas Comunitaria online (BETA)**
+  - Implementación con Firebase Firestore para almacenamiento instantáneo (¡y gratuito!) en la nube.
+  - Nuevo modal estilo "*Store*" independiente, que no interrumpe el flujo normal del panel de configuraciones.
+  - Los usuarios pueden compartir temas propios con background de URLs estableciendo un nombre de autor (que persiste).
+  - Al presionar **Aplicar** en las tarjetas de la galería, la página actualiza toda su estética de forma visual e inmersiva gracias al nuevo puente `SettingsManager.loadAndApply()`.
+- Nuevo indicador persistente _"✓ Compartido"_ para que no pierdas rastro de qué subiste (guarda su estado en `localStorage`).
+
+### Changed
+- El botón interno "Eliminar Tema" ahora tiene mayor visibilidad (ícono *cross*), un hitbox más grande y colores de contraste altos.
+
+### Removed
+- **Eliminada funcionalidad Favoritos**: Limpieza visual y de código de todos los ficheros JS, CSS y del DOM, ya que no era útil en el entorno SPA reducido, mejorando el rendimiento al evitar validaciones y chequeos iterativos extra por tarjeta de juego.
+
 ## Versiones Principales
 
 | Versión | Fecha | Cambio Principal |

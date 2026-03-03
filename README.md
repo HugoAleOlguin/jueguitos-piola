@@ -6,7 +6,7 @@
   <br> Hosteado 100% en GitHub Pages. Sin backend, sin frameworks.
 
   ![Status](https://img.shields.io/badge/Estado-Activo-success?style=for-the-badge&logo=github)
-  ![Version](https://img.shields.io/badge/Versión-3.2.0-blue?style=for-the-badge)
+  ![Version](https://img.shields.io/badge/Versión-3.3.0-blue?style=for-the-badge)
 
 </div>
 
@@ -15,13 +15,13 @@
 ## 🚀 Demo en vivo
 
 <p align="center">
-  <b>Versión 3.2 — SPA con Giveaways en tiempo real</b>
+  <b>Versión 3.3 — SPA con Giveaways y Galería de Temas en tiempo real</b>
 </p>
 
 | 🟢 Sitio Oficial |
 |:---:|
 | [![Sitio Oficial](https://img.shields.io/badge/🌐-Jugar_Ahora-2ea44f?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/) |
-| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/?v=3.2&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=200&refresh=true" alt="Vista previa oficial"></a> |
+| <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/?v=3.3&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=200&refresh=true" alt="Vista previa oficial"></a> |
 
 > *La versión antigua ha sido archivada en [/old](https://hugoaleolguin.github.io/jueguitos-piola/old) para la posteridad.*
 
@@ -81,6 +81,7 @@ Esto es un side-project, así que avanzo a mi ritmo:
 - [x] Canonical URLs dinámicos (SEO)
 - [x] **Sección de Giveaways en tiempo real** (v3.2)
 - [x] Agrupación por plataforma con logos reales
+- [x] **Galería de Temas Comunitaria online (BETA)**
 
 ### 🚧 Pendiente
 - [ ] Más easter eggs
