@@ -447,16 +447,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = card.dataset.gameId;
 
         const isFav = toggleFavorite(id);
+
+        // Actualizar estado visual de la card inmediatamente (sin esperar re-render)
         btn.classList.toggle('active', isFav);
+        btn.title = isFav ? 'Quitar de favoritos' : 'Agregar a favoritos';
         card.classList.toggle('is-favorite', isFav);
 
-        // Re-renderizar la grilla después de un breve delay para la animación
+        // Re-ordenar la grilla para que los favoritos suban arriba.
+        // Se hace con un pequeño delay para que la animación visual del botón sea visible primero.
         setTimeout(() => {
-            if (gameView.style.display === 'none') {
-                handleSearch(searchInput ? searchInput.value : '');
-            }
-        }, 300);
+            const visibleGames = allGames.filter(g => !g.hidden);
+            const term = searchInput?.value?.trim() || '';
+            const filtered = term
+                ? visibleGames.filter(g =>
+                    g.title.toLowerCase().includes(term.toLowerCase()) ||
+                    g.tags.some(tag => tag.toLowerCase().includes(term.toLowerCase()))
+                )
+                : visibleGames;
+            renderGrid(sortGamesWithFavorites(filtered), false);
+        }, 250);
     };
+
 
     // Ordena poniendo favoritos primero
     const sortGamesWithFavorites = (games) => {

@@ -358,6 +358,46 @@
     text-decoration: underline;
 }
 
+/* --- Links del autor (footer) --- */
+.settings-author-links {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.author-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    background: rgba(255, 255, 255, 0.03);
+    letter-spacing: 0.5px;
+}
+
+.author-link svg {
+    flex-shrink: 0;
+    opacity: 0.7;
+    transition: opacity 0.25s;
+}
+
+.author-link:hover {
+    color: var(--primary-color);
+    border-color: rgba(0, 243, 255, 0.3);
+    background: rgba(0, 243, 255, 0.05);
+}
+
+.author-link:hover svg {
+    opacity: 1;
+}
+
+
 .btn-ghost {
     background: transparent;
     color: #888;

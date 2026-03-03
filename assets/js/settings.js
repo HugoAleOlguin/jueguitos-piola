@@ -13,8 +13,10 @@ if (typeof window.SettingsManager === 'undefined') {
             BLUR: 'jueguitos_settings_blur',
             THEME_COLOR: 'jueguitos_settings_color',
             LITE_MODE: 'jueguitos_settings_lite',
-            CURSOR: 'jueguitos_settings_cursor',     // Nuevo
-            PARTICLES: 'jueguitos_settings_particles' // Nuevo
+            CURSOR: 'jueguitos_settings_cursor',
+            PARTICLES: 'jueguitos_settings_particles',
+            TRAIL: 'jueguitos_settings_trail',
+            UI_SOUNDS: 'jueguitos_settings_uisounds'
         };
 
         const DEFAULTS = {
@@ -24,12 +26,15 @@ if (typeof window.SettingsManager === 'undefined') {
             THEME_COLOR: '#00f3ff',
             LITE_MODE: 'false',
             CURSOR: 'default',
-            PARTICLES: 'false'
+            PARTICLES: 'true', // Activado por default
+            TRAIL: 'false',
+            UI_SOUNDS: 'false'
         };
 
         // Estado actual
         let currentSettings = {};
-        let particleAnimationId = null; // Para detener la animación
+        let particleAnimationId = null;
+        let trailCleanup = null; // Referencia para limpiar la estela
 
         // ========================================================================
         // INDEXED DB (Mismo de antes - optimizado)
@@ -111,14 +116,15 @@ if (typeof window.SettingsManager === 'undefined') {
                 themeColor: localStorage.getItem(STORAGE_KEYS.THEME_COLOR) || DEFAULTS.THEME_COLOR,
                 liteMode: localStorage.getItem(STORAGE_KEYS.LITE_MODE) || DEFAULTS.LITE_MODE,
                 cursor: localStorage.getItem(STORAGE_KEYS.CURSOR) || DEFAULTS.CURSOR,
-                particles: localStorage.getItem(STORAGE_KEYS.PARTICLES) || DEFAULTS.PARTICLES
+                particles: localStorage.getItem(STORAGE_KEYS.PARTICLES) || DEFAULTS.PARTICLES,
+                trail: localStorage.getItem(STORAGE_KEYS.TRAIL) || DEFAULTS.TRAIL,
+                uiSounds: localStorage.getItem(STORAGE_KEYS.UI_SOUNDS) || DEFAULTS.UI_SOUNDS
             };
         };
 
         const applySettings = async () => {
             const isLite = currentSettings.liteMode === 'true';
 
-            // Si es Retro, forzamos desactivar lite-mode para que se vea el grid
             document.body.classList.toggle('lite-mode', isLite);
 
             // 1. FONDO
@@ -132,6 +138,12 @@ if (typeof window.SettingsManager === 'undefined') {
 
             // 4. PARTÍCULAS (Disable in Lite Mode)
             applyParticles(currentSettings.particles === 'true' && !isLite);
+
+            // 5. ESTELA DEL CURSOR
+            applyTrail(currentSettings.trail === 'true' && !isLite);
+
+            // 6. SONIDOS UI
+            applyUiSounds(currentSettings.uiSounds === 'true');
         };
 
         const applyBackground = async (isLite) => {
@@ -211,6 +223,205 @@ if (typeof window.SettingsManager === 'undefined') {
                 // Para los tipos predefinidos (clases CSS)
                 document.body.classList.add(`cursor-${type}`);
             }
+        };
+
+        // ========================================================================
+        // FOLLOWING DOT (cursor follower con lag suave)
+        // ========================================================================
+        const applyTrail = (enabled) => {
+            if (trailCleanup) {
+                trailCleanup();
+                trailCleanup = null;
+            }
+
+            if (!enabled) return;
+
+            const color = currentSettings.themeColor || '#00f3ff';
+
+            // Dot principal: anillo que sigue al mouse
+            const dot = document.createElement('div');
+            dot.id = 'cursor-follow-dot';
+            dot.style.cssText = `
+                position: fixed;
+                top: 0; left: 0;
+                width: 28px; height: 28px;
+                border-radius: 50%;
+                border: 2px solid ${color};
+                background: transparent;
+                pointer-events: none;
+                z-index: 99999;
+                opacity: 0.7;
+                transform: translate(-50%, -50%);
+                transition: width 0.2s ease, height 0.2s ease,
+                            opacity 0.2s ease, background 0.2s ease,
+                            border-color 0.3s ease;
+                will-change: transform;
+            `;
+            document.body.appendChild(dot);
+
+            // Punto interior más pequeño que sigue exacto (sin lag)
+            const dotInner = document.createElement('div');
+            dotInner.style.cssText = `
+                position: fixed;
+                top: 0; left: 0;
+                width: 5px; height: 5px;
+                border-radius: 50%;
+                background: ${color};
+                pointer-events: none;
+                z-index: 99999;
+                opacity: 0.9;
+                transform: translate(-50%, -50%);
+                will-change: transform;
+            `;
+            document.body.appendChild(dotInner);
+
+            // Posición objetivo (mouse real) y posición actual (con lag)
+            let targetX = -100, targetY = -100;
+            let currentX = -100, currentY = -100;
+            let animId;
+
+            // Selectores de elementos que agrandan el dot al hover
+            const HOVER_SELECTOR = '.game-card, .btn, .theme-toggle, .floating-fab, .minigame-card, .vs-mode-btn, a';
+
+            const onMove = (e) => {
+                targetX = e.clientX;
+                targetY = e.clientY;
+
+                // Mover el dot interior inmediatamente (sin lag)
+                dotInner.style.transform = `translate(${targetX}px, ${targetY}px) translate(-50%, -50%)`;
+
+                // Agrandar dot si está sobre un elemento interactivo
+                const hovering = document.elementFromPoint(targetX, targetY)?.closest(HOVER_SELECTOR);
+                if (hovering) {
+                    dot.style.width = '44px';
+                    dot.style.height = '44px';
+                    dot.style.opacity = '0.4';
+                    dot.style.background = `${color}22`;
+                } else {
+                    dot.style.width = '28px';
+                    dot.style.height = '28px';
+                    dot.style.opacity = '0.7';
+                    dot.style.background = 'transparent';
+                }
+            };
+
+            const animate = () => {
+                // Lerp suave (lag natural)
+                currentX += (targetX - currentX) * 0.1;
+                currentY += (targetY - currentY) * 0.1;
+                dot.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+                animId = requestAnimationFrame(animate);
+            };
+
+            animId = requestAnimationFrame(animate);
+            document.addEventListener('mousemove', onMove);
+
+            trailCleanup = () => {
+                cancelAnimationFrame(animId);
+                document.removeEventListener('mousemove', onMove);
+                dot.remove();
+                dotInner.remove();
+            };
+        };
+
+        // ========================================================================
+        // SONIDOS DE INTERFAZ (modernos, no 8-bit)
+        // ========================================================================
+        let uiSoundsCleanup = null;
+
+        const applyUiSounds = (enabled) => {
+            if (uiSoundsCleanup) {
+                uiSoundsCleanup();
+                uiSoundsCleanup = null;
+            }
+
+            if (!enabled) return;
+
+            let audioCtx = null;
+            const getCtx = () => {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                return audioCtx;
+            };
+
+            /**
+             * Pop suave: sine puro, sin filtros ni sweeps fuertes.
+             * Apenas perceptible — más un "toque" que un sonido.
+             */
+            const playPop = () => {
+                try {
+                    const ctx = getCtx();
+                    const t = ctx.currentTime;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, t);
+                    osc.frequency.linearRampToValueAtTime(480, t + 0.1);
+
+                    gain.gain.setValueAtTime(0, t);
+                    gain.gain.linearRampToValueAtTime(0.06, t + 0.012);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.14);
+                } catch (_) { }
+            };
+
+            /** Click: ligeramente más agudo, igual de sutil */
+            const playClick = () => {
+                try {
+                    const ctx = getCtx();
+                    const t = ctx.currentTime;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(680, t);
+                    osc.frequency.linearRampToValueAtTime(560, t + 0.05);
+
+                    gain.gain.setValueAtTime(0, t);
+                    gain.gain.linearRampToValueAtTime(0.08, t + 0.006);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.1);
+                } catch (_) { }
+            };
+
+
+            // Selectores de elementos que disparan sonido
+            const HOVER_SELECTOR = '.game-card, .btn, .theme-toggle, .floating-fab, .vs-mode-btn, .minigame-card, .color-btn, .option-card';
+
+            /**
+             * Detecta si el mouse ENTRÓ al elemento desde afuera
+             * (no desde un hijo del mismo elemento).
+             * Evita sonidos al moverse entre hijos de la misma card.
+             */
+            const isEnteringFromOutside = (e) => {
+                const target = e.target.closest(HOVER_SELECTOR);
+                if (!target) return false;
+                const from = e.relatedTarget?.closest(HOVER_SELECTOR);
+                // Solo dispara si entramos desde fuera del mismo elemento
+                return target !== from;
+            };
+
+            const abortCtrl = new AbortController();
+
+            // Hover: solo al entrar al elemento desde fuera
+            document.body.addEventListener('mouseover', (e) => {
+                if (isEnteringFromOutside(e)) playPop(480, 0.1);
+            }, { signal: abortCtrl.signal });
+
+            // Click: en cualquier elemento interactivo
+            document.body.addEventListener('click', (e) => {
+                if (e.target.closest(HOVER_SELECTOR)) playClick(0.13);
+            }, { signal: abortCtrl.signal });
+
+            uiSoundsCleanup = () => abortCtrl.abort();
         };
 
         // ========================================================================
@@ -313,8 +524,10 @@ if (typeof window.SettingsManager === 'undefined') {
                 blur: document.getElementById('settingBlur'),
                 color: document.getElementById('settingColor'),
                 presets: document.querySelectorAll('.color-btn'),
-                cursorCards: document.querySelectorAll('.option-card'), // Cursors
-                particles: document.getElementById('settingParticles') // Particles Toggle
+                cursorCards: document.querySelectorAll('.option-card'),
+                particles: document.getElementById('settingParticles'),
+                trail: document.getElementById('settingCursorTrail'),
+                uiSounds: document.getElementById('settingUiSounds')
             };
 
             if (inputs.url) inputs.url.oninput = (e) => updatePreviewLocally(e.target.value);
@@ -416,6 +629,8 @@ if (typeof window.SettingsManager === 'undefined') {
             document.getElementById('settingColor').value = currentSettings.themeColor;
             document.getElementById('settingLiteMode').checked = currentSettings.liteMode === 'true';
             document.getElementById('settingParticles').checked = currentSettings.particles === 'true';
+            document.getElementById('settingCursorTrail').checked = currentSettings.trail === 'true';
+            document.getElementById('settingUiSounds').checked = currentSettings.uiSounds === 'true';
 
             // Set Active Cursor Card
             document.querySelectorAll('.option-card').forEach(c => {
@@ -463,6 +678,8 @@ if (typeof window.SettingsManager === 'undefined') {
                 const isLite = document.getElementById('settingLiteMode').checked;
                 const cursor = document.getElementById('settingCursor').value;
                 const particles = document.getElementById('settingParticles').checked;
+                const trail = document.getElementById('settingCursorTrail').checked;
+                const uiSounds = document.getElementById('settingUiSounds').checked;
 
                 let type = 'default';
                 let value = '';
@@ -496,6 +713,8 @@ if (typeof window.SettingsManager === 'undefined') {
                 localStorage.setItem(STORAGE_KEYS.LITE_MODE, isLite);
                 localStorage.setItem(STORAGE_KEYS.CURSOR, cursor);
                 localStorage.setItem(STORAGE_KEYS.PARTICLES, particles);
+                localStorage.setItem(STORAGE_KEYS.TRAIL, trail);
+                localStorage.setItem(STORAGE_KEYS.UI_SOUNDS, uiSounds);
 
                 // --- ACHIEVEMENTS CHECK ---
                 if (typeof AchievementManager !== 'undefined') {
@@ -509,7 +728,8 @@ if (typeof window.SettingsManager === 'undefined') {
                 // Update State
                 currentSettings = {
                     bgType: type, bgValue: value, blur, themeColor: color,
-                    liteMode: String(isLite), cursor, particles: String(particles)
+                    liteMode: String(isLite), cursor, particles: String(particles),
+                    trail: String(trail), uiSounds: String(uiSounds)
                 };
 
                 await applySettings();
