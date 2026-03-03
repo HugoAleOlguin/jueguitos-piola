@@ -344,8 +344,8 @@ if (typeof window.SettingsManager === 'undefined') {
             };
 
             /**
-             * Pop suave: sine puro, sin filtros ni sweeps fuertes.
-             * Apenas perceptible — más un "toque" que un sonido.
+             * Pop de hover: casi imperceptible, solo da feedback.
+             * Sine puro, volumen mínimo, duración muy corta.
              */
             const playPop = () => {
                 try {
@@ -355,21 +355,21 @@ if (typeof window.SettingsManager === 'undefined') {
                     const gain = ctx.createGain();
 
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(520, t);
-                    osc.frequency.linearRampToValueAtTime(480, t + 0.1);
+                    osc.frequency.setValueAtTime(500, t);
+                    osc.frequency.linearRampToValueAtTime(470, t + 0.07);
 
                     gain.gain.setValueAtTime(0, t);
-                    gain.gain.linearRampToValueAtTime(0.06, t + 0.012);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+                    gain.gain.linearRampToValueAtTime(0.03, t + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
 
                     osc.connect(gain);
                     gain.connect(ctx.destination);
                     osc.start(t);
-                    osc.stop(t + 0.14);
+                    osc.stop(t + 0.1);
                 } catch (_) { }
             };
 
-            /** Click: ligeramente más agudo, igual de sutil */
+            /** Click: levemente más audible para distinguirlo del hover */
             const playClick = () => {
                 try {
                     const ctx = getCtx();
@@ -378,11 +378,11 @@ if (typeof window.SettingsManager === 'undefined') {
                     const gain = ctx.createGain();
 
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(680, t);
-                    osc.frequency.linearRampToValueAtTime(560, t + 0.05);
+                    osc.frequency.setValueAtTime(640, t);
+                    osc.frequency.linearRampToValueAtTime(520, t + 0.05);
 
                     gain.gain.setValueAtTime(0, t);
-                    gain.gain.linearRampToValueAtTime(0.08, t + 0.006);
+                    gain.gain.linearRampToValueAtTime(0.07, t + 0.006);
                     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
 
                     osc.connect(gain);

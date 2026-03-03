@@ -124,17 +124,13 @@
                     <div class="preview-box" id="settingBgPreview">
                         <span>Vista Previa</span>
                     </div>
-                    <!-- Partículas movidas aquí para estar junto a los efectos de fondo -->
-                    <div class="form-group" style="margin-top: 1rem;">
-                        <label class="toggle-switch">
-                            <span style="display: flex; flex-direction: column;">
-                                <span>Partículas de Fondo</span>
-                                <span style="font-size: 0.78em; color: #666; font-weight: normal;">Puntitos flotantes
-                                    ambientales</span>
-                            </span>
-                            <input type="checkbox" id="settingParticles" class="toggle-input" checked>
-                        </label>
-                    </div>
+                    <label class="toggle-switch" style="margin-top: 0.8rem;">
+                        <span class="toggle-label">
+                            Partículas de Fondo
+                            <small>puntitos flotantes ambientales</small>
+                        </span>
+                        <input type="checkbox" id="settingParticles" class="toggle-input" checked>
+                    </label>
                 </div>
 
                 <!-- 2. ESTILO (Blur & Color) -->
@@ -214,25 +210,19 @@
                     <input type="file" id="settingCursorFile" accept="image/png" style="display: none;"
                         aria-label="Subir cursor personalizado">
 
-                    <!-- Cursor Dot -->
-                    <div class="form-group">
+                    <!-- Toggles de FX: compactos y apilados -->
+                    <div class="toggle-group">
                         <label class="toggle-switch">
-                            <span style="display: flex; flex-direction: column;">
-                                <span>Cursor Dot</span>
-                                <span style="font-size: 0.78em; color: #666; font-weight: normal;">Un punto que sigue al
-                                    mouse con lag suave</span>
+                            <span class="toggle-label">
+                                Cursor Dot
+                                <small>un punto que sigue al mouse</small>
                             </span>
                             <input type="checkbox" id="settingCursorTrail" class="toggle-input">
                         </label>
-                    </div>
-
-                    <!-- Sonidos de UI -->
-                    <div class="form-group">
                         <label class="toggle-switch">
-                            <span style="display: flex; flex-direction: column;">
-                                <span>Sonidos de Interfaz</span>
-                                <span style="font-size: 0.78em; color: #666; font-weight: normal;">Clicks y hovers con
-                                    efectos 8-bit</span>
+                            <span class="toggle-label">
+                                Sonidos de Interfaz
+                                <small>pop suave al interactuar</small>
                             </span>
                             <input type="checkbox" id="settingUiSounds" class="toggle-input">
                         </label>
