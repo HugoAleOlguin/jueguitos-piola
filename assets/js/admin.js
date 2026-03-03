@@ -330,34 +330,32 @@ function renderGamesList() {
     const container = document.getElementById('gamesList');
     const filter = document.getElementById('searchGames').value.toLowerCase();
 
-    // We render games in order. Using state.games order.
     container.innerHTML = state.games
         .map((game, index) => ({ ...game, originalIndex: index }))
         .filter(game => game.title.toLowerCase().includes(filter) || game.id.includes(filter))
-        .map((game, visibleIndex) => {
+        .map((game) => {
             const isHidden = game.hidden === true;
             return `
-            <div class="game-card-item" data-index="${game.originalIndex}" 
-                 onclick="editGame(${game.originalIndex})"
+            <div class="game-card-item" data-index="${game.originalIndex}"
                  role="button" tabindex="0"
                  onkeydown="if(event.key==='Enter'||event.key===' ') editGame(${game.originalIndex})"
                  style="${isHidden ? 'opacity: 0.6; border: 1px dashed var(--text-muted);' : ''} cursor: pointer; position: relative; overflow:hidden;">
-                
-                <div class="drag-handle" title="Arrastrar para reordenar" 
+
+                <div class="drag-handle" title="Arrastrar para reordenar"
                      role="button" tabindex="0" aria-label="Arrastrar para reordenar"
-                     onpointerdown="initSortable(event, this)" 
+                     onpointerdown="initSortable(event, this)"
                      onclick="event.stopPropagation()"
                      onkeydown="if(event.key==='Enter'||event.key===' '){ event.stopPropagation(); }"
                      style="padding: 10px; cursor: grab; color: var(--text-muted);">
                      ${ICONS.DRAG}
                 </div>
 
-                <img src="${game.image}" class="game-thumb" width="120" height="68" 
+                <img src="${game.image}" class="game-thumb" width="120" height="68"
                      alt="${game.title}"
-                     onerror="this.src='../favicon.png'" 
+                     onerror="this.src='../favicon.png'"
                      style="${isHidden ? 'filter:grayscale(100%)' : ''}; pointer-events:none;">
-                
-                <div style="flex:1; pointer-events:none;"> <!-- Pointer events none to prevent misclicks on text selecting -->
+
+                <div style="flex:1; pointer-events:none;">
                     <h4 style="margin:0;">${game.title} ${isHidden ? '<small style="color:var(--warning); font-size:0.7em">(OCULTO)</small>' : ''}</h4>
                     <p class="text-sm" style="margin:2px 0 0 0;">${game.id}</p>
                 </div>
@@ -366,16 +364,16 @@ function renderGamesList() {
                     ${(game.tags || []).map(t => `<span class="tag-badge">${t}</span>`).join('')}
                 </div>
 
-                <div style="display:flex; gap:5px; align-items:center;">
-                    <button class="btn btn-ghost" 
-                            onclick="event.stopPropagation(); toggleVisibility(${game.originalIndex})" 
+                <div style="display:flex; gap:5px; align-items:center;" onclick="event.stopPropagation()">
+                    <button class="btn btn-ghost action-btn"
+                            data-action="toggle" data-index="${game.originalIndex}"
                             title="${isHidden ? 'Mostrar juego' : 'Ocultar juego'}"
                             style="padding: 8px;">
                         ${isHidden ? ICONS.HIDDEN : ICONS.VISIBLE}
                     </button>
-                    <!-- Edit button removed as per request (click card to edit) -->
-                    <button class="btn btn-ghost" 
-                            onclick="event.stopPropagation(); deleteGame(${game.originalIndex})" 
+                    <button class="btn btn-ghost action-btn"
+                            data-action="delete" data-index="${game.originalIndex}"
+                            data-title="${game.title.replace(/"/g, '&quot;')}"
                             style="color:var(--danger); padding: 8px;"
                             title="Eliminar juego">
                         ${ICONS.DELETE}
@@ -383,7 +381,55 @@ function renderGamesList() {
                 </div>
             </div>
         `}).join('');
+
+    // Reasignar delegation en cada render
+    setupListDelegation(container);
 }
+
+/**
+ * Event delegation para la lista de juegos.
+ * Usa AbortController para limpiar el listener anterior antes de cada re-render,
+ * evitando duplicados sin romper el pointer capture del drag-and-drop.
+ */
+let listDelegationController = null;
+
+function setupListDelegation(container) {
+    // Cancelar listener anterior si existe
+    if (listDelegationController) {
+        listDelegationController.abort();
+    }
+    listDelegationController = new AbortController();
+
+    container.addEventListener('click', (e) => {
+        const actionBtn = e.target.closest('.action-btn');
+        const card = e.target.closest('.game-card-item');
+
+        if (actionBtn) {
+            e.stopPropagation();
+            const index = parseInt(actionBtn.dataset.index);
+            const action = actionBtn.dataset.action;
+
+            if (action === 'delete') {
+                const title = actionBtn.dataset.title;
+                if (confirm(`¿Seguro que querés borrar "${title}"?`)) {
+                    state.games.splice(index, 1);
+                    state.pendingChanges.push(`- ${title}`);
+                    renderGamesList();
+                    updatePendingUI();
+                }
+            } else if (action === 'toggle') {
+                toggleVisibility(index);
+            }
+            return;
+        }
+
+        // Click en la card (no en un botón de acción ni en el drag handle)
+        if (card && !e.target.closest('.drag-handle')) {
+            editGame(parseInt(card.dataset.index));
+        }
+    }, { signal: listDelegationController.signal });
+}
+
 
 // End of admin.js
 

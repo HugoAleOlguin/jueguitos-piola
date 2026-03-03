@@ -138,3 +138,9 @@ body.lite-mode .settings-modal .settings-section:not(.lite-section-container) {
 body.lite-mode .settings-footer .btn-text {
     display: none !important;
 }
+
+/* Ocultar efectos decorativos del fondo en Lite Mode */
+body.lite-mode::before,
+body.lite-mode::after {
+    display: none !important;
+}

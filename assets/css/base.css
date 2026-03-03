@@ -92,11 +92,55 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     background-image:
-        radial-gradient(circle at 10% 20%, rgba(188, 19, 254, 0.08) 0%, transparent 25%),
-        radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.08) 0%, transparent 25%),
-        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, var(--bg-color) 100%);
+        radial-gradient(ellipse at 5% 15%, rgba(188, 19, 254, 0.12) 0%, transparent 35%),
+        radial-gradient(ellipse at 95% 85%, rgba(0, 243, 255, 0.12) 0%, transparent 35%),
+        radial-gradient(ellipse at 80% 10%, rgba(0, 243, 255, 0.06) 0%, transparent 25%),
+        radial-gradient(ellipse at 20% 90%, rgba(188, 19, 254, 0.06) 0%, transparent 25%);
     line-height: 1.6;
     scroll-behavior: smooth;
+    position: relative;
+}
+
+/* Patrón de puntos sutil como textura de fondo */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Líneas de scan verticales muy sutiles */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px);
+    pointer-events: none;
+    z-index: 0;
+    animation: scanMove 8s linear infinite;
+}
+
+@keyframes scanMove {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 0 40px;
+    }
+}
+
+/* Asegurar que el contenido principal esté sobre los pseudoelementos */
+body>* {
+    position: relative;
+    z-index: 1;
 }
 
 /* Selección de texto */

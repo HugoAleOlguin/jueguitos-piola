@@ -46,13 +46,15 @@
     animation: modalGlow 5s infinite alternate;
 }
 
+/* --- Animación de brillo del modal --- */
 @keyframes modalGlow {
     from {
         box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 243, 255, 0.05);
     }
 
     to {
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 243, 255, 0.15);
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 243, 255, 0.1),
+            inset 0 0 0 1px rgba(0, 243, 255, 0.05);
     }
 }
 
@@ -117,18 +119,36 @@
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
-/* Sections */
+/* Divisor entre secciones */
+.settings-body>.settings-section+.settings-section {
+    margin-top: 0;
+}
+
+/* Override de color para secciones especiales */
+.lite-section-container {
+    border-left-color: rgba(255, 149, 0, 0.5) !important;
+}
+
+.lite-section-container:hover {
+    border-left-color: #ff9500 !important;
+    box-shadow: -3px 0 15px rgba(255, 149, 0, 0.08) !important;
+}
+
+/* --- Sections --- */
 .settings-section {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 16px;
     padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-left: 3px solid rgba(0, 243, 255, 0.3);
     transition: all 0.3s;
+    position: relative;
 }
 
 .settings-section:hover {
     background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.08);
+    border-left-color: var(--primary-color);
+    box-shadow: -3px 0 15px rgba(0, 243, 255, 0.05);
 }
 
 .settings-section h3 {
@@ -152,6 +172,30 @@
     font-size: 0.95rem;
     color: #ddd;
     font-weight: 500;
+}
+
+/* Label de subir archivo con apariencia de botón */
+.custom-file-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    color: #ccc;
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.custom-file-upload:hover {
+    background: rgba(0, 243, 255, 0.08);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 /* Text Input Styled */
@@ -293,13 +337,25 @@
 
 /* --- Footer --- */
 .settings-footer {
-    padding: 1.5rem 2.5rem;
+    padding: 1.2rem 2.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 0 0 24px 24px;
+    gap: 1rem;
+}
+
+.btn-ghost.danger {
+    color: var(--accent-red, #ff4757);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.btn-ghost.danger:hover {
+    opacity: 1;
+    text-decoration: underline;
 }
 
 .btn-ghost {
