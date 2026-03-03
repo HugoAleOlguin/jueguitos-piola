@@ -24,6 +24,15 @@
     border-color: var(--primary-color);
 }
 
+/* Iconos Lucide dentro de botones de la barra de navegación */
+.theme-toggle svg,
+.theme-toggle i svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    stroke: currentColor;
+}
+
 /* =====================================================
    HEADER
    ===================================================== */

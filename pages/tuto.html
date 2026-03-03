@@ -10,6 +10,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&family=Inter:wght@300;400;600;700&display=swap"
         rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script>
         if (localStorage.getItem('jueguitosTheme') === 'light') {
             document.documentElement.setAttribute('data-theme', 'light');
@@ -233,7 +235,7 @@
         <div class="tuto-container">
 
             <a href="../index.html" class="back-home-btn">
-                <span>⬅️</span> Volver al Inicio
+                <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Volver al Inicio
             </a>
 
 
@@ -245,7 +247,7 @@
             <div class="download-box glass-panel">
                 <a href="https://galemodmanager.com/#download-gale-mod-manager" class="cta-button" target="_blank"
                     rel="noopener noreferrer">
-                    <span>⬇️ Descargar Gale</span>
+                    <i data-lucide="download" style="width:18px;height:18px;vertical-align:middle;"></i> Descargar Gale
                 </a>
                 <br>
                 <small style="display:block; margin-top:1rem; color:var(--text-muted)">Versión 64-bit para
@@ -291,6 +293,7 @@
     </footer>
 
     <script src="../assets/js/theme.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
 
 </body>
 

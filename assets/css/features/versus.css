@@ -349,3 +349,17 @@
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     background: rgba(0, 0, 0, 0.8);
 }
+
+/* Iconos Lucide SVG dentro del FAB */
+.floating-fab svg {
+    width: 26px;
+    height: 26px;
+    stroke: #ffd700;
+}
+
+/* Iconos Lucide SVG dentro de los botones de modo torneo */
+.mode-icon svg {
+    width: 36px;
+    height: 36px;
+    stroke: var(--primary-color);
+}

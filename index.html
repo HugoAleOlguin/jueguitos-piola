@@ -50,6 +50,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
         rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <!-- Botón Configuración Avanzada -->
     <style>
         /* Small fix for settings button position if needed */
@@ -81,14 +83,14 @@
             </div>
             <!-- Botón Minijuegos -->
             <button class="theme-toggle" id="btnMiniGames" title="Minijuegos">
-                🎮
+                <i data-lucide="gamepad-2"></i>
             </button>
             <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
-                🎲
+                <i data-lucide="shuffle"></i>
             </button>
 
             <button class="theme-toggle" id="settingsToggle" title="Configuración">
-                ⚙️
+                <i data-lucide="sliders-horizontal"></i>
             </button>
         </nav>
     </header>
@@ -105,14 +107,16 @@
             <div class="settings-body">
                 <!-- 1. APARIENCIA (Fondo) -->
                 <div class="settings-section">
-                    <h3>🎨 Fondo & Ambiente</h3>
+                    <h3><i data-lucide="image" style="width:16px;height:16px;vertical-align:middle;"></i> Fondo &
+                        Ambiente</h3>
                     <div class="form-group">
                         <label for="settingBgUrl">Imagen de Fondo (URL)</label>
                         <input type="text" id="settingBgUrl" class="settings-input" placeholder="https://...">
                     </div>
                     <div class="form-group">
                         <label for="settingBgFile" class="custom-file-upload">
-                            📂 Subir Archivo Local
+                            <i data-lucide="folder-open" style="width:14px;height:14px;vertical-align:middle;"></i>
+                            Subir Archivo Local
                         </label>
                         <input type="file" id="settingBgFile" accept="image/*" style="display:none;"
                             aria-label="Subir archivo de fondo">
@@ -124,7 +128,8 @@
 
                 <!-- 2. ESTILO (Blur & Color) -->
                 <div class="settings-section">
-                    <h3>✨ Estética Neon</h3>
+                    <h3><i data-lucide="sparkles" style="width:16px;height:16px;vertical-align:middle;"></i> Estética
+                        Neon</h3>
                     <div class="form-group">
                         <label for="settingBlur">Nivel de Desenfoque (Glass)</label>
                         <input type="range" id="settingBlur" min="0" max="20" step="1" value="0"
@@ -156,14 +161,16 @@
 
                 <!-- 3. EFECTOS (Cursores & Partículas) - NEW -->
                 <div class="settings-section">
-                    <h3>🖱️ Cursores & FX</h3>
+                    <h3><i data-lucide="mouse-pointer-2" style="width:16px;height:16px;vertical-align:middle;"></i>
+                        Cursores & FX</h3>
 
                     <div class="form-group">
                         <span class="group-label">Cursor (BETA)</span>
                         <div class="options-grid" id="cursorGrid"
                             style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
                             <div class="option-card active" data-cursor="default" title="Default">
-                                <span class="option-icon" style="font-size: 1.2rem;">🖱️</span>
+                                <span class="option-icon"><i data-lucide="mouse-pointer"
+                                        style="width:20px;height:20px;"></i></span>
                             </div>
                             <div class="option-card" data-cursor="crosshair" title="FPS">
                                 <span class="option-icon" style="font-size: 1.2rem;">✛</span>
@@ -176,14 +183,15 @@
 
                             <!-- Custom Upload Option BETA-->
                             <div class="option-card" id="btnCustomCursor" title="Subir PNG">
-                                <span class="option-icon" style="font-size: 1.2rem;">📂</span>
+                                <span class="option-icon"><i data-lucide="upload"
+                                        style="width:20px;height:20px;"></i></span>
                             </div>
                         </div>
 
                         <!-- Help / Limitations -->
                         <div
                             style="margin-top: 5px; font-size: 0.75rem; color: #888; display: flex; gap: 5px; align-items: center;">
-                            <span>ℹ️</span>
+                            <span><i data-lucide="info" style="width:13px;height:13px;"></i></span>
                             <span>
                                 <strong>Limitaciones:</strong> Máx 128x128px (ideal 32x32), PNG transparente, < 100KB.
                                     </span>
@@ -205,7 +213,8 @@
 
                 <!-- 4. PRESETS -->
                 <div class="settings-section">
-                    <h3>💾 Temas Guardados</h3>
+                    <h3><i data-lucide="bookmark" style="width:16px;height:16px;vertical-align:middle;"></i> Temas
+                        Guardados</h3>
                     <div class="form-group" style="display: flex; gap: 10px;">
                         <input type="text" id="presetName" class="settings-input" placeholder="Nuevo tema..."
                             style="flex: 1;" aria-label="Nombre del nuevo tema">
@@ -219,7 +228,7 @@
 
                 <!-- 5. RENDIMIENTO -->
                 <div class="settings-section lite-section-container" style="border-color: rgba(255, 149, 0, 0.3);">
-                    <h3>🚀 Rendimiento</h3>
+                    <h3><i data-lucide="zap" style="width:16px;height:16px;vertical-align:middle;"></i> Rendimiento</h3>
                     <div class="form-group">
                         <label class="toggle-switch">
                             <span style="display: flex; flex-direction: column;">
@@ -286,12 +295,12 @@
             <!-- Stage 1: Selection -->
             <div id="vsStageSelection" class="vs-stage">
                 <button class="vs-mode-btn" data-mode="blitz">
-                    <span class="mode-icon">⚡</span>
+                    <span class="mode-icon"><i data-lucide="zap"></i></span>
                     <span class="mode-title">Torneo Rápido</span>
                     <span class="mode-desc">8 juegos al azar.</span>
                 </button>
                 <button class="vs-mode-btn" data-mode="all">
-                    <span class="mode-icon">🏆</span>
+                    <span class="mode-icon"><i data-lucide="trophy"></i></span>
                     <span class="mode-title">Torneo Completo</span>
                     <span class="mode-desc">Todos los juegos.</span>
                 </button>
@@ -324,7 +333,8 @@
         aria-modal="true" aria-labelledby="achTitle">
         <div class="achievements-window">
             <div class="achievements-header">
-                <h2 id="achTitle">🏆 Logros Desbloqueados <span id="achTitleCount">(0/0)</span></h2>
+                <h2 id="achTitle"><i data-lucide="trophy" style="width:20px;height:20px;vertical-align:middle;"></i>
+                    Logros Desbloqueados <span id="achTitleCount">(0/0)</span></h2>
                 <button class="btn-close-ach" id="btnCloseAchievements">×</button>
             </div>
             <div class="achievements-body">
@@ -340,22 +350,23 @@
 
     <!-- Floating Achievement Button (Bottom Right) -->
     <div class="floating-fab" id="btnAchievementsFab" title="Ver Logros">
-        🏆
+        <i data-lucide="trophy"></i>
     </div>
 
     <!-- Modal Minijuegos -->
     <div id="miniGamesModal" role="dialog" aria-modal="true" aria-labelledby="miniGamesTitle">
         <button id="miniGamesCloseBtn">×</button>
         <div id="miniGamesContainer">
-            <h2 id="miniGamesTitle">🎮 MINIJUEGOS</h2>
+            <h2 id="miniGamesTitle"><i data-lucide="gamepad-2"
+                    style="width:22px;height:22px;vertical-align:middle;"></i> MINIJUEGOS</h2>
             <div id="miniGamesGrid">
                 <div class="minigame-card" data-minigame="gamedle">
-                    <div class="minigame-icon">🖼️</div>
+                    <div class="minigame-icon"><i data-lucide="eye" style="width:28px;height:28px;"></i></div>
                     <div class="minigame-title">Adivina el Juego</div>
                     <div class="minigame-subtitle">Gamedle</div>
                 </div>
                 <div class="minigame-card" data-minigame="versus">
-                    <div class="minigame-icon">⚔️</div>
+                    <div class="minigame-icon"><i data-lucide="swords" style="width:28px;height:28px;"></i></div>
                     <div class="minigame-title">Torneo Versus</div>
                     <div class="minigame-subtitle">Competencia 1v1</div>
                 </div>
@@ -453,6 +464,8 @@
     <script src="assets/js/games.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/settings.js"></script>
+    <!-- Inicializa los iconos Lucide una vez que el DOM está completo -->
+    <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
 </body>
 
 </html>

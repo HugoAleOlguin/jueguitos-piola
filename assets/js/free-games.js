@@ -23,7 +23,7 @@ function setupFreeGamesUI() {
         btnFreeGames.className = 'theme-toggle';
         btnFreeGames.id = 'btnFreeGames';
         btnFreeGames.title = 'Juegos y Giveaways 100% Gratis';
-        btnFreeGames.innerHTML = '🎁';
+        btnFreeGames.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>';
         nav.insertBefore(btnFreeGames, document.getElementById('btnMiniGames'));
 
         btnFreeGames.addEventListener('click', () => {
@@ -41,7 +41,7 @@ function setupFreeGamesUI() {
         freeGamesView.innerHTML = `
             <div class="fg-header">
                 <div class="fg-title-wrapper">
-                    <span class="fg-icon">🎁</span>
+                    <span class="fg-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg></span>
                     <div>
                         <h2>Juegos Gratis (100% Descuento)</h2>
                         <p class="fg-subtitle">Regalos activos</p>
@@ -106,7 +106,7 @@ async function fetchFreeGames() {
     const container = document.getElementById('fgContainer');
     if (!container) return;
 
-    container.innerHTML = '<div class="fg-loading">Buscando giveaways activos... ⏳</div>';
+    container.innerHTML = '<div class="fg-loading">Buscando giveaways activos...</div>';
 
     // =====================================================================
     // WORKER PROPIO: una vez que actualices el código en Cloudflare Dashboard,
@@ -164,7 +164,7 @@ async function fetchFreeGames() {
             Para una solución permanente, configurá un Cloudflare Worker
             siguiendo las instrucciones en <code>.agent/scripts/cf-worker-cors-proxy.js</code>
         </p>
-        <button onclick="fetchFreeGames()" style="margin-top:12px; padding:8px 16px; background:rgba(0,243,255,0.15); border:1px solid var(--primary-color,#00f3ff); color:var(--primary-color,#00f3ff); border-radius:6px; cursor:pointer; font-family:inherit;">🔄 Reintentar</button>
+        <button onclick="fetchFreeGames()" style="margin-top:12px; padding:8px 16px; background:rgba(0,243,255,0.15); border:1px solid var(--primary-color,#00f3ff); color:var(--primary-color,#00f3ff); border-radius:6px; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.52"></path></svg> Reintentar</button>
     </div>`;
 }
 
@@ -247,7 +247,7 @@ function formatExpiryAR(endDateStr) {
         minute: '2-digit',
     });
 
-    return `<span class="fg-expiry-badge">⏳ Vence ${formatted} (ARG)</span>`;
+    return `<span class="fg-expiry-badge"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Vence ${formatted} (ARG)</span>`;
 }
 
 function renderFreeGames(gamesList) {
