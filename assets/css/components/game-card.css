@@ -1,6 +1,6 @@
 /* =====================================================
    TARJETAS DE JUEGOS
-   Card principal, imagen, contenido, favoritos, ribbon
+   Card principal, imagen, contenido, ribbon
    ===================================================== */
 
 .game-card {
@@ -52,64 +52,6 @@
     transition-duration: 0.1s;
 }
 
-/* =====================================================
-   BOTÓN DE FAVORITOS
-   ===================================================== */
-.favorite-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #666;
-    font-size: 1.1rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s var(--ease-out-back);
-    z-index: 10;
-    backdrop-filter: blur(4px);
-}
-
-.favorite-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
-    border-color: rgba(255, 200, 0, 0.3);
-    color: #ffc800;
-    transform: scale(1.1);
-}
-
-.favorite-btn.active {
-    color: #ffc800;
-    background: rgba(255, 200, 0, 0.15);
-    border-color: rgba(255, 200, 0, 0.4);
-    text-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
-}
-
-.favorite-btn.active:hover {
-    background: rgba(255, 200, 0, 0.25);
-}
-
-/* Tarjeta favorita - destacada con borde dorado */
-.game-card.is-favorite {
-    border-color: rgba(255, 200, 0, 0.35);
-    background: rgba(25, 22, 15, 0.95);
-    box-shadow:
-        0 4px 20px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 200, 0, 0.15),
-        inset 0 1px 0 rgba(255, 200, 0, 0.1);
-}
-
-.game-card.is-favorite:hover {
-    border-color: rgba(255, 200, 0, 0.5);
-    box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(255, 200, 0, 0.15),
-        0 0 0 1px rgba(255, 200, 0, 0.3);
-}
 
 /* =====================================================
    IMAGEN DE LA TARJETA

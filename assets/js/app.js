@@ -1,7 +1,7 @@
 // ============================================================================
 // APP.JS (VERSIÓN SPA)
 // Controlador Central de Jueguitos Piola
-// Maneja: Routing, Grilla, Detalle de Juego, Búsqueda, Favoritos
+// Maneja: Routing, Grilla, Detalle de Juego, Búsqueda
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,11 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Delegación de clicks en la grilla
         gamesGrid.addEventListener('click', (e) => {
-            // Botón de favorito se maneja por separado
-            if (e.target.closest('.favorite-btn')) {
-                handleFavoriteClick(e);
-                return;
-            }
 
             const card = e.target.closest('.game-card');
             if (card) {
@@ -153,10 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const visibleGames = allGames.filter(g => !g.hidden);
 
         if (gamesGrid.children.length === 0) {
-            renderGrid(sortGamesWithFavorites(visibleGames));
+            renderGrid(visibleGames);
         } else {
-            // Re-render sin animación para consistencia de estado
-            renderGrid(sortGamesWithFavorites(visibleGames), false);
+            renderGrid(visibleGames, false);
         }
     };
 
@@ -242,8 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         games.forEach((game, index) => {
             const card = document.createElement('div');
-            const gameIsFavorite = isFavorite(game.id);
-            card.className = `game-card${gameIsFavorite ? ' is-favorite' : ''}`;
+            card.className = 'game-card';
             card.dataset.gameId = game.id;
 
             if (animate) card.style.animationDelay = `${index * 0.03}s`;
@@ -258,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const utilityRibbon = isUtility ? '<div class="utility-ribbon">Utilidad</div>' : '';
 
             card.innerHTML = `
-                <button class="favorite-btn${gameIsFavorite ? ' active' : ''}" title="${gameIsFavorite ? 'Quitar' : 'Agregar'}">★</button>
                 <div class="card-image loaded" style="background-image: ${bgImage}">
                     ${utilityRibbon}
                 </div>
@@ -413,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        renderGrid(sortGamesWithFavorites(filtered), true);
+        renderGrid(filtered, true);
     }, 150);
 
     function debounce(fn, delay) {
@@ -424,64 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // --- Favoritos ---
-
-    const toggleFavorite = (id) => {
-        let favs = JSON.parse(localStorage.getItem('jueguitosFavorites')) || [];
-        const idx = favs.indexOf(id);
-        if (idx === -1) favs.push(id);
-        else favs.splice(idx, 1);
-        localStorage.setItem('jueguitosFavorites', JSON.stringify(favs));
-        return idx === -1;
-    };
-
-    const isFavorite = (id) => {
-        const favs = JSON.parse(localStorage.getItem('jueguitosFavorites')) || [];
-        return favs.includes(id);
-    };
-
-    const handleFavoriteClick = (e) => {
-        e.stopPropagation();
-        const btn = e.target.closest('.favorite-btn');
-        const card = btn.closest('.game-card');
-        const id = card.dataset.gameId;
-
-        const isFav = toggleFavorite(id);
-
-        // Actualizar estado visual de la card inmediatamente (sin esperar re-render)
-        btn.classList.toggle('active', isFav);
-        btn.title = isFav ? 'Quitar de favoritos' : 'Agregar a favoritos';
-        card.classList.toggle('is-favorite', isFav);
-
-        // Re-ordenar la grilla para que los favoritos suban arriba.
-        // Se hace con un pequeño delay para que la animación visual del botón sea visible primero.
-        setTimeout(() => {
-            const visibleGames = allGames.filter(g => !g.hidden);
-            const term = searchInput?.value?.trim() || '';
-            const filtered = term
-                ? visibleGames.filter(g =>
-                    g.title.toLowerCase().includes(term.toLowerCase()) ||
-                    g.tags.some(tag => tag.toLowerCase().includes(term.toLowerCase()))
-                )
-                : visibleGames;
-            renderGrid(sortGamesWithFavorites(filtered), false);
-        }, 250);
-    };
-
-
-    // Ordena poniendo favoritos primero
-    const sortGamesWithFavorites = (games) => {
-        const favs = JSON.parse(localStorage.getItem('jueguitosFavorites')) || [];
-        return [...games].sort((a, b) => {
-            const aFav = favs.includes(a.id);
-            const bFav = favs.includes(b.id);
-            if (aFav && !bFav) return -1;
-            if (!aFav && bFav) return 1;
-            return 0;
-        });
-    };
-
-    // === RULETA RANDOM ===
+    // === UTILIDADES (Búsqueda) ===
     const startRoulette = () => {
         const modal = document.getElementById('rouletteModal');
         const strip = document.getElementById('rouletteStrip');
