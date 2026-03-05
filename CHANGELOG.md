@@ -232,16 +232,46 @@ Historial de cambios estructurales y visuales del proyecto.
 ### Removed
 - **Eliminada funcionalidad Favoritos**: Limpieza visual y de código de todos los ficheros JS, CSS y del DOM, ya que no era útil en el entorno SPA reducido, mejorando el rendimiento al evitar validaciones y chequeos iterativos extra por tarjeta de juego.
 
+## [3.4.0] - 2026-03-05
+
+### Added
+- **PiolaChat — Chat en Tiempo Real**:
+  - Widget de chat integrado con burbuja flotante (abajo-izquierda).
+  - Historial completo persistente en Firebase Firestore.
+  - Presencia online/offline en tiempo real.
+  - Sistema de perfiles con nombre, avatar, descripción, juego favorito y color de nombre personalizable.
+  - Modal de perfil con vista lectura + modo edición (botón lápiz SVG).
+  - Al editar nombre/avatar/color, se actualizan **todos** los mensajes anteriores automáticamente (batch update).
+  - **GIFs/Imágenes**: Auto-detecta URLs de imágenes (`.gif`, `.png`, `.jpg`, `.webp`) y dominios conocidos (tenor.com, giphy.com, imgur.com), mostrándolas inline en el chat.
+- **Colección `chat_profiles` en Firestore**: Los perfiles se sincronizan a la nube, editables manualmente desde la consola de Firebase.
+- **Perfil unificado**: El mismo perfil se usa para el chat y para compartir temas en la galería comunitaria.
+  - Si no tenés perfil, la galería te redirige al setup del chat para crear uno.
+  - Las tarjetas de la galería ahora muestran el avatar del autor.
+
+### Changed
+- **Galería de Temas mejorada**:
+  - Modal más grande (`680px`) con glassmorphism.
+  - Cards más grandes con previews de `100px`.
+  - Detección de temas propios ahora por `authorId` (no por nombre).
+- **Panel del chat**: Fondo semi-transparente con `backdrop-filter: blur(20px)` para ver el fondo de la página.
+- **Mensajes**: Timestamps inline al lado del nombre (estilo Discord), hover sutil, padding mejorado.
+
+### Removed
+- **Código muerto eliminado**: `status`, `currentGame`, `_detectCurrentGame()`, `_sendActivityEvent()`, `_getGameTitle()`, parámetro `gameName` de `_updatePresence()`.
+- **Tenor API eliminada**: Reemplazada por auto-detección de URLs, sin necesidad de API key ni setup.
+
 ## Versiones Principales
 
 | Versión | Fecha | Cambio Principal |
 |---------|-------|------------------|
+| **3.4** | Mar 2026 | PiolaChat, Perfil unificado, GIFs |
+| **3.3** | Mar 2026 | Galería de Temas Comunitaria |
+| **3.2** | Feb 2026 | Giveaways en tiempo real |
 | **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
 | **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
-| **2.9** | Mar 2025 | Responsive final |
 | **2.0** | Mar 2025 | Rediseño completo |
 | **1.0** | Ene 2025 | Lanzamiento inicial |
 
 ---
 
-**230+ commits** | **Ene 2025 → Feb 2026**
+**240+ commits** | **Ene 2025 → Mar 2026**

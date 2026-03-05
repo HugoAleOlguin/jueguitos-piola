@@ -6,7 +6,7 @@
   <br> Hosteado 100% en GitHub Pages. Sin backend, sin frameworks.
 
   ![Status](https://img.shields.io/badge/Estado-Activo-success?style=for-the-badge&logo=github)
-  ![Version](https://img.shields.io/badge/Versión-3.3.0-blue?style=for-the-badge)
+  ![Version](https://img.shields.io/badge/Versión-3.4.0-blue?style=for-the-badge)
 
 </div>
 
@@ -15,7 +15,7 @@
 ## 🚀 Demo en vivo
 
 <p align="center">
-  <b>Versión 3.3 — SPA con Giveaways y Galería de Temas en tiempo real</b>
+  <b>Versión 3.4 — SPA con Chat en Tiempo Real, Giveaways y Galería de Temas</b>
 </p>
 
 | 🟢 Sitio Oficial |
@@ -41,6 +41,7 @@ Sin frameworks pesados — HTML, CSS y JavaScript vanilla para aprender cómo fu
 - **HTML5** — Estructura semántica y SEO
 - **CSS3** — Variables, Glassmorphism, Animaciones, CSS Modules
 - **JavaScript ES6+** — SPA Architecture, Fetch API, LocalStorage
+- **Firebase Firestore** — Chat en tiempo real, presencia, perfiles y galería de temas
 - **Cloudflare Workers** — Proxy CORS serverless para APIs externas
 - **GitHub Pages** — Deploy automático desde `gh-pages`
 
@@ -82,6 +83,10 @@ Esto es un side-project, así que avanzo a mi ritmo:
 - [x] **Sección de Giveaways en tiempo real** (v3.2)
 - [x] Agrupación por plataforma con logos reales
 - [x] **Galería de Temas Comunitaria online (BETA)**
+- [x] **PiolaChat — Chat en tiempo real** (v3.4)
+- [x] **Perfil unificado** (chat + galería)
+- [x] **GIFs/Imágenes inline** (auto-detección de URLs)
+- [x] **Perfiles en Firestore** (editables desde consola)
 
 ### 🚧 Pendiente
 - [ ] Más easter eggs
