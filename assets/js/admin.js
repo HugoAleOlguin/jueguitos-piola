@@ -364,7 +364,7 @@ function renderGamesList() {
                     ${(game.tags || []).map(t => `<span class="tag-badge">${t}</span>`).join('')}
                 </div>
 
-                <div style="display:flex; gap:5px; align-items:center;" onclick="event.stopPropagation()">
+                <div style="display:flex; gap:5px; align-items:center;">
                     <button class="btn btn-ghost action-btn"
                             data-action="toggle" data-index="${game.originalIndex}"
                             title="${isHidden ? 'Mostrar juego' : 'Ocultar juego'}"
