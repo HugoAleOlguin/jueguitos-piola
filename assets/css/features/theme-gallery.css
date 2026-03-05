@@ -1,8 +1,9 @@
 /* =======================================================================
-   THEME GALLERY — Estilos del Modal independiente y Botones
+   THEME GALLERY — Estilos del Modal y Cards
+   Ahora integrado con el perfil del chat
    ======================================================================= */
 
-/* --- Botones --- */
+/* --- Botones de la galería --- */
 .gallery-toggle-btn {
     display: inline-flex;
     align-items: center;
@@ -67,8 +68,7 @@
 .gallery-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(14px);
+    background: rgba(0, 0, 0, 0.6);
     z-index: 10000;
     display: flex;
     align-items: center;
@@ -83,22 +83,22 @@
     visibility: visible;
 }
 
-/* --- Modal Principal --- */
+/* --- Modal — más grande y con glassmorphism --- */
 .gallery-modal {
-    background: linear-gradient(160deg, rgba(20, 20, 25, 0.95), rgba(10, 10, 12, 0.98));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 40px 100px rgba(0, 0, 0, 0.8),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-        0 0 30px rgba(0, 243, 255, 0.05);
+    background: rgba(10, 10, 16, 0.75);
+    backdrop-filter: blur(28px) saturate(1.3);
+    -webkit-backdrop-filter: blur(28px) saturate(1.3);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
     border-radius: 20px;
-    width: 90%;
-    max-width: 500px;
+    width: 92%;
+    max-width: 680px;
     transform: scale(0.95) translateY(20px);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     flex-direction: column;
-    max-height: 80vh;
+    max-height: 82vh;
 }
 
 .gallery-modal-overlay.active .gallery-modal {
@@ -106,7 +106,7 @@
 }
 
 .gallery-header {
-    padding: 16px 20px;
+    padding: 18px 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     justify-content: space-between;
@@ -117,7 +117,7 @@
 
 .gallery-header h2 {
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: #fff;
     margin: 0;
     text-transform: uppercase;
@@ -128,111 +128,142 @@
     gap: 8px;
 }
 
+.gallery-header .btn-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s ease;
+}
+
+.gallery-header .btn-close:hover {
+    color: #fff;
+}
+
 .gallery-body {
-    padding: 20px;
+    padding: 20px 24px;
     overflow-y: auto;
     flex-grow: 1;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 .gallery-footer {
-    padding: 12px 20px;
-    background: rgba(0, 0, 0, 0.4);
+    padding: 14px 24px;
+    background: rgba(0, 0, 0, 0.2);
     border-top: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 0 0 20px 20px;
     text-align: center;
 }
 
-/* --- Grid de cards remotas --- */
-.remote-themes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 15px;
+.gallery-footer span {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.35);
+    font-style: italic;
 }
 
-/* Card individual de un tema remoto */
+/* --- Grid de cards — más grandes --- */
+.remote-themes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+/* Card de tema */
 .remote-theme-card {
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
     overflow: hidden;
     cursor: default;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
 }
 
 .remote-theme-card:hover {
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border-color: rgba(0, 243, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-/* Preview del fondo de la card remota */
+/* Preview del fondo */
 .remote-theme-preview {
     width: 100%;
-    height: 80px;
+    height: 100px;
     background-size: cover;
     background-position: center;
-    background-color: #1a1a2e;
+    background-color: rgba(20, 20, 30, 0.8);
     position: relative;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-/* Pastilla de color del tema (acento) */
 .remote-theme-color-dot {
     position: absolute;
-    bottom: 6px;
-    left: 6px;
+    bottom: 8px;
+    left: 8px;
     width: 14px;
     height: 14px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
-/* Overlay de "tuyo" para temas propios */
 .remote-theme-own-badge {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    font-size: 0.65rem;
-    background: rgba(0, 0, 0, 0.8);
+    top: 8px;
+    right: 8px;
+    font-size: 0.62rem;
+    background: rgba(0, 0, 0, 0.75);
     color: var(--primary-color);
-    border: 1px solid var(--primary-color);
+    border: 1px solid rgba(0, 243, 255, 0.4);
     border-radius: 6px;
-    padding: 2px 6px;
+    padding: 2px 7px;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
-/* Info y acciones debajo del preview */
+/* Info y autor */
 .remote-theme-info {
-    padding: 10px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     flex: 1;
 }
 
 .remote-theme-name {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     font-weight: 600;
-    color: #eee;
+    color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/* Autor con avatar mini */
 .remote-theme-author {
-    font-size: 0.7rem;
-    color: #888;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-/* Botones de acción en la card */
+.remote-theme-author img {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Botones de acción */
 .remote-theme-actions {
     display: flex;
     gap: 6px;
     margin-top: auto;
+    padding-top: 4px;
 }
 
 .btn-apply-theme {
@@ -240,12 +271,12 @@
     padding: 8px 0;
     font-size: 0.78rem;
     font-weight: 700;
-    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    background: rgba(0, 243, 255, 0.08);
     color: var(--primary-color);
-    border: 1px solid color-mix(in srgb, var(--primary-color) 40%, transparent);
+    border: 1px solid rgba(0, 243, 255, 0.2);
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.25s ease;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -254,15 +285,15 @@
     background: var(--primary-color);
     color: #000;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 30%, transparent);
+    box-shadow: 0 4px 12px rgba(0, 243, 255, 0.25);
 }
 
 .btn-delete-remote-theme {
     padding: 6px 10px;
     font-size: 0.8rem;
-    background: rgba(255, 50, 50, 0.1);
+    background: rgba(255, 50, 50, 0.08);
     color: #ff5555;
-    border: 1px solid rgba(255, 50, 50, 0.25);
+    border: 1px solid rgba(255, 50, 50, 0.2);
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -272,21 +303,21 @@
 }
 
 .btn-delete-remote-theme:hover {
-    background: rgba(255, 50, 50, 0.3);
+    background: rgba(255, 50, 50, 0.25);
     color: #fff;
 }
 
 /* --- Estados: cargando y vacío --- */
 .gallery-status-msg {
     text-align: center;
-    color: #999;
-    font-size: 0.85rem;
-    padding: 24px 12px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.88rem;
+    padding: 32px 16px;
     font-style: italic;
     grid-column: 1 / -1;
     background: rgba(255, 255, 255, 0.02);
-    border-radius: 8px;
-    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border: 1px dashed rgba(255, 255, 255, 0.07);
 }
 
 .gallery-spinner {
@@ -304,5 +335,18 @@
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+    .gallery-modal {
+        width: calc(100vw - 16px);
+        max-height: 85vh;
+    }
+
+    .remote-themes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
     }
 }

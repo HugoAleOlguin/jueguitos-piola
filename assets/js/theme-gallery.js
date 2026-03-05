@@ -1,9 +1,10 @@
 /**
- * THEME-GALLERY.JS — Compartir temas via Firebase (BETA)
- * 
- * Sin panel de galería. Solo un botón "Compartir" en los presets locales
- * que tiene URL de fondo. Al clickear: pide tu nombre si no está guardado
- * y sube el tema a Firestore en un clic.
+ * THEME-GALLERY.JS — Compartir temas via Firebase
+ *
+ * Ahora usa el perfil del PiolaChat como identidad del autor.
+ * Si no tenés perfil, te pide crear uno antes de compartir.
+ *
+ * Flujo: Compartir tema → ¿Tiene perfil? → Sí → Sube → No → Setup del chat → Sube
  */
 
 if (typeof window.ThemeGallery === 'undefined') {
@@ -22,13 +23,13 @@ if (typeof window.ThemeGallery === 'undefined') {
         };
 
         const FIRESTORE_COLLECTION = 'shared_themes';
-        const AUTHOR_KEY = 'jueguitos_gallery_author';
+        const CHAT_PROFILE_KEY = 'piola_chat_profile';
 
         let db = null;
         let isFirebaseReady = false;
 
         // =====================================================================
-        // INICIALIZACIÓN — solo Firebase, sin inyectar HTML
+        // INICIALIZACIÓN
         // =====================================================================
         const init = () => {
             try {
@@ -44,14 +45,42 @@ if (typeof window.ThemeGallery === 'undefined') {
         };
 
         // =====================================================================
-        // COMPARTIR TEMA — flujo completo en un clic
+        // PERFIL — lee del mismo localStorage que PiolaChat
+        // =====================================================================
+
+        /** Obtiene el perfil del chat (compartido con PiolaChat) */
+        const _getProfile = () => {
+            try {
+                const raw = localStorage.getItem(CHAT_PROFILE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch {
+                return null;
+            }
+        };
+
+        /** Verifica que haya perfil. Si no, abre el setup del chat. */
+        const _ensureProfile = () => {
+            const profile = _getProfile();
+            if (profile && profile.name) return profile;
+
+            // Abrir el setup del chat para que cree su perfil
+            if (typeof PiolaChat !== 'undefined' && PiolaChat.editProfile) {
+                PiolaChat.editProfile();
+            } else {
+                alert('Creá tu perfil en el chat primero para poder compartir temas.');
+            }
+            return null;
+        };
+
+        // =====================================================================
+        // COMPARTIR TEMA
         // =====================================================================
 
         /**
-         * Sube un preset local a Firestore.
-         * Si no hay nombre de autor guardado, pide uno con prompt.
-         * @param {Object} preset - Objeto preset del sistema local de settings
-         * @param {HTMLElement} btn - Botón que disparó la acción (para feedback)
+         * Sube un preset local a Firestore usando el perfil del chat como autor.
+         * @param {Object} preset - Objeto preset del sistema local
+         * @param {HTMLElement} btn - Botón que disparó la acción (feedback)
          */
         const shareTheme = async (preset, btn) => {
             if (!isFirebaseReady) {
@@ -59,17 +88,11 @@ if (typeof window.ThemeGallery === 'undefined') {
                 return;
             }
 
-            // Obtener o pedir nombre de autor
-            let author = localStorage.getItem(AUTHOR_KEY) || '';
+            // Obtener perfil — si no existe, abrir setup y salir
+            const profile = _ensureProfile();
+            if (!profile) return;
 
-            if (!author) {
-                author = window.prompt('¿Con qué nombre querés aparecer en la galería?');
-                if (!author || !author.trim()) return; // El usuario canceló
-                author = author.trim().slice(0, 20);
-                localStorage.setItem(AUTHOR_KEY, author);
-            }
-
-            // Validar que tenga URL de fondo (las imágenes locales no son portables)
+            // Validar que tenga URL de fondo
             if (!preset.bgValue || preset.bgType !== 'url') {
                 alert('Solo se pueden compartir temas con fondo de URL de internet.');
                 return;
@@ -80,7 +103,9 @@ if (typeof window.ThemeGallery === 'undefined') {
             try {
                 await db.collection(FIRESTORE_COLLECTION).add({
                     name: preset.name,
-                    author,
+                    author: profile.name,
+                    authorId: profile.id,
+                    authorAvatar: profile.avatar || '',
                     bgUrl: preset.bgValue,
                     blur: preset.blur || '0',
                     themeColor: preset.themeColor || '#00f3ff',
@@ -88,7 +113,7 @@ if (typeof window.ThemeGallery === 'undefined') {
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Marcar como compartido localmente y persistirlo
+                // Marcar como compartido localmente
                 preset.isShared = true;
                 const localPresets = JSON.parse(localStorage.getItem('jueguitos_presets') || '[]');
                 const updatedPresets = localPresets.map(p => p.id === preset.id ? preset : p);
@@ -98,15 +123,9 @@ if (typeof window.ThemeGallery === 'undefined') {
                 btn.classList.add('shared');
                 btn.disabled = true;
 
-                // Si la persona subió por la via de ajustes, podemos forzar un re-render del settings.
-                if (window.SettingsManager && SettingsManager.loadPresetsList) {
-                    // No llamamos loadPresetsList para no interrumpir pero ya persistió
-                }
-
             } catch (err) {
                 console.error('[ThemeGallery] Error al compartir:', err);
                 _showFeedback(btn, '❌ Error', true);
-                // Restaurar botón tras el error
                 setTimeout(() => {
                     btn.textContent = '⬆ Compartir';
                     btn.disabled = false;
@@ -115,7 +134,7 @@ if (typeof window.ThemeGallery === 'undefined') {
         };
 
         // =====================================================================
-        // MODAL INDEPENDIENTE GALERÍA
+        // MODAL DE GALERÍA
         // =====================================================================
         const _injectGalleryModal = () => {
             if (document.getElementById('galleryModalOverlay')) return;
@@ -130,7 +149,7 @@ if (typeof window.ThemeGallery === 'undefined') {
                             <div class="remote-themes-grid" id="remoteThemesGrid"></div>
                         </div>
                         <div class="gallery-footer">
-                            <span style="color:#888; font-style:italic; font-size:0.8rem;">Comparte un tema para que aparezca aquí</span>
+                            <span>Compartí tu tema desde los ajustes para que aparezca acá</span>
                         </div>
                     </div>
                 </div>
@@ -162,38 +181,44 @@ if (typeof window.ThemeGallery === 'undefined') {
             if (!grid) return;
 
             if (!isFirebaseReady) {
-                grid.innerHTML = '<div class="gallery-status-msg">Ups, Firebase no está conectado aún.</div>';
+                grid.innerHTML = '<div class="gallery-status-msg">Firebase no está conectado.</div>';
                 return;
             }
 
-            grid.innerHTML = '<div class="gallery-status-msg"><span class="gallery-spinner"></span> Buscando temas..</div>';
+            grid.innerHTML = '<div class="gallery-status-msg"><span class="gallery-spinner"></span> Cargando temas...</div>';
 
             try {
                 const snapshot = await db.collection(FIRESTORE_COLLECTION).orderBy('createdAt', 'desc').get();
                 if (snapshot.empty) {
-                    grid.innerHTML = '<div class="gallery-status-msg">No hay temas subidos todavía.</div>';
+                    grid.innerHTML = '<div class="gallery-status-msg">No hay temas compartidos todavía. ¡Sé el primero!</div>';
                     return;
                 }
                 grid.innerHTML = '';
-                const myAuthor = localStorage.getItem(AUTHOR_KEY) || '';
+                const myProfile = _getProfile();
+                const myId = myProfile?.id || '';
+
                 snapshot.forEach(doc => {
                     const theme = { id: doc.id, ...doc.data() };
-                    const card = _buildRemoteCard(theme, myAuthor);
+                    const card = _buildRemoteCard(theme, myId);
                     grid.appendChild(card);
                 });
             } catch (err) {
-                console.error(err);
-                grid.innerHTML = '<div class="gallery-status-msg" style="color:#ff6b6b; border-color:rgba(255,107,107,0.2);">Error de conexión o permisos. se rompió todo mal, es culpa de Milei...</div>';
+                console.error('[ThemeGallery] Error cargando temas:', err);
+                grid.innerHTML = '<div class="gallery-status-msg" style="color:rgba(255,100,100,0.8); border-color:rgba(255,100,100,0.15);">Error de conexión. Intentá de nuevo más tarde.</div>';
             }
         };
 
-        const _buildRemoteCard = (theme, myAuthor) => {
-            const isOwn = theme.author === myAuthor && myAuthor !== '';
+        const _buildRemoteCard = (theme, myId) => {
+            // Determinar si el tema es mío comparando por authorId
+            const isOwn = theme.authorId === myId && myId !== '';
             const card = document.createElement('div');
             card.className = 'remote-theme-card';
 
             const ownBadge = isOwn ? '<span class="remote-theme-own-badge">Mío</span>' : '';
             const deleteBtnHtml = isOwn ? '<button class="btn-delete-remote-theme" title="Borrar">✕</button>' : '';
+
+            // Avatar del autor (usa el guardado en el tema, o default)
+            const authorAvatar = theme.authorAvatar || `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(theme.author || 'anon')}`;
 
             card.innerHTML = `
                 <div class="remote-theme-preview" style="background-image: url('${theme.bgUrl}')">
@@ -202,7 +227,11 @@ if (typeof window.ThemeGallery === 'undefined') {
                 </div>
                 <div class="remote-theme-info">
                     <div class="remote-theme-name" title="${theme.name}">${theme.name}</div>
-                    <div class="remote-theme-author">por ${theme.author}</div>
+                    <div class="remote-theme-author">
+                        <img src="${authorAvatar}" alt=""
+                             onerror="this.style.display='none'">
+                        ${theme.author || 'Anon'}
+                    </div>
                     <div class="remote-theme-actions">
                         <button class="btn-apply-theme">Aplicar</button>
                         ${deleteBtnHtml}
@@ -210,7 +239,7 @@ if (typeof window.ThemeGallery === 'undefined') {
                 </div>
             `;
 
-            // Apply Theme
+            // Aplicar tema
             card.querySelector('.btn-apply-theme').addEventListener('click', (e) => {
                 if (typeof SettingsManager !== 'undefined') {
                     localStorage.setItem('jueguitos_settings_bg_type', 'url');
@@ -226,9 +255,9 @@ if (typeof window.ThemeGallery === 'undefined') {
                     }
 
                     e.target.textContent = '✓ Aplicado';
-                    e.target.style.background = 'color-mix(in srgb, #00ff88 20%, transparent)';
+                    e.target.style.background = 'rgba(0, 255, 136, 0.15)';
                     e.target.style.color = '#00ff88';
-                    e.target.style.borderColor = 'rgba(0, 255, 136, 0.4)';
+                    e.target.style.borderColor = 'rgba(0, 255, 136, 0.3)';
 
                     setTimeout(() => {
                         e.target.textContent = 'Aplicar';
@@ -239,14 +268,14 @@ if (typeof window.ThemeGallery === 'undefined') {
                 }
             });
 
+            // Borrar tema propio
             if (isOwn) {
                 card.querySelector('.btn-delete-remote-theme').addEventListener('click', async () => {
-                    if (confirm('¿Seguro quieres borrar tu tema de la galería pública?')) {
+                    if (confirm('¿Seguro querés borrar tu tema de la galería?')) {
                         try {
                             await db.collection(FIRESTORE_COLLECTION).doc(theme.id).delete();
 
-                            // Limpiar el flag isShared del preset local que coincida con este tema,
-                            // para que el botón "Compartir" vuelva a estar disponible.
+                            // Limpiar flag isShared del preset local
                             const localPresets = JSON.parse(localStorage.getItem('jueguitos_presets') || '[]');
                             const updatedPresets = localPresets.map(p => {
                                 const isSameTheme = p.bgValue === theme.bgUrl &&

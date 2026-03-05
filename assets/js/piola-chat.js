@@ -2,15 +2,19 @@
  * PIOLA-CHAT.JS — Chat en Tiempo Real con Firebase
  *
  * Features:
- *   - Perfil local (nombre + avatar URL) guardado en localStorage
+ *   - Perfil: nombre, avatar, descripción, juego favorito, color de nombre
  *   - Historial persistente en Firestore (nunca se borra)
+ *   - Al cambiar nombre → actualiza TODOS los mensajes anteriores
  *   - Presencia online/offline con Firestore
  *   - Live Activity: avisa cuando alguien entra a un juego
- *   - Widget minimizable abajo a la izquierda
+ *   - Modal de perfil con vista lectura + modo edición (lápiz)
+ *
+ * Modelo de perfil (localStorage):
+ *   { id, name, avatar, description, favoriteGame, nameColor }
  *
  * Colecciones de Firestore:
- *   - chat_messages:  { author, authorId, avatar, text, type, createdAt }
- *   - chat_presence:  { name, avatar, online, lastSeen, currentGame }
+ *   - chat_messages:  { author, authorId, avatar, nameColor, text, type, createdAt }
+ *   - chat_presence:  { name, avatar, description, favoriteGame, nameColor, online, lastSeen, currentGame }
  */
 
 const PiolaChat = (() => {
@@ -22,6 +26,8 @@ const PiolaChat = (() => {
     const COLLECTION_PRESENCE = 'chat_presence';
     const MAX_MSG_LENGTH = 300;
     const MSG_LOAD_LIMIT = 80;
+    const DEFAULT_AVATAR = 'https://api.dicebear.com/7.x/thumbs/svg?seed=default';
+    const DEFAULT_NAME_COLOR = '#00f3ff';
 
     // =========================================================================
     // ESTADO INTERNO
@@ -29,21 +35,20 @@ const PiolaChat = (() => {
     let db = null;
     let isReady = false;
     let isOpen = false;
-    let profile = null;            // { id, name, avatar }
-    let unsubMessages = null;       // Listener de onSnapshot para mensajes
-    let unsubPresence = null;       // Listener de onSnapshot para presencia
-    let presenceMap = new Map();    // userId -> { name, online, currentGame, ... }
+    // Perfil: { id, name, avatar, description, favoriteGame, nameColor }
+    let profile = null;
+    let unsubMessages = null;
+    let unsubPresence = null;
+    let presenceMap = new Map();
     let unreadCount = 0;
-    let lastSeenTimestamp = null;   // Para trackear nuevos mensajes
 
     // =========================================================================
     // INICIALIZACIÓN
     // =========================================================================
     const init = () => {
-        // Reutilizar la instancia de Firebase que ya usa ThemeGallery
         try {
             if (!firebase.apps.length) {
-                console.warn('[PiolaChat] Firebase no inicializado. Esperando a ThemeGallery...');
+                console.warn('[PiolaChat] Firebase no inicializado.');
                 return;
             }
             db = firebase.firestore();
@@ -53,30 +58,21 @@ const PiolaChat = (() => {
             return;
         }
 
-        // Cargar perfil desde localStorage
         profile = _loadProfile();
-
-        // Inyectar HTML del widget
         _injectHTML();
-
-        // Configurar eventos del DOM
         _bindEvents();
 
-        // Si ya tiene perfil, arrancar listeners de Firebase
         if (profile) {
             _startListeners();
             _updatePresence(true);
         }
 
-        // Detectar si el usuario está viendo un juego (live activity)
         _detectCurrentGame();
 
-        // Limpiar presencia cuando cierre la pestaña
         window.addEventListener('beforeunload', () => {
             if (profile) _updatePresence(false);
         });
 
-        // Cada 60s, actualizar presencia para demostrar que sigue vivo
         setInterval(() => {
             if (profile && isReady) _updatePresence(true);
         }, 60000);
@@ -87,8 +83,6 @@ const PiolaChat = (() => {
     // =========================================================================
     // PERFIL (localStorage)
     // =========================================================================
-
-    /** Genera un ID corto y único para el usuario */
     const _generateId = () => {
         return 'user_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     };
@@ -106,6 +100,24 @@ const PiolaChat = (() => {
     const _saveProfile = (data) => {
         profile = data;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    };
+
+    const _defaultAvatar = (name) => {
+        return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(name || 'anon')}`;
+    };
+
+    // =========================================================================
+    // HELPERS DE JUEGOS — buscar título e imagen desde gamesData
+    // =========================================================================
+    const _getGameByTitle = (title) => {
+        if (!window.gamesData || !title) return null;
+        return window.gamesData.find(g => g.title === title) || null;
+    };
+
+    const _getGameTitle = (gameId) => {
+        if (!window.gamesData) return null;
+        const game = window.gamesData.find(g => g.id === gameId);
+        return game ? game.title : null;
     };
 
     // =========================================================================
@@ -127,7 +139,7 @@ const PiolaChat = (() => {
         `;
         document.body.appendChild(bubble);
 
-        // Panel principal
+        // Panel principal del chat (sin emoji bar)
         const panel = document.createElement('div');
         panel.className = 'piola-chat-panel';
         panel.id = 'piolaChatPanel';
@@ -144,9 +156,7 @@ const PiolaChat = (() => {
                 </div>
                 <button class="btn-close-chat" id="btnCloseChat" title="Minimizar">×</button>
             </div>
-            <div class="piola-chat-messages" id="piolaChatMessages">
-                <!-- Mensajes se renderizan acá -->
-            </div>
+            <div class="piola-chat-messages" id="piolaChatMessages"></div>
             <div class="piola-chat-input-area">
                 <input type="text" id="piolaChatInput" placeholder="Escribí algo..."
                        maxlength="${MAX_MSG_LENGTH}" autocomplete="off">
@@ -162,31 +172,49 @@ const PiolaChat = (() => {
         `;
         document.body.appendChild(panel);
 
-        // Modal de setup de perfil
+        // Modal de setup de perfil (primera vez)
         const setup = document.createElement('div');
         setup.className = 'piola-chat-setup';
         setup.id = 'piolaChatSetup';
         setup.innerHTML = `
             <div class="setup-card">
                 <h3>Tu Perfil del Chat</h3>
-                <p>Elegí un nombre y una foto para el chat</p>
+                <p>Completá tu perfil para entrar al chat</p>
                 <img class="setup-avatar-preview" id="setupAvatarPreview"
-                     src="https://api.dicebear.com/7.x/thumbs/svg?seed=default"
-                     alt="Avatar preview">
-                <span class="setup-avatar-hint">Clic en la imagen para cambiar (URL)</span>
+                     src="${DEFAULT_AVATAR}" alt="Avatar preview">
+                <span class="setup-avatar-hint">Clickeá la imagen para cambiar foto</span>
                 <input type="text" id="setupNameInput" placeholder="Tu nombre..." maxlength="20">
                 <input type="text" id="setupAvatarInput" placeholder="URL de foto (opcional)">
+                <div class="setup-color-row">
+                    <label>Color de nombre:</label>
+                    <input type="color" id="setupNameColor" value="${DEFAULT_NAME_COLOR}">
+                </div>
+
+                <span class="setup-section-label">Personalización</span>
+                <textarea id="setupDescInput" placeholder="Bio corta (opcional)..." maxlength="120"></textarea>
+
                 <button class="btn-setup-save" id="btnSetupSave">Entrar al Chat</button>
             </div>
         `;
         document.body.appendChild(setup);
+
+        // Modal de perfil (ver/editar)
+        const profileModal = document.createElement('div');
+        profileModal.className = 'piola-profile-modal';
+        profileModal.id = 'piolaProfileModal';
+        profileModal.innerHTML = `<div class="profile-card" id="profileCardContent"></div>`;
+        document.body.appendChild(profileModal);
+
+        // Cerrar modal de perfil al clickear overlay
+        profileModal.addEventListener('click', (e) => {
+            if (e.target === profileModal) _closeProfileModal();
+        });
     };
 
     // =========================================================================
     // EVENTOS DEL DOM
     // =========================================================================
     const _bindEvents = () => {
-        // Abrir/cerrar chat
         document.getElementById('piolaChatBubble').addEventListener('click', _toggleChat);
         document.getElementById('btnCloseChat').addEventListener('click', _toggleChat);
 
@@ -199,26 +227,24 @@ const PiolaChat = (() => {
             }
         });
 
-        // Setup de perfil
+        // Setup
         document.getElementById('btnSetupSave').addEventListener('click', _handleSetupSave);
         document.getElementById('setupNameInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') _handleSetupSave();
         });
 
-        // Preview del avatar en setup
+        // Preview avatar en setup
         document.getElementById('setupAvatarInput').addEventListener('input', (e) => {
             const url = e.target.value.trim();
             const preview = document.getElementById('setupAvatarPreview');
             if (url) {
                 preview.src = url;
-                // Si falla, volver al default
-                preview.onerror = () => {
-                    preview.src = 'https://api.dicebear.com/7.x/thumbs/svg?seed=default';
-                };
+                preview.onerror = () => { preview.src = DEFAULT_AVATAR; };
+            } else {
+                preview.src = DEFAULT_AVATAR;
             }
         });
 
-        // Clic en el avatar preview para pegar URL
         document.getElementById('setupAvatarPreview').addEventListener('click', () => {
             document.getElementById('setupAvatarInput').focus();
         });
@@ -231,7 +257,6 @@ const PiolaChat = (() => {
         const panel = document.getElementById('piolaChatPanel');
         const bubble = document.getElementById('piolaChatBubble');
 
-        // Si no tiene perfil, mostrar setup primero
         if (!profile) {
             _showSetup();
             return;
@@ -242,12 +267,9 @@ const PiolaChat = (() => {
         if (isOpen) {
             panel.classList.add('open');
             bubble.style.display = 'none';
-            // Resetear contador de no leídos
             unreadCount = 0;
             _updateUnreadBadge();
-            // Scroll al final
             _scrollToBottom();
-            // Focus en input
             setTimeout(() => document.getElementById('piolaChatInput').focus(), 300);
         } else {
             panel.classList.remove('open');
@@ -256,16 +278,17 @@ const PiolaChat = (() => {
     };
 
     // =========================================================================
-    // SETUP DE PERFIL
+    // SETUP DE PERFIL (primera vez)
     // =========================================================================
     const _showSetup = () => {
         const modal = document.getElementById('piolaChatSetup');
         modal.classList.add('active');
 
-        // Si ya tiene datos, pre-popular
         if (profile) {
             document.getElementById('setupNameInput').value = profile.name || '';
             document.getElementById('setupAvatarInput').value = profile.avatar || '';
+            document.getElementById('setupDescInput').value = profile.description || '';
+            document.getElementById('setupNameColor').value = profile.nameColor || DEFAULT_NAME_COLOR;
             if (profile.avatar) {
                 document.getElementById('setupAvatarPreview').src = profile.avatar;
             }
@@ -274,7 +297,6 @@ const PiolaChat = (() => {
 
     const _handleSetupSave = () => {
         const nameInput = document.getElementById('setupNameInput');
-        const avatarInput = document.getElementById('setupAvatarInput');
         const name = nameInput.value.trim();
 
         if (!name) {
@@ -284,24 +306,338 @@ const PiolaChat = (() => {
             return;
         }
 
-        const avatar = avatarInput.value.trim() ||
-            `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(name)}`;
-
-        // Preservar ID existente o generar uno nuevo
+        const avatarUrl = document.getElementById('setupAvatarInput').value.trim();
+        const avatar = avatarUrl || _defaultAvatar(name);
         const id = profile?.id || _generateId();
 
-        _saveProfile({ id, name, avatar });
+        const newProfile = {
+            id,
+            name,
+            avatar,
+            description: document.getElementById('setupDescInput').value.trim().slice(0, 120),
+            favoriteGame: '',
+            nameColor: document.getElementById('setupNameColor').value || DEFAULT_NAME_COLOR
+        };
 
-        // Cerrar modal de setup
+        _saveProfile(newProfile);
+
         document.getElementById('piolaChatSetup').classList.remove('active');
 
-        // Iniciar listeners si es la primera vez
         _startListeners();
         _updatePresence(true);
         _detectCurrentGame();
-
-        // Abrir el chat directamente
         _toggleChat();
+    };
+
+    // =========================================================================
+    // MODAL DE PERFIL — Lectura por defecto, lápiz para editar
+    // =========================================================================
+
+    /**
+     * Abre el modal de perfil para un usuario.
+     * Siempre abre en modo LECTURA, con botón lápiz si es propio.
+     */
+    const _openProfileModal = (userId) => {
+        const modal = document.getElementById('piolaProfileModal');
+        const container = document.getElementById('profileCardContent');
+        if (!modal || !container) return;
+
+        const isOwn = profile && userId === profile.id;
+        const presence = presenceMap.get(userId);
+
+        // Armar datos unificados
+        const data = isOwn ? {
+            name: profile.name,
+            avatar: profile.avatar,
+            description: profile.description || '',
+            favoriteGame: profile.favoriteGame || '',
+            nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
+            online: presence?.online || true,
+            currentGame: presence?.currentGame || ''
+        } : {
+            name: presence?.name || 'Desconocido',
+            avatar: presence?.avatar || _defaultAvatar('unknown'),
+            description: presence?.description || '',
+            favoriteGame: presence?.favoriteGame || '',
+            nameColor: presence?.nameColor || DEFAULT_NAME_COLOR,
+            online: presence?.online || false,
+            currentGame: presence?.currentGame || ''
+        };
+
+        _renderViewProfile(container, data, isOwn, userId);
+        modal.classList.add('active');
+    };
+
+    /** Renderiza perfil en modo LECTURA (para todos, incluido el propio) */
+    const _renderViewProfile = (container, data, isOwn, userId) => {
+        const statusDotClass = data.online ? 'online' : 'offline';
+        const description = data.description || 'Sin descripción';
+        const favGame = _getGameByTitle(data.favoriteGame);
+        const currentGame = data.currentGame || '';
+
+        // HTML del juego favorito con imagen
+        let favGameHtml;
+        if (favGame) {
+            favGameHtml = `
+                <div class="fav-game-display">
+                    <img src="${_escapeHtml(favGame.image)}" alt=""
+                         onerror="this.style.display='none'">
+                    <span>${_escapeHtml(favGame.title)}</span>
+                </div>`;
+        } else {
+            favGameHtml = `<span class="profile-field-value empty">Ninguno</span>`;
+        }
+
+        // Botón de editar solo si es perfil propio — ícono SVG de lápiz
+        const editBtnHtml = isOwn
+            ? `<button class="btn-edit-profile" id="btnEditProfile" title="Editar perfil">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                    <path d="m15 5 4 4"/>
+                </svg>
+               </button>`
+            : '';
+
+        container.innerHTML = `
+            <div class="profile-banner">
+                <button class="btn-close-profile" id="btnCloseProfile" title="Cerrar">×</button>
+                ${editBtnHtml}
+            </div>
+            <div class="profile-avatar-wrapper">
+                <img class="profile-avatar-large" src="${_escapeHtml(data.avatar)}"
+                     alt="" onerror="this.src='${DEFAULT_AVATAR}'">
+                <span class="profile-status-dot status-dot ${statusDotClass}"></span>
+            </div>
+            <div class="profile-body">
+                <div class="profile-name" style="color: ${_escapeHtml(data.nameColor)}">
+                    ${_escapeHtml(data.name)}
+                    ${isOwn ? '<span class="own-tag">(vos)</span>' : ''}
+                </div>
+
+                <div class="profile-fields">
+                    <div class="profile-divider"></div>
+
+                    <div class="profile-field">
+                        <span class="profile-field-label">Descripción</span>
+                        <span class="profile-field-value ${!data.description ? 'empty' : ''}">${_escapeHtml(description)}</span>
+                    </div>
+
+                    <div class="profile-field">
+                        <span class="profile-field-label">🎮 Juego Favorito</span>
+                        ${favGameHtml}
+                    </div>
+
+                    ${currentGame ? `
+                        <div class="profile-field">
+                            <span class="profile-field-label">🕹️ Jugando ahora</span>
+                            <span class="profile-field-value">${_escapeHtml(currentGame)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+
+        // Eventos
+        container.querySelector('#btnCloseProfile').addEventListener('click', _closeProfileModal);
+
+        // Botón lápiz → cambiar a modo edición
+        if (isOwn) {
+            container.querySelector('#btnEditProfile').addEventListener('click', () => {
+                _renderEditProfile(container, data, userId);
+            });
+        }
+    };
+
+    /** Renderiza perfil PROPIO en modo EDICIÓN */
+    const _renderEditProfile = (container, data, userId) => {
+        // Generar opciones del select con juegos
+        let gameOptions = '<option value="">Ninguno</option>';
+        if (window.gamesData) {
+            window.gamesData.forEach(g => {
+                if (g.hidden) return;
+                const selected = g.title === data.favoriteGame ? 'selected' : '';
+                gameOptions += `<option value="${_escapeHtml(g.title)}" ${selected}>${_escapeHtml(g.title)}</option>`;
+            });
+        }
+
+        const statusDotClass = data.online ? 'online' : 'offline';
+
+        container.innerHTML = `
+            <div class="profile-banner">
+                <button class="btn-close-profile" id="btnCloseProfile" title="Cerrar">×</button>
+            </div>
+            <div class="profile-avatar-wrapper">
+                <img class="profile-avatar-large" id="profileEditAvatar"
+                     src="${_escapeHtml(data.avatar)}" alt=""
+                     onerror="this.src='${DEFAULT_AVATAR}'"
+                     style="cursor: pointer;" title="Clic para cambiar foto">
+                <span class="profile-status-dot status-dot ${statusDotClass}"></span>
+            </div>
+            <div class="profile-body">
+                <div class="profile-name" style="color: ${_escapeHtml(data.nameColor)}">
+                    ${_escapeHtml(data.name)} <span class="own-tag">(editando)</span>
+                </div>
+
+                <div class="profile-fields">
+                    <div class="profile-divider"></div>
+
+                    <div class="profile-field">
+                        <span class="profile-field-label">Nombre</span>
+                        <input class="profile-edit-input" id="profileEditName" type="text"
+                               value="${_escapeHtml(data.name)}" maxlength="20" placeholder="Tu nombre...">
+                    </div>
+
+                    <div class="profile-field">
+                        <span class="profile-field-label">Foto de Perfil (URL)</span>
+                        <input class="profile-edit-input" id="profileEditAvatarUrl" type="text"
+                               value="${_escapeHtml(data.avatar)}" placeholder="URL de imagen...">
+                    </div>
+
+                    <div class="profile-field">
+                        <span class="profile-field-label">Color de Nombre</span>
+                        <div class="edit-color-row">
+                            <input type="color" id="profileEditNameColor" value="${data.nameColor || DEFAULT_NAME_COLOR}">
+                            <span class="color-preview-name" id="colorPreviewName"
+                                  style="color: ${_escapeHtml(data.nameColor)}">${_escapeHtml(data.name)}</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-field">
+                        <span class="profile-field-label">Descripción</span>
+                        <textarea class="profile-edit-input" id="profileEditDesc"
+                                  maxlength="120" placeholder="Bio corta...">${_escapeHtml(data.description)}</textarea>
+                    </div>
+
+                    <div class="profile-field">
+                        <span class="profile-field-label">🎮 Juego Favorito</span>
+                        <select class="profile-edit-input" id="profileEditFavGame">
+                            ${gameOptions}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn-profile-action" id="btnProfileCancel">Cancelar</button>
+                    <button class="btn-profile-action primary" id="btnProfileSave">Guardar</button>
+                </div>
+            </div>
+        `;
+
+        // Eventos del modo edición
+        container.querySelector('#btnCloseProfile').addEventListener('click', _closeProfileModal);
+        container.querySelector('#btnProfileCancel').addEventListener('click', _closeProfileModal);
+        container.querySelector('#btnProfileSave').addEventListener('click', () => _handleProfileSave(userId));
+
+        // Preview live del avatar
+        container.querySelector('#profileEditAvatarUrl').addEventListener('input', (e) => {
+            const img = container.querySelector('#profileEditAvatar');
+            const url = e.target.value.trim();
+            img.src = url || DEFAULT_AVATAR;
+            img.onerror = () => { img.src = DEFAULT_AVATAR; };
+        });
+
+        // Clic en avatar para enfocar input
+        container.querySelector('#profileEditAvatar').addEventListener('click', () => {
+            container.querySelector('#profileEditAvatarUrl').focus();
+        });
+
+        // Preview live del color del nombre
+        container.querySelector('#profileEditNameColor').addEventListener('input', (e) => {
+            const preview = container.querySelector('#colorPreviewName');
+            preview.style.color = e.target.value;
+        });
+
+        // Actualizar preview name text al cambiar nombre
+        container.querySelector('#profileEditName').addEventListener('input', (e) => {
+            const preview = container.querySelector('#colorPreviewName');
+            preview.textContent = e.target.value || 'Preview';
+        });
+    };
+
+    /** Guardar cambios del perfil propio */
+    const _handleProfileSave = async (userId) => {
+        const name = document.getElementById('profileEditName').value.trim();
+        if (!name) return;
+
+        const oldName = profile.name;
+        const oldAvatar = profile.avatar;
+        const oldNameColor = profile.nameColor;
+
+        const avatarUrl = document.getElementById('profileEditAvatarUrl').value.trim();
+        const avatar = avatarUrl || _defaultAvatar(name);
+        const nameColor = document.getElementById('profileEditNameColor').value || DEFAULT_NAME_COLOR;
+
+        const updatedProfile = {
+            id: profile.id,
+            name,
+            avatar,
+            description: document.getElementById('profileEditDesc').value.trim().slice(0, 120),
+            favoriteGame: document.getElementById('profileEditFavGame').value || '',
+            nameColor
+        };
+
+        _saveProfile(updatedProfile);
+        _updatePresence(true);
+
+        // Si el nombre, avatar o color cambiaron, actualizar todo el historial
+        const nameChanged = oldName !== name;
+        const avatarChanged = oldAvatar !== avatar;
+        const colorChanged = oldNameColor !== nameColor;
+
+        if (nameChanged || avatarChanged || colorChanged) {
+            _updateHistoryMessages(profile.id, name, avatar, nameColor);
+        }
+
+        _closeProfileModal();
+    };
+
+    /**
+     * Actualiza nombre, avatar y color en TODOS los mensajes anteriores de este usuario.
+     * Usa un batch de Firestore para eficiencia.
+     */
+    const _updateHistoryMessages = async (userId, newName, newAvatar, newColor) => {
+        if (!isReady || !db) return;
+
+        try {
+            const snapshot = await db.collection(COLLECTION_MESSAGES)
+                .where('authorId', '==', userId)
+                .get();
+
+            if (snapshot.empty) return;
+
+            // Firestore limita batches a 500 operaciones
+            const batchSize = 500;
+            let batch = db.batch();
+            let count = 0;
+
+            snapshot.forEach(doc => {
+                batch.update(doc.ref, {
+                    author: newName,
+                    avatar: newAvatar,
+                    nameColor: newColor
+                });
+                count++;
+
+                // Si llegamos al límite, commitear y crear nuevo batch
+                if (count % batchSize === 0) {
+                    batch.commit();
+                    batch = db.batch();
+                }
+            });
+
+            // Commitear el último batch
+            await batch.commit();
+            console.info(`[PiolaChat] Historial actualizado: ${count} mensajes`);
+        } catch (err) {
+            console.error('[PiolaChat] Error actualizando historial:', err);
+        }
+    };
+
+    const _closeProfileModal = () => {
+        const modal = document.getElementById('piolaProfileModal');
+        if (modal) modal.classList.remove('active');
     };
 
     // =========================================================================
@@ -310,11 +646,10 @@ const PiolaChat = (() => {
     const _startListeners = () => {
         if (!isReady || !db) return;
 
-        // Limpiar listeners anteriores si existen (evita duplicados)
         if (unsubMessages) unsubMessages();
         if (unsubPresence) unsubPresence();
 
-        // --- Listener de mensajes (en tiempo real, ordenados por fecha) ---
+        // Listener de mensajes
         unsubMessages = db.collection(COLLECTION_MESSAGES)
             .orderBy('createdAt', 'asc')
             .limitToLast(MSG_LOAD_LIMIT)
@@ -323,25 +658,18 @@ const PiolaChat = (() => {
                 if (!container) return;
 
                 container.innerHTML = '';
-
                 snapshot.forEach(doc => {
-                    const msg = doc.data();
-                    _renderMessage(container, msg);
+                    _renderMessage(container, doc.data());
                 });
-
                 _scrollToBottom();
 
-                // Contar mensajes no leídos si el chat está cerrado
+                // No leídos
                 if (!isOpen) {
-                    const changes = snapshot.docChanges();
-                    const newMessages = changes.filter(c => c.type === 'added');
-                    // Solo contar mensajes de OTROS usuarios
-                    const othersNew = newMessages.filter(c => {
-                        const data = c.doc.data();
-                        return data.authorId !== profile?.id;
-                    });
-                    if (othersNew.length > 0) {
-                        unreadCount += othersNew.length;
+                    const newFromOthers = snapshot.docChanges().filter(c =>
+                        c.type === 'added' && c.doc.data().authorId !== profile?.id
+                    );
+                    if (newFromOthers.length > 0) {
+                        unreadCount += newFromOthers.length;
                         _updateUnreadBadge();
                     }
                 }
@@ -349,19 +677,16 @@ const PiolaChat = (() => {
                 console.error('[PiolaChat] Error en listener de mensajes:', err);
             });
 
-        // --- Listener de presencia ---
+        // Listener de presencia
         unsubPresence = db.collection(COLLECTION_PRESENCE)
             .onSnapshot((snapshot) => {
                 presenceMap.clear();
                 let onlineCount = 0;
-
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     presenceMap.set(doc.id, data);
                     if (data.online) onlineCount++;
                 });
-
-                // Actualizar contador en el header
                 const countEl = document.getElementById('chatOnlineCount');
                 if (countEl) {
                     countEl.textContent = onlineCount > 0 ? `${onlineCount} online` : '';
@@ -375,7 +700,7 @@ const PiolaChat = (() => {
     // RENDERIZADO DE UN MENSAJE
     // =========================================================================
     const _renderMessage = (container, msg) => {
-        // Mensaje tipo "activity" (alguien entró a un juego)
+        // Actividad
         if (msg.type === 'activity') {
             const div = document.createElement('div');
             div.className = 'chat-activity-event';
@@ -387,25 +712,36 @@ const PiolaChat = (() => {
         // Mensaje normal
         const presence = presenceMap.get(msg.authorId);
         const isOnline = presence?.online || false;
+        // El color del nombre se toma del mensaje (actualizado por batch si cambió)
+        const nameColor = msg.nameColor || DEFAULT_NAME_COLOR;
 
         const div = document.createElement('div');
         div.className = 'chat-msg';
 
-        const avatarSrc = msg.avatar || 'https://api.dicebear.com/7.x/thumbs/svg?seed=anon';
+        const avatarSrc = msg.avatar || _defaultAvatar('anon');
         const timeStr = msg.createdAt ? _formatTime(msg.createdAt.toDate()) : '';
 
         div.innerHTML = `
-            <img class="msg-avatar" src="${_escapeHtml(avatarSrc)}" alt=""
-                 onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=error'">
+            <img class="msg-avatar" data-userid="${_escapeHtml(msg.authorId || '')}"
+                 src="${_escapeHtml(avatarSrc)}" alt=""
+                 onerror="this.src='${DEFAULT_AVATAR}'">
             <div class="msg-body">
-                <div class="msg-author">
+                <div class="msg-author" data-userid="${_escapeHtml(msg.authorId || '')}"
+                     style="color: ${_escapeHtml(nameColor)}">
                     <span class="status-dot ${isOnline ? 'online' : 'offline'}"></span>
                     ${_escapeHtml(msg.author || 'Anon')}
+                    <span class="msg-time">${timeStr}</span>
                 </div>
                 <div class="msg-text">${_escapeHtml(msg.text)}</div>
-                <div class="msg-time">${timeStr}</div>
             </div>
         `;
+
+        // Click en avatar o nombre → abrir perfil
+        const openProfile = () => {
+            if (msg.authorId) _openProfileModal(msg.authorId);
+        };
+        div.querySelector('.msg-avatar').addEventListener('click', openProfile);
+        div.querySelector('.msg-author').addEventListener('click', openProfile);
 
         container.appendChild(div);
     };
@@ -428,6 +764,7 @@ const PiolaChat = (() => {
                 author: profile.name,
                 authorId: profile.id,
                 avatar: profile.avatar,
+                nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
                 text: text.slice(0, MAX_MSG_LENGTH),
                 type: 'message',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -438,7 +775,7 @@ const PiolaChat = (() => {
     };
 
     // =========================================================================
-    // PRESENCIA (online/offline + currentGame)
+    // PRESENCIA
     // =========================================================================
     const _updatePresence = (online, gameName = null) => {
         if (!isReady || !profile || !db) return;
@@ -446,22 +783,23 @@ const PiolaChat = (() => {
         const data = {
             name: profile.name,
             avatar: profile.avatar,
+            description: profile.description || '',
+            favoriteGame: profile.favoriteGame || '',
+            nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
             online: online,
             lastSeen: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        // Solo incluir currentGame si estamos pasándolo explícitamente
         if (gameName !== null) {
             data.currentGame = gameName;
         }
 
-        // Usar el profile.id como ID del documento de presencia
         db.collection(COLLECTION_PRESENCE).doc(profile.id).set(data, { merge: true })
             .catch(err => console.error('[PiolaChat] Error actualizando presencia:', err));
     };
 
     // =========================================================================
-    // LIVE ACTIVITY — Detectar qué juego está viendo el usuario
+    // LIVE ACTIVITY
     // =========================================================================
     const _detectCurrentGame = () => {
         if (!profile) return;
@@ -470,37 +808,20 @@ const PiolaChat = (() => {
         const gameId = params.get('id');
 
         if (!gameId) {
-            // En la home, no hay juego activo
             _updatePresence(true, '');
             return;
         }
 
-        // Buscar el título del juego en gamesData
         const gameTitle = _getGameTitle(gameId);
         if (!gameTitle) return;
 
-        // Actualizar presencia con el juego actual
         _updatePresence(true, gameTitle);
-
-        // Enviar un evento de actividad al chat
         _sendActivityEvent(gameTitle);
     };
 
-    /** Busca el título de un juego por su ID en window.gamesData */
-    const _getGameTitle = (gameId) => {
-        if (!window.gamesData) return null;
-        const game = window.gamesData.find(g => g.id === gameId);
-        return game ? game.title : null;
-    };
-
-    /**
-     * Envía un mensaje tipo "activity" al chat.
-     * Usa un throttle local para no spamear si el usuario recarga mucho.
-     */
     const _sendActivityEvent = async (gameTitle) => {
         if (!isReady || !profile) return;
 
-        // Throttle: no repetir la misma actividad en menos de 30s
         const throttleKey = `piola_chat_activity_${profile.id}`;
         const lastActivity = sessionStorage.getItem(throttleKey);
         const now = Date.now();
@@ -513,6 +834,7 @@ const PiolaChat = (() => {
                 author: profile.name,
                 authorId: profile.id,
                 avatar: profile.avatar,
+                nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
                 text: `${profile.name} está en ${gameTitle}`,
                 type: 'activity',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -525,23 +847,18 @@ const PiolaChat = (() => {
     // =========================================================================
     // UTILIDADES
     // =========================================================================
-
-    /** Scroll suave al fondo del chat */
     const _scrollToBottom = () => {
         const container = document.getElementById('piolaChatMessages');
         if (container) {
-            // Usar requestAnimationFrame para asegurar que el DOM se actualizó
             requestAnimationFrame(() => {
                 container.scrollTop = container.scrollHeight;
             });
         }
     };
 
-    /** Actualizar badge de no leídos */
     const _updateUnreadBadge = () => {
         const badge = document.getElementById('chatUnreadBadge');
         if (!badge) return;
-
         if (unreadCount > 0) {
             badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
             badge.classList.add('visible');
@@ -550,7 +867,6 @@ const PiolaChat = (() => {
         }
     };
 
-    /** Formatea un Date a "HH:MM" legible */
     const _formatTime = (date) => {
         if (!date) return '';
         const h = date.getHours().toString().padStart(2, '0');
@@ -558,7 +874,6 @@ const PiolaChat = (() => {
         return `${h}:${m}`;
     };
 
-    /** Escapa HTML para prevenir XSS */
     const _escapeHtml = (str) => {
         const div = document.createElement('div');
         div.textContent = str;
@@ -570,14 +885,14 @@ const PiolaChat = (() => {
     // =========================================================================
     return {
         init,
-        /** Permite abrir el setup del perfil desde otro módulo (ej: settings) */
-        editProfile: _showSetup
+        /** Abre el setup del perfil (usado por ThemeGallery si no hay perfil) */
+        editProfile: _showSetup,
+        /** Devuelve el perfil actual o null si no existe */
+        getProfile: () => profile
     };
 
 })();
 
-// Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    // Pequeño delay para asegurar que Firebase ya se cargó (después de ThemeGallery)
     setTimeout(() => PiolaChat.init(), 500);
 });
