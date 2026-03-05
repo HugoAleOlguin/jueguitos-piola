@@ -12,6 +12,15 @@
     if (window.JueguitosThemeInitialized) return;
     window.JueguitosThemeInitialized = true;
 
+    // Aplicar clase prime-mode de forma temprana (antes de DOMContentLoaded)
+    // para que settings.js lo detecte y no sobreescriba el fondo al inicializar.
+    if (localStorage.getItem('jueguitos_prime_mode') === 'true') {
+        document.documentElement.classList.add('prime-mode-pending');
+        document.body
+            ? document.body.classList.add('prime-mode')
+            : document.addEventListener('DOMContentLoaded', () => document.body.classList.add('prime-mode'), { once: true });
+    }
+
     const CONFIG = {
         KEYS: { THEME: 'jueguitosTheme' },
         ICONS: {
@@ -24,9 +33,17 @@
     // ============================================================================
     const ThemeManager = {
         init() {
-            // Restore Prime Mode if saved
+            // Restaurar Modo Prime si estaba guardado
             if (localStorage.getItem('jueguitos_prime_mode') === 'true') {
                 document.body.classList.add('prime-mode');
+                // Limpiar cualquier inline style de fondo que settings.js pueda haber aplicado
+                // (o que quede de sesiones anteriores). El CSS de prime-mode se encarga del resto.
+                const body = document.body;
+                body.style.removeProperty('background-image');
+                body.style.removeProperty('background-size');
+                body.style.removeProperty('background-attachment');
+                body.style.removeProperty('background-position');
+                body.style.removeProperty('background-color');
             }
             this.setupSearchTrigger();
         },

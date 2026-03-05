@@ -156,7 +156,9 @@ if (typeof window.SettingsManager === 'undefined') {
             body.style.removeProperty('background-attachment');
             body.style.removeProperty('background-position');
 
-            if (isLite) return; // Lite mode = default dark bg
+            // En lite mode y prime mode, el fondo lo maneja el CSS — no aplicar nada inline.
+            if (isLite) return;
+            if (body.classList.contains('prime-mode')) return;
 
             if (bgType === 'blob') {
                 try {
@@ -198,8 +200,9 @@ if (typeof window.SettingsManager === 'undefined') {
             // Limpiar clases anteriores
             document.body.classList.remove('cursor-crosshair', 'cursor-troll', 'static-cursor');
 
-            // Limpiar inline style si existe (para custom/troll)
+            // Limpiar inline style en body Y en html (el custom cursor se setea en ambos durante preview)
             document.body.style.cursor = '';
+            document.documentElement.style.cursor = '';
 
             if (!type || type === 'default') return;
 
@@ -612,18 +615,21 @@ if (typeof window.SettingsManager === 'undefined') {
         // ========================================================================
         // MODAL STATE
         // ========================================================================
-        const openModal = () => {
+
+        /**
+         * Rellena los inputs del modal con los valores de currentSettings.
+         * Se llama al abrir el modal Y al aplicar un tema externo (galería)
+         * para mantener los inputs siempre en sincronía con el estado real.
+         */
+        const populateModalUI = () => {
             const modal = document.getElementById('settingsModal');
             if (!modal) return;
 
-            // Reload settings to get latest changes (e.g. "Use as Background" from app.js)
-            loadSettings();
-
-            // Force Clear file input to prevent "revert to blob"
+            // Vaciar el file input para evitar "revertir al blob viejo"
             const fileInput = document.getElementById('settingBgFile');
             if (fileInput) fileInput.value = '';
 
-            // Populate UI
+            // Inputs de fondo
             document.getElementById('settingBgUrl').value = currentSettings.bgType === 'url' ? currentSettings.bgValue : '';
             document.getElementById('settingBlur').value = currentSettings.blur;
             document.getElementById('settingColor').value = currentSettings.themeColor;
@@ -632,17 +638,26 @@ if (typeof window.SettingsManager === 'undefined') {
             document.getElementById('settingCursorTrail').checked = currentSettings.trail === 'true';
             document.getElementById('settingUiSounds').checked = currentSettings.uiSounds === 'true';
 
-            // Set Active Cursor Card
+            // Cursor activo
             document.querySelectorAll('.option-card').forEach(c => {
                 c.classList.toggle('active', c.dataset.cursor === currentSettings.cursor);
             });
             document.getElementById('settingCursor').value = currentSettings.cursor;
 
-            // Visual Init
+            // Preview de fondo
             const isUrl = currentSettings.bgType === 'url';
             document.getElementById('settingBgPreview').style.backgroundImage = isUrl ? `url('${currentSettings.bgValue}')` : '';
+        };
 
-            bindModalEvents(); // Re-bind to ensure fresh logic
+        const openModal = () => {
+            const modal = document.getElementById('settingsModal');
+            if (!modal) return;
+
+            // Recargar desde localStorage para capturar cambios externos (galería, app.js, etc.)
+            loadSettings();
+            populateModalUI();
+
+            bindModalEvents(); // Re-bind para lógica fresca
             modal.style.display = 'flex';
             void modal.offsetWidth;
             modal.classList.add('active');
@@ -685,6 +700,11 @@ if (typeof window.SettingsManager === 'undefined') {
                 let value = '';
 
                 // Handle Background Priority
+                // IMPORTANTE: Leemos del localStorage porque la galería comunitaria puede haber
+                // guardado valores ahí sin pasar por currentSettings (que se actualiza solo en memoria).
+                const savedBgType = localStorage.getItem(STORAGE_KEYS.BG_TYPE) || 'default';
+                const savedBgValue = localStorage.getItem(STORAGE_KEYS.BG_VALUE) || '';
+
                 if (bgFile) {
                     await ImageCacheStore.saveBlob('custom_bg', bgFile);
                     type = 'blob';
@@ -692,9 +712,10 @@ if (typeof window.SettingsManager === 'undefined') {
                 } else if (bgUrl) {
                     type = 'url';
                     value = bgUrl;
-                } else if (currentSettings.bgType !== 'default') {
-                    type = currentSettings.bgType;
-                    value = currentSettings.bgValue;
+                } else if (savedBgType !== 'default') {
+                    // Respetamos lo que ya esté guardado (p.ej. aplicado desde galería comunitaria)
+                    type = savedBgType;
+                    value = savedBgValue;
                 }
 
                 // Handle Custom Cursor Upload
@@ -883,11 +904,15 @@ if (typeof window.SettingsManager === 'undefined') {
                 div.querySelector('.preset-delete').onclick = async () => {
                     if (!confirm('¿Borrar este tema?')) return;
 
-                    // If it's a blob, delete from DB to save space
+                    // Si era blob, borrar de IndexedDB para liberar espacio
                     if (p.bgType === 'blob') {
                         await ImageCacheStore.deleteBlob(p.bgValue);
                     }
 
+                    // Al borrar el preset local, lo eliminamos del array.
+                    // Si en algún momento el usuario borra de Firestore pero no el local,
+                    // el flag isShared quedaría desincronizado — al borrar el preset local
+                    // simplemente lo removemos completo, sin marcar nada.
                     const newList = getPresets().filter(item => item.id !== p.id);
                     localStorage.setItem('jueguitos_presets', JSON.stringify(newList));
                     loadPresetsList();
@@ -923,6 +948,14 @@ if (typeof window.SettingsManager === 'undefined') {
         const loadAndApply = async () => {
             loadSettings();
             await applySettings();
+
+            // Si el modal de configuración está abierto, actualizar sus inputs
+            // para que reflejen el tema recién aplicado (p.ej. desde la galería comunitaria).
+            // Así evitamos que al guardar se vuelva al estado anterior del modal.
+            const modal = document.getElementById('settingsModal');
+            if (modal && modal.classList.contains('active')) {
+                populateModalUI();
+            }
         };
 
         return {

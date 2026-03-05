@@ -244,8 +244,22 @@ if (typeof window.ThemeGallery === 'undefined') {
                     if (confirm('¿Seguro quieres borrar tu tema de la galería pública?')) {
                         try {
                             await db.collection(FIRESTORE_COLLECTION).doc(theme.id).delete();
+
+                            // Limpiar el flag isShared del preset local que coincida con este tema,
+                            // para que el botón "Compartir" vuelva a estar disponible.
+                            const localPresets = JSON.parse(localStorage.getItem('jueguitos_presets') || '[]');
+                            const updatedPresets = localPresets.map(p => {
+                                const isSameTheme = p.bgValue === theme.bgUrl &&
+                                    p.themeColor === theme.themeColor &&
+                                    p.blur === theme.blur;
+                                return isSameTheme ? { ...p, isShared: false } : p;
+                            });
+                            localStorage.setItem('jueguitos_presets', JSON.stringify(updatedPresets));
+
                             loadRemoteThemes();
-                        } catch (err) { }
+                        } catch (err) {
+                            console.error('[ThemeGallery] Error al borrar tema:', err);
+                        }
                     }
                 });
             }
