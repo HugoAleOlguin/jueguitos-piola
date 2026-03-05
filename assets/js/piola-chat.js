@@ -172,7 +172,7 @@ const PiolaChat = (() => {
             </div>
             <div class="piola-chat-messages" id="piolaChatMessages"></div>
             <div class="piola-chat-input-area">
-                <input type="text" id="piolaChatInput" placeholder="Escribí algo... (podés pegar URLs de GIFs)"
+                <input type="text" id="piolaChatInput" placeholder="Escribí algo..."
                        maxlength="${MAX_MSG_LENGTH}" autocomplete="off">
                 <button class="btn-send" id="btnSendChat" title="Enviar">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
@@ -183,6 +183,7 @@ const PiolaChat = (() => {
                     </svg>
                 </button>
             </div>
+            <div class="piola-chat-resize-handle" id="chatResizeHandle"></div>
         `;
         document.body.appendChild(panel);
 
@@ -262,6 +263,134 @@ const PiolaChat = (() => {
             document.getElementById('setupAvatarInput').focus();
         });
 
+        // Drag y resize del panel
+        _setupDragAndResize();
+    };
+
+    // =========================================================================
+    // DRAG & RESIZE DEL PANEL
+    // =========================================================================
+    const CHAT_LAYOUT_KEY = 'piola_chat_layout';
+    const MIN_WIDTH = 320;
+    const MIN_HEIGHT = 300;
+
+    const _setupDragAndResize = () => {
+        const panel = document.getElementById('piolaChatPanel');
+        const header = panel.querySelector('.piola-chat-header');
+        const resizeHandle = document.getElementById('chatResizeHandle');
+
+        // Restaurar posición/tamaño guardados
+        _restoreChatLayout(panel);
+
+        // --- DRAG (mover desde el header) ---
+        let isDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        header.addEventListener('mousedown', (e) => {
+            // No arrastrar si se clickea un botón
+            if (e.target.closest('button')) return;
+            isDragging = true;
+            dragOffsetX = e.clientX - panel.getBoundingClientRect().left;
+            dragOffsetY = e.clientY - panel.getBoundingClientRect().top;
+            panel.style.transition = 'none';
+            header.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+
+        // --- RESIZE (desde la esquina inferior-derecha) ---
+        let isResizing = false;
+        let resizeStartX = 0;
+        let resizeStartY = 0;
+        let resizeStartW = 0;
+        let resizeStartH = 0;
+
+        resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            resizeStartX = e.clientX;
+            resizeStartY = e.clientY;
+            resizeStartW = panel.offsetWidth;
+            resizeStartH = panel.offsetHeight;
+            panel.style.transition = 'none';
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        // Mousemove y mouseup globales
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                let x = e.clientX - dragOffsetX;
+                let y = e.clientY - dragOffsetY;
+
+                // Limitar a los bordes de la ventana
+                x = Math.max(0, Math.min(x, window.innerWidth - panel.offsetWidth));
+                y = Math.max(0, Math.min(y, window.innerHeight - panel.offsetHeight));
+
+                // Cambiar de bottom/left a top/left para posicionamiento libre
+                panel.style.bottom = 'auto';
+                panel.style.left = x + 'px';
+                panel.style.top = y + 'px';
+            }
+
+            if (isResizing) {
+                const dw = e.clientX - resizeStartX;
+                const dh = resizeStartY - e.clientY; // Invertido: arrastrar arriba = más alto
+
+                const newWidth = Math.max(MIN_WIDTH, Math.min(resizeStartW + dw, window.innerWidth - panel.offsetLeft));
+                const newHeight = Math.max(MIN_HEIGHT, Math.min(resizeStartH + dh, window.innerHeight));
+
+                panel.style.width = newWidth + 'px';
+                panel.style.maxHeight = newHeight + 'px';
+
+                // Si agrandamos hacia arriba, mover el top
+                if (panel.style.bottom !== 'auto') {
+                    // Seguimos con bottom, no mover
+                } else {
+                    const newTop = panel.getBoundingClientRect().top + (resizeStartH - newHeight) + (resizeStartY - e.clientY - (resizeStartH - newHeight));
+                    // Mantener posición simple
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging || isResizing) {
+                isDragging = false;
+                isResizing = false;
+                header.style.cursor = '';
+                panel.style.transition = '';
+                _saveChatLayout(panel);
+            }
+        });
+    };
+
+    /** Guarda posición y tamaño del panel en localStorage */
+    const _saveChatLayout = (panel) => {
+        const layout = {
+            left: panel.style.left,
+            top: panel.style.top,
+            bottom: panel.style.bottom,
+            width: panel.style.width,
+            maxHeight: panel.style.maxHeight
+        };
+        localStorage.setItem(CHAT_LAYOUT_KEY, JSON.stringify(layout));
+    };
+
+    /** Restaura posición y tamaño del panel desde localStorage */
+    const _restoreChatLayout = (panel) => {
+        try {
+            const raw = localStorage.getItem(CHAT_LAYOUT_KEY);
+            if (!raw) return;
+            const layout = JSON.parse(raw);
+            if (layout.left) panel.style.left = layout.left;
+            if (layout.top) {
+                panel.style.top = layout.top;
+                panel.style.bottom = 'auto';
+            }
+            if (layout.width) panel.style.width = layout.width;
+            if (layout.maxHeight) panel.style.maxHeight = layout.maxHeight;
+        } catch {
+            // Ignorar si hay datos corruptos
+        }
     };
 
     // =========================================================================
