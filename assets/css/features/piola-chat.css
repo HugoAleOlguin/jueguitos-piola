@@ -305,6 +305,16 @@
     border-color: rgba(0, 243, 255, 0.2);
 }
 
+/* GIF/imagen auto-detectado en mensajes */
+.chat-msg .msg-gif {
+    display: block;
+    max-width: 220px;
+    max-height: 160px;
+    border-radius: 8px;
+    margin-top: 4px;
+    cursor: default;
+}
+
 /* === MODAL DE SETUP (primera vez) === */
 .piola-chat-setup {
     position: fixed;
@@ -481,7 +491,7 @@
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 22px;
     width: 700px;
-    min-height: 480px;
+    min-height: 430px;
     overflow: hidden;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65),
         inset 0 1px 0 rgba(255, 255, 255, 0.04);

@@ -3,18 +3,20 @@
  *
  * Features:
  *   - Perfil: nombre, avatar, descripción, juego favorito, color de nombre
- *   - Historial persistente en Firestore (nunca se borra)
- *   - Al cambiar nombre → actualiza TODOS los mensajes anteriores
- *   - Presencia online/offline con Firestore
- *   - Live Activity: avisa cuando alguien entra a un juego
- *   - Modal de perfil con vista lectura + modo edición (lápiz)
+ *   - Historial persistente en Firestore
+ *   - Al cambiar nombre/avatar/color → actualiza TODO el historial
+ *   - Presencia online/offline
+ *   - Modal de perfil (lectura + edición con lápiz)
+ *   - GIFs vía Tenor API
+ *   - Perfiles guardados en Firestore (colección chat_profiles)
  *
- * Modelo de perfil (localStorage):
+ * Modelo de perfil (localStorage + Firestore):
  *   { id, name, avatar, description, favoriteGame, nameColor }
  *
  * Colecciones de Firestore:
- *   - chat_messages:  { author, authorId, avatar, nameColor, text, type, createdAt }
- *   - chat_presence:  { name, avatar, description, favoriteGame, nameColor, online, lastSeen, currentGame }
+ *   - chat_messages:  { author, authorId, avatar, nameColor, text, gifUrl, type, createdAt }
+ *   - chat_presence:  { name, avatar, description, favoriteGame, nameColor, online, lastSeen }
+ *   - chat_profiles:  { name, avatar, description, favoriteGame, nameColor, createdAt, updatedAt }
  */
 
 const PiolaChat = (() => {
@@ -24,10 +26,13 @@ const PiolaChat = (() => {
     const STORAGE_KEY = 'piola_chat_profile';
     const COLLECTION_MESSAGES = 'chat_messages';
     const COLLECTION_PRESENCE = 'chat_presence';
+    const COLLECTION_PROFILES = 'chat_profiles';
     const MAX_MSG_LENGTH = 300;
     const MSG_LOAD_LIMIT = 80;
     const DEFAULT_AVATAR = 'https://api.dicebear.com/7.x/thumbs/svg?seed=default';
     const DEFAULT_NAME_COLOR = '#00f3ff';
+
+
 
     // =========================================================================
     // ESTADO INTERNO
@@ -35,7 +40,6 @@ const PiolaChat = (() => {
     let db = null;
     let isReady = false;
     let isOpen = false;
-    // Perfil: { id, name, avatar, description, favoriteGame, nameColor }
     let profile = null;
     let unsubMessages = null;
     let unsubPresence = null;
@@ -65,14 +69,15 @@ const PiolaChat = (() => {
         if (profile) {
             _startListeners();
             _updatePresence(true);
+            // Sincronizar perfil a Firestore al iniciar
+            _syncProfileToFirestore();
         }
-
-        _detectCurrentGame();
 
         window.addEventListener('beforeunload', () => {
             if (profile) _updatePresence(false);
         });
 
+        // Heartbeat cada 60s
         setInterval(() => {
             if (profile && isReady) _updatePresence(true);
         }, 60000);
@@ -81,7 +86,7 @@ const PiolaChat = (() => {
     };
 
     // =========================================================================
-    // PERFIL (localStorage)
+    // PERFIL (localStorage + Firestore)
     // =========================================================================
     const _generateId = () => {
         return 'user_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -106,18 +111,27 @@ const PiolaChat = (() => {
         return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(name || 'anon')}`;
     };
 
+    /** Guarda/actualiza el perfil en la colección chat_profiles de Firestore */
+    const _syncProfileToFirestore = () => {
+        if (!isReady || !db || !profile) return;
+
+        db.collection(COLLECTION_PROFILES).doc(profile.id).set({
+            name: profile.name,
+            avatar: profile.avatar,
+            description: profile.description || '',
+            favoriteGame: profile.favoriteGame || '',
+            nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true })
+            .catch(err => console.error('[PiolaChat] Error sincronizando perfil:', err));
+    };
+
     // =========================================================================
-    // HELPERS DE JUEGOS — buscar título e imagen desde gamesData
+    // HELPERS DE JUEGOS
     // =========================================================================
     const _getGameByTitle = (title) => {
         if (!window.gamesData || !title) return null;
         return window.gamesData.find(g => g.title === title) || null;
-    };
-
-    const _getGameTitle = (gameId) => {
-        if (!window.gamesData) return null;
-        const game = window.gamesData.find(g => g.id === gameId);
-        return game ? game.title : null;
     };
 
     // =========================================================================
@@ -139,7 +153,7 @@ const PiolaChat = (() => {
         `;
         document.body.appendChild(bubble);
 
-        // Panel principal del chat (sin emoji bar)
+        // Panel principal del chat
         const panel = document.createElement('div');
         panel.className = 'piola-chat-panel';
         panel.id = 'piolaChatPanel';
@@ -158,7 +172,7 @@ const PiolaChat = (() => {
             </div>
             <div class="piola-chat-messages" id="piolaChatMessages"></div>
             <div class="piola-chat-input-area">
-                <input type="text" id="piolaChatInput" placeholder="Escribí algo..."
+                <input type="text" id="piolaChatInput" placeholder="Escribí algo... (podés pegar URLs de GIFs)"
                        maxlength="${MAX_MSG_LENGTH}" autocomplete="off">
                 <button class="btn-send" id="btnSendChat" title="Enviar">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
@@ -172,14 +186,14 @@ const PiolaChat = (() => {
         `;
         document.body.appendChild(panel);
 
-        // Modal de setup de perfil (primera vez)
+        // Modal de setup de perfil
         const setup = document.createElement('div');
         setup.className = 'piola-chat-setup';
         setup.id = 'piolaChatSetup';
         setup.innerHTML = `
             <div class="setup-card">
-                <h3>Tu Perfil del Chat</h3>
-                <p>Completá tu perfil para entrar al chat</p>
+                <h3>Tu Perfil</h3>
+                <p>Completá tu perfil para usar el chat y la galería</p>
                 <img class="setup-avatar-preview" id="setupAvatarPreview"
                      src="${DEFAULT_AVATAR}" alt="Avatar preview">
                 <span class="setup-avatar-hint">Clickeá la imagen para cambiar foto</span>
@@ -193,7 +207,7 @@ const PiolaChat = (() => {
                 <span class="setup-section-label">Personalización</span>
                 <textarea id="setupDescInput" placeholder="Bio corta (opcional)..." maxlength="120"></textarea>
 
-                <button class="btn-setup-save" id="btnSetupSave">Entrar al Chat</button>
+                <button class="btn-setup-save" id="btnSetupSave">Crear Perfil</button>
             </div>
         `;
         document.body.appendChild(setup);
@@ -205,7 +219,6 @@ const PiolaChat = (() => {
         profileModal.innerHTML = `<div class="profile-card" id="profileCardContent"></div>`;
         document.body.appendChild(profileModal);
 
-        // Cerrar modal de perfil al clickear overlay
         profileModal.addEventListener('click', (e) => {
             if (e.target === profileModal) _closeProfileModal();
         });
@@ -248,6 +261,7 @@ const PiolaChat = (() => {
         document.getElementById('setupAvatarPreview').addEventListener('click', () => {
             document.getElementById('setupAvatarInput').focus();
         });
+
     };
 
     // =========================================================================
@@ -278,7 +292,7 @@ const PiolaChat = (() => {
     };
 
     // =========================================================================
-    // SETUP DE PERFIL (primera vez)
+    // SETUP DE PERFIL
     // =========================================================================
     const _showSetup = () => {
         const modal = document.getElementById('piolaChatSetup');
@@ -320,23 +334,19 @@ const PiolaChat = (() => {
         };
 
         _saveProfile(newProfile);
+        _syncProfileToFirestore();
 
         document.getElementById('piolaChatSetup').classList.remove('active');
 
         _startListeners();
         _updatePresence(true);
-        _detectCurrentGame();
         _toggleChat();
     };
+
 
     // =========================================================================
     // MODAL DE PERFIL — Lectura por defecto, lápiz para editar
     // =========================================================================
-
-    /**
-     * Abre el modal de perfil para un usuario.
-     * Siempre abre en modo LECTURA, con botón lápiz si es propio.
-     */
     const _openProfileModal = (userId) => {
         const modal = document.getElementById('piolaProfileModal');
         const container = document.getElementById('profileCardContent');
@@ -345,37 +355,32 @@ const PiolaChat = (() => {
         const isOwn = profile && userId === profile.id;
         const presence = presenceMap.get(userId);
 
-        // Armar datos unificados
         const data = isOwn ? {
             name: profile.name,
             avatar: profile.avatar,
             description: profile.description || '',
             favoriteGame: profile.favoriteGame || '',
             nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
-            online: presence?.online || true,
-            currentGame: presence?.currentGame || ''
+            online: presence?.online || true
         } : {
             name: presence?.name || 'Desconocido',
             avatar: presence?.avatar || _defaultAvatar('unknown'),
             description: presence?.description || '',
             favoriteGame: presence?.favoriteGame || '',
             nameColor: presence?.nameColor || DEFAULT_NAME_COLOR,
-            online: presence?.online || false,
-            currentGame: presence?.currentGame || ''
+            online: presence?.online || false
         };
 
         _renderViewProfile(container, data, isOwn, userId);
         modal.classList.add('active');
     };
 
-    /** Renderiza perfil en modo LECTURA (para todos, incluido el propio) */
+    /** Perfil en modo LECTURA */
     const _renderViewProfile = (container, data, isOwn, userId) => {
         const statusDotClass = data.online ? 'online' : 'offline';
         const description = data.description || 'Sin descripción';
         const favGame = _getGameByTitle(data.favoriteGame);
-        const currentGame = data.currentGame || '';
 
-        // HTML del juego favorito con imagen
         let favGameHtml;
         if (favGame) {
             favGameHtml = `
@@ -388,7 +393,6 @@ const PiolaChat = (() => {
             favGameHtml = `<span class="profile-field-value empty">Ninguno</span>`;
         }
 
-        // Botón de editar solo si es perfil propio — ícono SVG de lápiz
         const editBtnHtml = isOwn
             ? `<button class="btn-edit-profile" id="btnEditProfile" title="Editar perfil">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
@@ -428,21 +432,12 @@ const PiolaChat = (() => {
                         <span class="profile-field-label">🎮 Juego Favorito</span>
                         ${favGameHtml}
                     </div>
-
-                    ${currentGame ? `
-                        <div class="profile-field">
-                            <span class="profile-field-label">🕹️ Jugando ahora</span>
-                            <span class="profile-field-value">${_escapeHtml(currentGame)}</span>
-                        </div>
-                    ` : ''}
                 </div>
             </div>
         `;
 
-        // Eventos
         container.querySelector('#btnCloseProfile').addEventListener('click', _closeProfileModal);
 
-        // Botón lápiz → cambiar a modo edición
         if (isOwn) {
             container.querySelector('#btnEditProfile').addEventListener('click', () => {
                 _renderEditProfile(container, data, userId);
@@ -450,9 +445,8 @@ const PiolaChat = (() => {
         }
     };
 
-    /** Renderiza perfil PROPIO en modo EDICIÓN */
+    /** Perfil PROPIO en modo EDICIÓN */
     const _renderEditProfile = (container, data, userId) => {
-        // Generar opciones del select con juegos
         let gameOptions = '<option value="">Ninguno</option>';
         if (window.gamesData) {
             window.gamesData.forEach(g => {
@@ -525,7 +519,6 @@ const PiolaChat = (() => {
             </div>
         `;
 
-        // Eventos del modo edición
         container.querySelector('#btnCloseProfile').addEventListener('click', _closeProfileModal);
         container.querySelector('#btnProfileCancel').addEventListener('click', _closeProfileModal);
         container.querySelector('#btnProfileSave').addEventListener('click', () => _handleProfileSave(userId));
@@ -538,25 +531,21 @@ const PiolaChat = (() => {
             img.onerror = () => { img.src = DEFAULT_AVATAR; };
         });
 
-        // Clic en avatar para enfocar input
         container.querySelector('#profileEditAvatar').addEventListener('click', () => {
             container.querySelector('#profileEditAvatarUrl').focus();
         });
 
-        // Preview live del color del nombre
+        // Preview live del color
         container.querySelector('#profileEditNameColor').addEventListener('input', (e) => {
-            const preview = container.querySelector('#colorPreviewName');
-            preview.style.color = e.target.value;
+            container.querySelector('#colorPreviewName').style.color = e.target.value;
         });
 
-        // Actualizar preview name text al cambiar nombre
         container.querySelector('#profileEditName').addEventListener('input', (e) => {
-            const preview = container.querySelector('#colorPreviewName');
-            preview.textContent = e.target.value || 'Preview';
+            container.querySelector('#colorPreviewName').textContent = e.target.value || 'Preview';
         });
     };
 
-    /** Guardar cambios del perfil propio */
+    /** Guardar cambios del perfil */
     const _handleProfileSave = async (userId) => {
         const name = document.getElementById('profileEditName').value.trim();
         if (!name) return;
@@ -580,23 +569,18 @@ const PiolaChat = (() => {
 
         _saveProfile(updatedProfile);
         _updatePresence(true);
+        _syncProfileToFirestore();
 
-        // Si el nombre, avatar o color cambiaron, actualizar todo el historial
-        const nameChanged = oldName !== name;
-        const avatarChanged = oldAvatar !== avatar;
-        const colorChanged = oldNameColor !== nameColor;
-
-        if (nameChanged || avatarChanged || colorChanged) {
+        // Si algo visual cambió, actualizar todo el historial
+        const changed = oldName !== name || oldAvatar !== avatar || oldNameColor !== nameColor;
+        if (changed) {
             _updateHistoryMessages(profile.id, name, avatar, nameColor);
         }
 
         _closeProfileModal();
     };
 
-    /**
-     * Actualiza nombre, avatar y color en TODOS los mensajes anteriores de este usuario.
-     * Usa un batch de Firestore para eficiencia.
-     */
+    /** Actualiza nombre/avatar/color en TODOS los mensajes anteriores (batch) */
     const _updateHistoryMessages = async (userId, newName, newAvatar, newColor) => {
         if (!isReady || !db) return;
 
@@ -607,7 +591,6 @@ const PiolaChat = (() => {
 
             if (snapshot.empty) return;
 
-            // Firestore limita batches a 500 operaciones
             const batchSize = 500;
             let batch = db.batch();
             let count = 0;
@@ -620,14 +603,12 @@ const PiolaChat = (() => {
                 });
                 count++;
 
-                // Si llegamos al límite, commitear y crear nuevo batch
                 if (count % batchSize === 0) {
                     batch.commit();
                     batch = db.batch();
                 }
             });
 
-            // Commitear el último batch
             await batch.commit();
             console.info(`[PiolaChat] Historial actualizado: ${count} mensajes`);
         } catch (err) {
@@ -697,7 +678,7 @@ const PiolaChat = (() => {
     };
 
     // =========================================================================
-    // RENDERIZADO DE UN MENSAJE
+    // RENDERIZADO DE MENSAJES
     // =========================================================================
     const _renderMessage = (container, msg) => {
         // Actividad
@@ -709,10 +690,8 @@ const PiolaChat = (() => {
             return;
         }
 
-        // Mensaje normal
         const presence = presenceMap.get(msg.authorId);
         const isOnline = presence?.online || false;
-        // El color del nombre se toma del mensaje (actualizado por batch si cambió)
         const nameColor = msg.nameColor || DEFAULT_NAME_COLOR;
 
         const div = document.createElement('div');
@@ -720,6 +699,15 @@ const PiolaChat = (() => {
 
         const avatarSrc = msg.avatar || _defaultAvatar('anon');
         const timeStr = msg.createdAt ? _formatTime(msg.createdAt.toDate()) : '';
+
+        // Contenido: GIF guardado como tal, o auto-detectar URL de imagen en texto
+        let msgContentHtml;
+        if ((msg.type === 'gif' && msg.gifUrl) || _isImageUrl(msg.text)) {
+            const imgSrc = msg.gifUrl || msg.text;
+            msgContentHtml = `<img class="msg-gif" src="${_escapeHtml(imgSrc)}" alt="GIF" loading="lazy">`;
+        } else {
+            msgContentHtml = `<div class="msg-text">${_escapeHtml(msg.text)}</div>`;
+        }
 
         div.innerHTML = `
             <img class="msg-avatar" data-userid="${_escapeHtml(msg.authorId || '')}"
@@ -732,7 +720,7 @@ const PiolaChat = (() => {
                     ${_escapeHtml(msg.author || 'Anon')}
                     <span class="msg-time">${timeStr}</span>
                 </div>
-                <div class="msg-text">${_escapeHtml(msg.text)}</div>
+                ${msgContentHtml}
             </div>
         `;
 
@@ -747,7 +735,7 @@ const PiolaChat = (() => {
     };
 
     // =========================================================================
-    // ENVIAR MENSAJE
+    // ENVIAR MENSAJE DE TEXTO
     // =========================================================================
     const _sendMessage = async () => {
         if (!isReady || !profile) return;
@@ -759,16 +747,26 @@ const PiolaChat = (() => {
         input.value = '';
         input.focus();
 
+        // Si el texto es una URL de imagen/GIF, guardar como tipo 'gif'
+        const isImage = _isImageUrl(text);
+
         try {
-            await db.collection(COLLECTION_MESSAGES).add({
+            const msgData = {
                 author: profile.name,
                 authorId: profile.id,
                 avatar: profile.avatar,
                 nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
                 text: text.slice(0, MAX_MSG_LENGTH),
-                type: 'message',
+                type: isImage ? 'gif' : 'message',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            };
+
+            // Si es imagen, guardar la URL también en gifUrl
+            if (isImage) {
+                msgData.gifUrl = text;
+            }
+
+            await db.collection(COLLECTION_MESSAGES).add(msgData);
         } catch (err) {
             console.error('[PiolaChat] Error al enviar mensaje:', err);
         }
@@ -777,10 +775,10 @@ const PiolaChat = (() => {
     // =========================================================================
     // PRESENCIA
     // =========================================================================
-    const _updatePresence = (online, gameName = null) => {
+    const _updatePresence = (online) => {
         if (!isReady || !profile || !db) return;
 
-        const data = {
+        db.collection(COLLECTION_PRESENCE).doc(profile.id).set({
             name: profile.name,
             avatar: profile.avatar,
             description: profile.description || '',
@@ -788,60 +786,8 @@ const PiolaChat = (() => {
             nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
             online: online,
             lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        if (gameName !== null) {
-            data.currentGame = gameName;
-        }
-
-        db.collection(COLLECTION_PRESENCE).doc(profile.id).set(data, { merge: true })
+        }, { merge: true })
             .catch(err => console.error('[PiolaChat] Error actualizando presencia:', err));
-    };
-
-    // =========================================================================
-    // LIVE ACTIVITY
-    // =========================================================================
-    const _detectCurrentGame = () => {
-        if (!profile) return;
-
-        const params = new URLSearchParams(window.location.search);
-        const gameId = params.get('id');
-
-        if (!gameId) {
-            _updatePresence(true, '');
-            return;
-        }
-
-        const gameTitle = _getGameTitle(gameId);
-        if (!gameTitle) return;
-
-        _updatePresence(true, gameTitle);
-        _sendActivityEvent(gameTitle);
-    };
-
-    const _sendActivityEvent = async (gameTitle) => {
-        if (!isReady || !profile) return;
-
-        const throttleKey = `piola_chat_activity_${profile.id}`;
-        const lastActivity = sessionStorage.getItem(throttleKey);
-        const now = Date.now();
-
-        if (lastActivity && (now - parseInt(lastActivity)) < 30000) return;
-        sessionStorage.setItem(throttleKey, now.toString());
-
-        try {
-            await db.collection(COLLECTION_MESSAGES).add({
-                author: profile.name,
-                authorId: profile.id,
-                avatar: profile.avatar,
-                nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
-                text: `${profile.name} está en ${gameTitle}`,
-                type: 'activity',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        } catch (err) {
-            console.error('[PiolaChat] Error al enviar actividad:', err);
-        }
     };
 
     // =========================================================================
@@ -880,14 +826,36 @@ const PiolaChat = (() => {
         return div.innerHTML;
     };
 
+    /** Detecta si un texto es una URL de imagen o GIF */
+    const _isImageUrl = (text) => {
+        if (!text || typeof text !== 'string') return false;
+        const trimmed = text.trim();
+
+        // Debe empezar con http
+        if (!trimmed.startsWith('http')) return false;
+
+        // Detectar por extensión de archivo
+        const imageExtensions = /\.(gif|png|jpg|jpeg|webp)(\?.*)?$/i;
+        if (imageExtensions.test(trimmed)) return true;
+
+        // Detectar dominios conocidos de GIFs (URLs que no siempre terminan en .gif)
+        const gifDomains = ['tenor.com', 'media.tenor.com', 'giphy.com', 'media.giphy.com', 'i.imgur.com'];
+        try {
+            const url = new URL(trimmed);
+            return gifDomains.some(domain => url.hostname.endsWith(domain));
+        } catch {
+            return false;
+        }
+    };
+
     // =========================================================================
     // API PÚBLICA
     // =========================================================================
     return {
         init,
-        /** Abre el setup del perfil (usado por ThemeGallery si no hay perfil) */
+        /** Abre el setup del perfil */
         editProfile: _showSetup,
-        /** Devuelve el perfil actual o null si no existe */
+        /** Devuelve el perfil actual o null */
         getProfile: () => profile
     };
 
