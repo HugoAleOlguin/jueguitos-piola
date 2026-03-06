@@ -413,7 +413,11 @@ const PiolaChat = (() => {
             unreadCount = 0;
             _updateUnreadBadge();
             _scrollToBottom();
-            setTimeout(() => document.getElementById('piolaChatInput').focus(), 300);
+            // Solo autofocus en desktop — en mobile abre el teclado y lagea la pantalla
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            if (!isMobile) {
+                setTimeout(() => document.getElementById('piolaChatInput').focus(), 300);
+            }
         } else {
             panel.classList.remove('open');
             bubble.style.display = 'flex';

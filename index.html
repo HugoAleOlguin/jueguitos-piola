@@ -110,12 +110,12 @@
                 <!-- 1. APARIENCIA (Fondo) -->
                 <div class="settings-section">
                     <h3><i data-lucide="image" style="width:16px;height:16px;vertical-align:middle;"></i> Fondo &
-                        Ambiente</h3>
+                        Apariencia</h3>
                     <div class="form-group">
                         <label for="settingBgUrl">Imagen de Fondo (URL)</label>
                         <input type="text" id="settingBgUrl" class="settings-input" placeholder="https://...">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group settings-hide-mobile">
                         <label for="settingBgFile" class="custom-file-upload">
                             <i data-lucide="folder-open" style="width:14px;height:14px;vertical-align:middle;"></i>
                             Subir Archivo Local
@@ -123,7 +123,7 @@
                         <input type="file" id="settingBgFile" accept="image/*" style="display:none;"
                             aria-label="Subir archivo de fondo">
                     </div>
-                    <div class="preview-box" id="settingBgPreview">
+                    <div class="preview-box settings-hide-mobile" id="settingBgPreview">
                         <span>Vista Previa</span>
                     </div>
                     <label class="toggle-switch" style="margin-top: 0.8rem;">
@@ -137,9 +137,9 @@
 
                 <!-- 2. ESTILO (Blur & Color) -->
                 <div class="settings-section">
-                    <h3><i data-lucide="sparkles" style="width:16px;height:16px;vertical-align:middle;"></i> Estética
-                        Neon</h3>
-                    <div class="form-group">
+                    <h3><i data-lucide="sparkles" style="width:16px;height:16px;vertical-align:middle;"></i> Color &
+                        Blur</h3>
+                    <div class="form-group settings-hide-mobile">
                         <label for="settingBlur">Nivel de Desenfoque (Glass)</label>
                         <input type="range" id="settingBlur" min="0" max="20" step="1" value="0"
                             style="width: 100%; accent-color: var(--primary-color);">
@@ -160,7 +160,6 @@
                                 title="Error Red"></button>
                             <button class="color-btn" style="--bg: #ffffff" data-color="#ffffff"
                                 title="Pure White"></button>
-
                             <div class="custom-color-wrapper" title="Personalizado">
                                 <input type="color" id="settingColor" value="#00f3ff" aria-label="Color personalizado">
                             </div>
@@ -168,8 +167,8 @@
                     </div>
                 </div>
 
-                <!-- 3. EFECTOS (Cursores & Partículas) - NEW -->
-                <div class="settings-section">
+                <!-- 3. EFECTOS (Cursores & FX) — oculto en mobile (táctil) -->
+                <div class="settings-section settings-hide-mobile">
                     <h3><i data-lucide="mouse-pointer-2" style="width:16px;height:16px;vertical-align:middle;"></i>
                         Cursores & FX</h3>
 
@@ -184,35 +183,22 @@
                             <div class="option-card" data-cursor="crosshair" title="FPS">
                                 <span class="option-icon" style="font-size: 1.2rem;">✛</span>
                             </div>
-
-                            <!-- Troll Cursor -->
                             <div class="option-card" data-cursor="troll" title="Troll">
                                 <img src="assets/css/features/null_.png" alt="Troll" style="width: 20px; height: auto;">
                             </div>
-
-                            <!-- Custom Upload Option BETA-->
                             <div class="option-card" id="btnCustomCursor" title="Subir PNG">
                                 <span class="option-icon"><i data-lucide="upload"
                                         style="width:20px;height:20px;"></i></span>
                             </div>
                         </div>
-
-                        <!-- Help / Limitations -->
-                        <div
-                            style="margin-top: 5px; font-size: 0.75rem; color: #888; display: flex; gap: 5px; align-items: center;">
-                            <span><i data-lucide="info" style="width:13px;height:13px;"></i></span>
-                            <span>
-                                <strong>Limitaciones:</strong> Máx 128x128px (ideal 32x32), PNG transparente, < 100KB.
-                                    </span>
-                        </div>
                     </div>
 
-                    <!-- Inputs Hidden -->
+                    <!-- Inputs Hidden (necesarios para el JS aunque estén ocultos) -->
                     <input type="hidden" id="settingCursor" value="default">
                     <input type="file" id="settingCursorFile" accept="image/png" style="display: none;"
                         aria-label="Subir cursor personalizado">
 
-                    <!-- Toggles de FX: compactos y apilados -->
+                    <!-- Toggles de FX -->
                     <div class="toggle-group">
                         <label class="toggle-switch">
                             <span class="toggle-label">
@@ -231,6 +217,13 @@
                     </div>
                 </div>
 
+                <!-- En mobile, inputs hidden necesarios para el JS -->
+                <div class="settings-mobile-only" style="display:none;">
+                    <input type="hidden" id="settingCursor" value="default">
+                    <input type="file" id="settingCursorFile" accept="image/png" style="display: none;"
+                        aria-label="Subir cursor personalizado">
+                </div>
+
                 <!-- 4. PRESETS -->
                 <div class="settings-section">
                     <div
@@ -239,7 +232,7 @@
                                 style="width:16px;height:16px;vertical-align:middle;"></i> Temas Guardados</h3>
                         <button onclick="if(window.ThemeGallery) ThemeGallery.openGallery()" class="gallery-toggle-btn"
                             title="Ver Galeria Compartida"><i data-lucide="globe" style="width:14px;height:14px;"></i>
-                            Explorar Temas <span class="badge-beta">BETA</span></button>
+                            Explorar <span class="badge-beta">BETA</span></button>
                     </div>
                     <div class="form-group" style="display: flex; gap: 10px;">
                         <input type="text" id="presetName" class="settings-input" placeholder="Nuevo tema..."
@@ -271,8 +264,8 @@
             <div class="settings-footer">
                 <button class="btn-ghost danger" id="btnResetSettings">Restaurar</button>
                 <div style="flex: 1;"></div>
-                <!-- Links del autor -->
-                <div class="settings-author-links">
+                <!-- Links del autor — ocultos en mobile para ahorrar espacio -->
+                <div class="settings-author-links settings-hide-mobile">
                     <a href="https://github.com/HugoAleOlguin/jueguitos-piola" target="_blank" rel="noopener noreferrer"
                         class="author-link" title="Ver repositorio en GitHub">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -294,7 +287,7 @@
                         <span>Portfolio</span>
                     </a>
                 </div>
-                <button class="btn-save" id="btnSaveSettings">Guardar Cambios</button>
+                <button class="btn-save" id="btnSaveSettings">Guardar</button>
             </div>
         </div>
     </div>

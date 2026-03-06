@@ -239,15 +239,15 @@
         padding: 0.6rem;
     }
 
-    /* ---- MODALES: tamaño y posición correctos ---- */
-
-    /* Settings Modal */
+    /* ---- SETTINGS MODAL ---- */
     .settings-modal {
         width: 96% !important;
         max-width: none !important;
         max-height: 90vh !important;
         border-radius: 16px;
         margin: 0 2%;
+        /* Desactivar animación glow pulsante — muy costosa en mobile */
+        animation: none !important;
     }
 
     .settings-header {
@@ -262,14 +262,19 @@
         padding: 1rem 1.25rem;
     }
 
-    .settings-section h3 {
-        font-size: 0.9rem;
+    .settings-section {
+        padding: 1rem !important;
+        margin-bottom: 0.75rem !important;
     }
 
-    /* Ocultar secciones no esenciales en mobile */
-    /* Cursores custom, partículas, trail — no funcionales en touch */
-    .settings-section:has(#cursorGrid) {
-        display: none;
+    .settings-section h3 {
+        font-size: 0.88rem;
+        margin-bottom: 0.75rem !important;
+    }
+
+    /* Clases de visibilidad móvil */
+    .settings-hide-mobile {
+        display: none !important;
     }
 
     /* Botón "Explorar Temas" más chico */
@@ -278,6 +283,12 @@
         padding: 4px 8px;
     }
 
+    .settings-footer {
+        padding: 0.75rem 1.25rem;
+        gap: 0.5rem;
+    }
+
+    /* ---- MODALES: tamaño y posición correctos ---- */
     /* Achievements Modal */
     .achievements-window {
         width: 95% !important;
@@ -357,9 +368,9 @@
     }
 
     /* Versus Modal */
-    .vs-modal {
+    .versus-container {
         width: 95% !important;
-        max-width: none !important;
+        height: 85vh !important;
         border-radius: 16px;
     }
 
@@ -369,7 +380,6 @@
     }
 
     /* ---- FLOATING ELEMENTS ---- */
-
     /* FAB de logros: más chico y sin sobreponerse */
     .floating-fab {
         width: 42px !important;
@@ -383,7 +393,7 @@
         height: 18px !important;
     }
 
-    /* Chat bubble */
+    /* ---- CHAT — más pequeño y sin teclado automático ---- */
     .piola-chat-bubble {
         width: 42px;
         height: 42px;
@@ -391,18 +401,23 @@
         left: 14px;
     }
 
-    /* Chat panel — fullwidth mobile */
+    /* Chat panel — fullwidth mobile, más bajo */
     .piola-chat-panel {
         width: calc(100vw - 16px);
         left: 8px;
         bottom: 8px;
-        max-height: 70vh;
+        max-height: 60vh;
         border-radius: 14px;
     }
 
     .piola-chat-messages {
-        min-height: 200px;
-        max-height: 50vh;
+        min-height: 160px;
+        max-height: 40vh;
+    }
+
+    /* Drag handle oculto en mobile (no hay mouse) */
+    .piola-chat-resize-handle {
+        display: none;
     }
 
     /* Chat profile card — no se desborde */
@@ -435,11 +450,6 @@
         max-width: 340px;
     }
 
-    /* ---- ROULETTE ---- */
-    .roulette-overlay {
-        padding: 1rem;
-    }
-
     /* ---- FOOTER ---- */
     footer {
         padding: 1rem;
@@ -447,19 +457,16 @@
     }
 
     /* ---- PERFORMANCE: Desactivar efectos pesados en mobile ---- */
-    /* Sin backdrop-filter en cards (muy costoso) */
     .game-card,
     .game-detail-container {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
 
-    /* Sin canvas de partículas */
     #particles-canvas {
         display: none !important;
     }
 
-    /* Sin cursor trail */
     #cursor-follow-dot {
         display: none !important;
     }
