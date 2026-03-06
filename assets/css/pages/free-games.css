@@ -378,3 +378,55 @@
 .fg-attribution a:hover {
     opacity: 1;
 }
+
+/* === RESPONSIVE MOBILE === */
+@media (max-width: 768px) {
+    #free-games-view {
+        padding: 1rem 0.75rem;
+    }
+
+    .fg-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 0.75rem 1rem;
+        gap: 0.5rem;
+    }
+
+    .fg-title-wrapper h2 {
+        font-size: 1.1rem;
+    }
+
+    .fg-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .fg-card-img {
+        height: 120px;
+    }
+
+    .fg-card-title {
+        font-size: 0.85rem;
+    }
+
+    .fg-description {
+        font-size: 0.78rem;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
+
+    .fg-section-header {
+        padding: 8px 12px;
+        margin: 1.5rem 0 0.75rem 0;
+        gap: 10px;
+    }
+
+    .fg-platform-label {
+        font-size: 0.8rem;
+    }
+
+    .fg-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+}
