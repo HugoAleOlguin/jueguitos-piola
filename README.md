@@ -20,7 +20,6 @@
 
 | 🟢 Sitio Oficial |
 |:---:|
-| [![Sitio Oficial](https://img.shields.io/badge/🌐-Jugar_Ahora-2ea44f?style=for-the-badge)](https://hugoaleolguin.github.io/jueguitos-piola/) |
 | <a href="https://hugoaleolguin.github.io/jueguitos-piola/" target="_blank"><img src="https://api.microlink.io/?url=https://hugoaleolguin.github.io/jueguitos-piola/?v=3.3&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=200&refresh=true" alt="Vista previa oficial"></a> |
 
 > *La versión antigua ha sido archivada en [/old](https://hugoaleolguin.github.io/jueguitos-piola/old) para la posteridad.*
@@ -47,26 +46,6 @@ Sin frameworks pesados — HTML, CSS y JavaScript vanilla para aprender cómo fu
 
 ---
 
-## 📥 Instalación Local
-
-<details>
-  <summary><b>👇 Clic para ver instrucciones</b></summary>
-
-  ```bash
-  # 1. Cloná el repo
-  git clone https://github.com/HugoAleOlguin/jueguitos-piola.git
-
-  # 2. Entrá a la carpeta
-  cd jueguitos-piola
-
-  # 3. Abrí con Live Server en VS Code
-  # La navegación SPA requiere un servidor local para funcionar correctamente.
-  ```
-
-</details>
-
--
-
 ## 🧠 Roadmap
 
 ![Progreso](https://img.shields.io/badge/Progreso-77%25-green)
@@ -91,7 +70,8 @@ Esto es un side-project, así que avanzo a mi ritmo:
 ### 🚧 Pendiente
 - [ ] Más easter eggs
 - [ ] Lazy loading para imágenes
-- [ ] Modo offline / Service Worker
+- [ ] Mejoras del chat
+- [ ] Mejor integracion de juegos gratis
 
 ---
 
