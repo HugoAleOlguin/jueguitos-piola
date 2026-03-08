@@ -397,6 +397,10 @@ const PiolaChat = (() => {
             unreadCount = 0;
             _updateUnreadBadge();
             _scrollToBottom();
+
+            // Mark as read immediately when opening
+            localStorage.setItem('piola_chat_last_read', Date.now().toString());
+
             // Solo autofocus en desktop — en mobile abre el teclado y lagea la pantalla
             const isMobile = window.matchMedia('(max-width: 768px)').matches;
             if (!isMobile) {
@@ -405,6 +409,9 @@ const PiolaChat = (() => {
         } else {
             panel.classList.remove('open');
             bubble.style.display = 'flex';
+
+            // Mark as read again when closing
+            localStorage.setItem('piola_chat_last_read', Date.now().toString());
         }
     };
 
@@ -707,16 +714,33 @@ const PiolaChat = (() => {
                 currentMessages = snapshot.docs;
                 _renderAllMessages();
 
-                // No leídos
-                if (!isOpen) {
-                    const newFromOthers = snapshot.docChanges().filter(c =>
-                        c.type === 'added' && c.doc.data().authorId !== profile?.id
-                    );
-                    if (newFromOthers.length > 0) {
-                        unreadCount += newFromOthers.length;
-                        _updateUnreadBadge();
+                let lastRead = parseInt(localStorage.getItem('piola_chat_last_read') || '0', 10);
+
+                // Si está abierto, actualizamos el marcador de leído al instante
+                if (isOpen) {
+                    lastRead = Date.now();
+                    localStorage.setItem('piola_chat_last_read', lastRead.toString());
+                    unreadCount = 0;
+                } else {
+                    // Contar todos los mensajes que han llegado DESPUÉS de nuestro lastRead
+                    // Filtramos los mensajes que son nuestros
+                    const newMessages = snapshot.docs.filter(doc => {
+                        const data = doc.data();
+                        if (data.authorId === profile?.id) return false;
+
+                        // Si no tiene fecha (ej. escritura pendiente), usamos timestamp actual
+                        const msgTime = data.createdAt ? data.createdAt.toMillis() : Date.now();
+                        return msgTime > lastRead;
+                    });
+
+                    if (newMessages.length > 0) {
+                        unreadCount = newMessages.length;
+                    } else {
+                        unreadCount = 0;
                     }
                 }
+
+                _updateUnreadBadge();
             }, (err) => {
                 console.error('[PiolaChat] Error en listener de mensajes:', err);
             });
