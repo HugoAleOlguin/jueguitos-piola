@@ -42,6 +42,7 @@ const PiolaChat = (() => {
     let unsubMessages = null;
     let unsubUsers = null;
     let userMap = new Map();
+    let currentMessages = []; // Cache of last messages snapshot
     let unreadCount = 0;
 
     // =========================================================================
@@ -703,14 +704,8 @@ const PiolaChat = (() => {
             .orderBy('createdAt', 'asc')
             .limitToLast(MSG_LOAD_LIMIT)
             .onSnapshot((snapshot) => {
-                const container = document.getElementById('piolaChatMessages');
-                if (!container) return;
-
-                container.innerHTML = '';
-                snapshot.forEach(doc => {
-                    _renderMessage(container, doc.data());
-                });
-                _scrollToBottom();
+                currentMessages = snapshot.docs;
+                _renderAllMessages();
 
                 // No leídos
                 if (!isOpen) {
@@ -740,6 +735,8 @@ const PiolaChat = (() => {
                 if (countEl) {
                     countEl.textContent = onlineCount > 0 ? `${onlineCount} online` : '';
                 }
+                // Re-render messages dynamically when users update (name changes, avatar changes, etc)
+                _renderAllMessages();
             }, (err) => {
                 console.error('[PiolaChat] Error en listener de usuarios:', err);
             });
@@ -748,6 +745,24 @@ const PiolaChat = (() => {
     // =========================================================================
     // RENDERIZADO DE MENSAJES
     // =========================================================================
+
+    const _renderAllMessages = () => {
+        const container = document.getElementById('piolaChatMessages');
+        if (!container) return;
+
+        // Save scroll position relative to bottom
+        const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+
+        container.innerHTML = '';
+        currentMessages.forEach(doc => {
+            _renderMessage(container, doc.data());
+        });
+
+        // Maintain scroll intelligently
+        if (isAtBottom) {
+            _scrollToBottom();
+        }
+    };
     const _renderMessage = (container, msg) => {
         // Actividad
         if (msg.type === 'activity') {
