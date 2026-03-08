@@ -13,10 +13,9 @@
  * Modelo de perfil (localStorage + Firestore):
  *   { id, name, avatar, description, favoriteGame, nameColor }
  *
- * Colecciones de Firestore:
- *   - chat_messages:  { author, authorId, avatar, nameColor, text, gifUrl, type, createdAt }
- *   - chat_presence:  { name, avatar, description, favoriteGame, nameColor, online, lastSeen }
- *   - chat_profiles:  { name, avatar, description, favoriteGame, nameColor, createdAt, updatedAt }
+ * Colecciones de Firestore (Estructura Migrada):
+ *   - messages: { authorId, text, mediaUrl, type, createdAt }
+ *   - users:    { name, avatar, description, favoriteGame, nameColor, online, status, lastSeen, updatedAt }
  */
 
 const PiolaChat = (() => {
@@ -24,9 +23,8 @@ const PiolaChat = (() => {
     // CONFIGURACIÓN
     // =========================================================================
     const STORAGE_KEY = 'piola_chat_profile';
-    const COLLECTION_MESSAGES = 'chat_messages';
-    const COLLECTION_PRESENCE = 'chat_presence';
-    const COLLECTION_PROFILES = 'chat_profiles';
+    const COLLECTION_MESSAGES = 'messages';
+    const COLLECTION_USERS = 'users';
     const MAX_MSG_LENGTH = 300;
     const MSG_LOAD_LIMIT = 80;
     const DEFAULT_AVATAR = 'https://api.dicebear.com/7.x/thumbs/svg?seed=default';
@@ -42,8 +40,8 @@ const PiolaChat = (() => {
     let isOpen = false;
     let profile = null;
     let unsubMessages = null;
-    let unsubPresence = null;
-    let presenceMap = new Map();
+    let unsubUsers = null;
+    let userMap = new Map();
     let unreadCount = 0;
 
     // =========================================================================
@@ -69,8 +67,6 @@ const PiolaChat = (() => {
         if (profile) {
             _startListeners();
             _updatePresence(true);
-            // Sincronizar perfil a Firestore al iniciar
-            _syncProfileToFirestore();
         }
 
         window.addEventListener('beforeunload', () => {
@@ -111,20 +107,7 @@ const PiolaChat = (() => {
         return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(name || 'anon')}`;
     };
 
-    /** Guarda/actualiza el perfil en la colección chat_profiles de Firestore */
-    const _syncProfileToFirestore = () => {
-        if (!isReady || !db || !profile) return;
-
-        db.collection(COLLECTION_PROFILES).doc(profile.id).set({
-            name: profile.name,
-            avatar: profile.avatar,
-            description: profile.description || '',
-            favoriteGame: profile.favoriteGame || '',
-            nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true })
-            .catch(err => console.error('[PiolaChat] Error sincronizando perfil:', err));
-    };
+    /* Eliminado _syncProfileToFirestore: unificado en _updatePresence */
 
     // =========================================================================
     // HELPERS DE JUEGOS
@@ -467,7 +450,6 @@ const PiolaChat = (() => {
         };
 
         _saveProfile(newProfile);
-        _syncProfileToFirestore();
 
         document.getElementById('piolaChatSetup').classList.remove('active');
 
@@ -486,7 +468,7 @@ const PiolaChat = (() => {
         if (!modal || !container) return;
 
         const isOwn = profile && userId === profile.id;
-        const presence = presenceMap.get(userId);
+        const presence = userMap.get(userId);
 
         const data = isOwn ? {
             name: profile.name,
@@ -683,10 +665,6 @@ const PiolaChat = (() => {
         const name = document.getElementById('profileEditName').value.trim();
         if (!name) return;
 
-        const oldName = profile.name;
-        const oldAvatar = profile.avatar;
-        const oldNameColor = profile.nameColor;
-
         const avatarUrl = document.getElementById('profileEditAvatarUrl').value.trim();
         const avatar = avatarUrl || _defaultAvatar(name);
         const nameColor = document.getElementById('profileEditNameColor').value || DEFAULT_NAME_COLOR;
@@ -702,51 +680,8 @@ const PiolaChat = (() => {
 
         _saveProfile(updatedProfile);
         _updatePresence(true);
-        _syncProfileToFirestore();
-
-        // Si algo visual cambió, actualizar todo el historial
-        const changed = oldName !== name || oldAvatar !== avatar || oldNameColor !== nameColor;
-        if (changed) {
-            _updateHistoryMessages(profile.id, name, avatar, nameColor);
-        }
 
         _closeProfileModal();
-    };
-
-    /** Actualiza nombre/avatar/color en TODOS los mensajes anteriores (batch) */
-    const _updateHistoryMessages = async (userId, newName, newAvatar, newColor) => {
-        if (!isReady || !db) return;
-
-        try {
-            const snapshot = await db.collection(COLLECTION_MESSAGES)
-                .where('authorId', '==', userId)
-                .get();
-
-            if (snapshot.empty) return;
-
-            const batchSize = 500;
-            let batch = db.batch();
-            let count = 0;
-
-            snapshot.forEach(doc => {
-                batch.update(doc.ref, {
-                    author: newName,
-                    avatar: newAvatar,
-                    nameColor: newColor
-                });
-                count++;
-
-                if (count % batchSize === 0) {
-                    batch.commit();
-                    batch = db.batch();
-                }
-            });
-
-            await batch.commit();
-            console.info(`[PiolaChat] Historial actualizado: ${count} mensajes`);
-        } catch (err) {
-            console.error('[PiolaChat] Error actualizando historial:', err);
-        }
     };
 
     const _closeProfileModal = () => {
@@ -761,7 +696,7 @@ const PiolaChat = (() => {
         if (!isReady || !db) return;
 
         if (unsubMessages) unsubMessages();
-        if (unsubPresence) unsubPresence();
+        if (unsubUsers) unsubUsers();
 
         // Listener de mensajes
         unsubMessages = db.collection(COLLECTION_MESSAGES)
@@ -791,14 +726,14 @@ const PiolaChat = (() => {
                 console.error('[PiolaChat] Error en listener de mensajes:', err);
             });
 
-        // Listener de presencia
-        unsubPresence = db.collection(COLLECTION_PRESENCE)
+        // Listener de usuarios (presencia y perfiles unificados)
+        unsubUsers = db.collection(COLLECTION_USERS)
             .onSnapshot((snapshot) => {
-                presenceMap.clear();
+                userMap.clear();
                 let onlineCount = 0;
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    presenceMap.set(doc.id, data);
+                    userMap.set(doc.id, data);
                     if (data.online) onlineCount++;
                 });
                 const countEl = document.getElementById('chatOnlineCount');
@@ -806,7 +741,7 @@ const PiolaChat = (() => {
                     countEl.textContent = onlineCount > 0 ? `${onlineCount} online` : '';
                 }
             }, (err) => {
-                console.error('[PiolaChat] Error en listener de presencia:', err);
+                console.error('[PiolaChat] Error en listener de usuarios:', err);
             });
     };
 
@@ -823,21 +758,24 @@ const PiolaChat = (() => {
             return;
         }
 
-        const presence = presenceMap.get(msg.authorId);
+        const presence = userMap.get(msg.authorId);
         const isOnline = presence?.online || false;
-        const nameColor = msg.nameColor || DEFAULT_NAME_COLOR;
+
+        // Datos del autor se toman de USERS para no duplicar en MESSAGES.
+        const nameColor = presence?.nameColor || msg.nameColor || DEFAULT_NAME_COLOR;
+        const avatarSrc = presence?.avatar || msg.avatar || _defaultAvatar('anon');
+        const authorName = presence?.name || msg.author || 'Anon';
 
         const div = document.createElement('div');
         div.className = 'chat-msg';
 
-        const avatarSrc = msg.avatar || _defaultAvatar('anon');
         const timeStr = msg.createdAt ? _formatTime(msg.createdAt.toDate()) : '';
 
-        // Contenido: GIF guardado como tal, o auto-detectar URL de imagen en texto
+        // Contenido
         let msgContentHtml;
-        if ((msg.type === 'gif' && msg.gifUrl) || _isImageUrl(msg.text)) {
-            const imgSrc = msg.gifUrl || msg.text;
-            msgContentHtml = `<img class="msg-gif" src="${_escapeHtml(imgSrc)}" alt="GIF" loading="lazy">`;
+        if ((msg.type === 'media' && msg.mediaUrl) || (msg.type === 'gif' && msg.gifUrl) || _isImageUrl(msg.text)) {
+            const imgSrc = msg.mediaUrl || msg.gifUrl || msg.text;
+            msgContentHtml = `<img class="msg-gif" src="${_escapeHtml(imgSrc)}" alt="Media" loading="lazy">`;
         } else {
             msgContentHtml = `<div class="msg-text">${_escapeHtml(msg.text)}</div>`;
         }
@@ -850,7 +788,7 @@ const PiolaChat = (() => {
                 <div class="msg-author" data-userid="${_escapeHtml(msg.authorId || '')}"
                      style="color: ${_escapeHtml(nameColor)}">
                     <span class="status-dot ${isOnline ? 'online' : 'offline'}"></span>
-                    ${_escapeHtml(msg.author || 'Anon')}
+                    ${_escapeHtml(authorName)}
                     <span class="msg-time">${timeStr}</span>
                 </div>
                 ${msgContentHtml}
@@ -885,18 +823,14 @@ const PiolaChat = (() => {
 
         try {
             const msgData = {
-                author: profile.name,
                 authorId: profile.id,
-                avatar: profile.avatar,
-                nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
                 text: text.slice(0, MAX_MSG_LENGTH),
-                type: isImage ? 'gif' : 'message',
+                type: isImage ? 'media' : 'message',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            // Si es imagen, guardar la URL también en gifUrl
             if (isImage) {
-                msgData.gifUrl = text;
+                msgData.mediaUrl = text;
             }
 
             await db.collection(COLLECTION_MESSAGES).add(msgData);
@@ -911,16 +845,17 @@ const PiolaChat = (() => {
     const _updatePresence = (online) => {
         if (!isReady || !profile || !db) return;
 
-        db.collection(COLLECTION_PRESENCE).doc(profile.id).set({
+        db.collection(COLLECTION_USERS).doc(profile.id).set({
             name: profile.name,
             avatar: profile.avatar,
             description: profile.description || '',
             favoriteGame: profile.favoriteGame || '',
             nameColor: profile.nameColor || DEFAULT_NAME_COLOR,
             online: online,
-            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true })
-            .catch(err => console.error('[PiolaChat] Error actualizando presencia:', err));
+            .catch(err => console.error('[PiolaChat] Error actualizando usuario:', err));
     };
 
     // =========================================================================

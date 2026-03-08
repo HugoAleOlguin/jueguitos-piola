@@ -22,7 +22,8 @@ if (typeof window.ThemeGallery === 'undefined') {
             appId: "1:372800075568:web:80e91799d1340d1a85faf5"
         };
 
-        const FIRESTORE_COLLECTION = 'shared_themes';
+        const FIRESTORE_COLLECTION = 'themes';
+        const COLLECTION_USERS = 'users';
         const CHAT_PROFILE_KEY = 'piola_chat_profile';
 
         let db = null;
@@ -102,10 +103,8 @@ if (typeof window.ThemeGallery === 'undefined') {
 
             try {
                 await db.collection(FIRESTORE_COLLECTION).add({
+                    userId: profile.id,
                     name: preset.name,
-                    author: profile.name,
-                    authorId: profile.id,
-                    authorAvatar: profile.avatar || '',
                     bgUrl: preset.bgValue,
                     blur: preset.blur || '0',
                     themeColor: preset.themeColor || '#00f3ff',
@@ -188,6 +187,11 @@ if (typeof window.ThemeGallery === 'undefined') {
             grid.innerHTML = '<div class="gallery-status-msg"><span class="gallery-spinner"></span> Cargando temas...</div>';
 
             try {
+                // Fetch profiles dict for dynamic linking (avoids duplication)
+                const usersSnap = await db.collection(COLLECTION_USERS).get();
+                const usersDict = {};
+                usersSnap.forEach(d => usersDict[d.id] = d.data());
+
                 const snapshot = await db.collection(FIRESTORE_COLLECTION).orderBy('createdAt', 'desc').get();
                 if (snapshot.empty) {
                     grid.innerHTML = '<div class="gallery-status-msg">No hay temas compartidos todavía. ¡Sé el primero!</div>';
@@ -199,6 +203,11 @@ if (typeof window.ThemeGallery === 'undefined') {
 
                 snapshot.forEach(doc => {
                     const theme = { id: doc.id, ...doc.data() };
+                    // Resolve author from usersDict
+                    const authorInfo = usersDict[theme.userId];
+                    theme._authorName = authorInfo?.name || 'Anon';
+                    theme._authorAvatar = authorInfo?.avatar || `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(theme.userId || 'anon')}`;
+
                     const card = _buildRemoteCard(theme, myId);
                     grid.appendChild(card);
                 });
@@ -209,16 +218,17 @@ if (typeof window.ThemeGallery === 'undefined') {
         };
 
         const _buildRemoteCard = (theme, myId) => {
-            // Determinar si el tema es mío comparando por authorId
-            const isOwn = theme.authorId === myId && myId !== '';
+            // Determinar si el tema es mío comparando por userId
+            const isOwn = theme.userId === myId && myId !== '';
             const card = document.createElement('div');
             card.className = 'remote-theme-card';
 
             const ownBadge = isOwn ? '<span class="remote-theme-own-badge">Mío</span>' : '';
             const deleteBtnHtml = isOwn ? '<button class="btn-delete-remote-theme" title="Borrar">✕</button>' : '';
 
-            // Avatar del autor (usa el guardado en el tema, o default)
-            const authorAvatar = theme.authorAvatar || `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(theme.author || 'anon')}`;
+            // Avatar y nombre dinámico
+            const authorAvatar = theme._authorAvatar;
+            const authorName = theme._authorName;
 
             card.innerHTML = `
                 <div class="remote-theme-preview" style="background-image: url('${theme.bgUrl}')">
@@ -230,7 +240,7 @@ if (typeof window.ThemeGallery === 'undefined') {
                     <div class="remote-theme-author">
                         <img src="${authorAvatar}" alt=""
                              onerror="this.style.display='none'">
-                        ${theme.author || 'Anon'}
+                        ${authorName}
                     </div>
                     <div class="remote-theme-actions">
                         <button class="btn-apply-theme">Aplicar</button>
