@@ -5,12 +5,12 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     const loadedScripts = new Set();
-    
+
     const loadScript = (src) => {
         if (loadedScripts.has(src) || document.querySelector(`script[src="${src}"]`)) return;
-        
+
         const script = document.createElement('script');
         script.src = src;
         script.async = true;
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadScript('assets/js/gamedle.js');
             loadScript('assets/js/versus.js');
         };
-        
+
         btnMiniGames.addEventListener('mouseenter', loadMiniGames, { once: true });
         btnMiniGames.addEventListener('touchstart', loadMiniGames, { once: true });
         btnMiniGames.addEventListener('click', loadMiniGames);
@@ -39,15 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadAchievements = () => {
             loadScript('assets/js/achievements.js');
         };
-        
+
         btnAchievements.addEventListener('mouseenter', loadAchievements, { once: true });
         btnAchievements.addEventListener('touchstart', loadAchievements, { once: true });
     }
 
-    // 3. Deferred Scripts (Achievements globales y Free Games)
+    // 3. Deferred Scripts (Free Games)
     // Se cargan cuando hay tiempo inactivo para no estorbar a Firebase
     const loadIdleScripts = () => {
-        loadScript('assets/js/achievements.js');
         loadScript('assets/js/free-games.js');
     };
 
