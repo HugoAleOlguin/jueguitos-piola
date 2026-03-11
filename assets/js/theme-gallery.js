@@ -322,6 +322,31 @@ if (typeof window.ThemeGallery === 'undefined') {
     })();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.ThemeGallery) window.ThemeGallery.init();
+// Esperar a que Firebase esté disponible
+const waitForGalleryFirebase = () => {
+    return new Promise((resolve) => {
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            resolve();
+        } else {
+            const check = setInterval(() => {
+                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                    clearInterval(check);
+                    resolve();
+                }
+            }, 100);
+            setTimeout(() => {
+                clearInterval(check);
+                resolve();
+            }, 5000);
+        }
+    });
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await waitForGalleryFirebase();
+    // Inicializar ThemeGallery solo si el usuario tiene perfil
+    const profile = JSON.parse(localStorage.getItem('piola_chat_profile') || 'null');
+    if (profile && window.ThemeGallery) {
+        window.ThemeGallery.init();
+    }
 });

@@ -968,6 +968,29 @@ const PiolaChat = (() => {
 
 })();
 
-document.addEventListener('DOMContentLoaded', () => {
+// Esperar a que Firebase esté disponible antes de inicializar
+const waitForFirebase = () => {
+    return new Promise((resolve) => {
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            resolve();
+        } else {
+            // Retry hasta que Firebase esté disponible
+            const check = setInterval(() => {
+                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                    clearInterval(check);
+                    resolve();
+                }
+            }, 100);
+            // Timeout después de 5 segundos
+            setTimeout(() => {
+                clearInterval(check);
+                resolve();
+            }, 5000);
+        }
+    });
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await waitForFirebase();
     setTimeout(() => PiolaChat.init(), 500);
 });
