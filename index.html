@@ -14,6 +14,11 @@
             }
         });
     </script>
+
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com;">
+
     <!-- SEO Meta Tags -->
     <meta name="description"
         content="Descarga los mejores juegos cooperativos, de terror y party para jugar con amigos. Enlaces directos, sin publicidad molesta y con tutoriales de instalación.">
@@ -39,34 +44,94 @@
     <meta property="twitter:image" content="https://hugoaleolguin.github.io/jueguitos-piola/favicon.png">
 
     <link rel="canonical" href="https://hugoaleolguin.github.io/jueguitos-piola/">
-    
+
     <!-- Critical CSS Inline -->
     <style id="critical-css">
         :root {
-            --bg-color: #020202; --text-color: #d0d0d0;
-            --primary-color: #00f3ff; --secondary-color: #bc13fe;
-            --glass-bg: rgba(255, 255, 255, 0.025); --glass-border: rgba(255, 255, 255, 0.06);
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; --font-display: 'Orbitron', sans-serif;
-            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --bg-color: #020202;
+            --text-color: #d0d0d0;
+            --primary-color: #00f3ff;
+            --secondary-color: #bc13fe;
+            --glass-bg: rgba(255, 255, 255, 0.025);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-display: 'Orbitron', sans-serif;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main);
-            overflow-x: hidden; min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
             background-image: radial-gradient(ellipse at 5% 15%, rgba(188, 19, 254, 0.14) 0%, transparent 38%), radial-gradient(ellipse at 95% 85%, rgba(0, 243, 255, 0.14) 0%, transparent 38%);
         }
-        body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(circle, rgba(255, 255, 255, 0.035) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; z-index: 0; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem; background: rgba(0, 0, 0, 0.7); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; }
-        .logo { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--primary-color); }
-        main { padding: 3rem 4rem; max-width: 1600px; margin: 0 auto; min-height: calc(100vh - 200px); }
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto; }
-        @media (min-width: 1000px) { .games-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4rem;
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        main {
+            padding: 3rem 4rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: calc(100vh - 200px);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1000px) {
+            .games-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
     </style>
 
     <!-- Asynchronous CSS Loading -->
     <link rel="preload" href="assets/css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="assets/css/style.css"></noscript>
-    
+    <noscript>
+        <link rel="stylesheet" href="assets/css/style.css">
+    </noscript>
+
     <link rel="stylesheet" href="assets/css/features/gamedle.css">
     <link rel="stylesheet" href="assets/css/features/minigames-modal.css">
     <link rel="stylesheet" href="assets/css/features/theme-gallery.css">
@@ -76,16 +141,25 @@
     <!-- Google Fonts: Optimizado con font-display swap y preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         /* Fallback mientras carga la fuente */
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        .logo { font-family: 'Orbitron', sans-serif; }
-        body { font-family: 'Roboto', sans-serif; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
     </style>
     <!-- Preload Fondo Guardado y Tema -->
     <script>
-        (function() {
+        (function () {
             try {
                 var bgType = localStorage.getItem('jueguitos_settings_bg_type');
                 if (bgType === 'url') {
@@ -102,7 +176,7 @@
                 if (color) {
                     document.documentElement.style.setProperty('--primary-color', color);
                 }
-            } catch(e) {}
+            } catch (e) { }
         })();
     </script>
     <!-- Lucide Icons -->
@@ -319,6 +393,16 @@
                 <div style="flex: 1;"></div>
                 <!-- Links del autor — ocultos en mobile para ahorrar espacio -->
                 <div class="settings-author-links settings-hide-mobile">
+                    <a href="pages/admin.html" class="author-link" title="Panel de Administración"
+                        style="opacity: 0.7;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        <span>Admin</span>
+                    </a>
                     <a href="https://github.com/HugoAleOlguin/jueguitos-piola" target="_blank" rel="noopener noreferrer"
                         class="author-link" title="Ver repositorio en GitHub">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -376,7 +460,7 @@
 
     <footer>
         <p>&copy; 2026 Jueguitos Piola. <a href="pages/admin.html"
-                style="color: inherit; text-decoration: none; opacity: 0.2; margin-left: 10px;" title="π">π</a></p>
+                style="color: inherit; text-decoration: none; opacity: 0.4; margin-left: 10px;" title="Admin">⚙️</a></p>
     </footer>
 
     <!-- Modal Versus -->
@@ -563,12 +647,12 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                .then(registration => {
-                    console.log('SW Piola activado: ', registration.scope);
-                })
-                .catch(err => {
-                    console.warn('SW falló (ignorar si es entorno local sin https): ', err);
-                });
+                    .then(registration => {
+                        console.log('SW Piola activado: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.warn('SW falló (ignorar si es entorno local sin https): ', err);
+                    });
             });
         }
     </script>
