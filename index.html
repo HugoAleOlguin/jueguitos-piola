@@ -46,12 +46,16 @@
     <link rel="stylesheet" href="assets/css/features/piola-chat.css">
     <link rel="stylesheet" href="assets/css/pages/free-games.css">
     <link rel="icon" href="favicon.png">
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Optimizado con font-display swap y preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Fallback mientras carga la fuente */
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .logo { font-family: 'Orbitron', sans-serif; }
+        body { font-family: 'Roboto', sans-serif; }
+    </style>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <!-- Botón Configuración Avanzada -->
@@ -501,16 +505,11 @@
         </div>
     </noscript>
 
-    <!-- Scripts -->
-    <script src="assets/js/theme.js"></script>
-    <script src="assets/js/games.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script src="assets/js/settings.js"></script>
-    <!-- Firebase SDK (compat) para ThemeGallery -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="assets/js/theme-gallery.js"></script>
-    <script src="assets/js/piola-chat.js"></script>
+    <!-- Firebase SDK (compat) con defer -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
+    <script src="assets/js/theme-gallery.js" defer></script>
+    <script src="assets/js/piola-chat.js" defer></script>
     <!-- Inicializa los iconos Lucide una vez que el DOM está completo -->
     <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
 </body>
