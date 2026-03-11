@@ -39,7 +39,34 @@
     <meta property="twitter:image" content="https://hugoaleolguin.github.io/jueguitos-piola/favicon.png">
 
     <link rel="canonical" href="https://hugoaleolguin.github.io/jueguitos-piola/">
-    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Critical CSS Inline -->
+    <style id="critical-css">
+        :root {
+            --bg-color: #020202; --text-color: #d0d0d0;
+            --primary-color: #00f3ff; --secondary-color: #bc13fe;
+            --glass-bg: rgba(255, 255, 255, 0.025); --glass-border: rgba(255, 255, 255, 0.06);
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; --font-display: 'Orbitron', sans-serif;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main);
+            overflow-x: hidden; min-height: 100vh;
+            background-image: radial-gradient(ellipse at 5% 15%, rgba(188, 19, 254, 0.14) 0%, transparent 38%), radial-gradient(ellipse at 95% 85%, rgba(0, 243, 255, 0.14) 0%, transparent 38%);
+        }
+        body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(circle, rgba(255, 255, 255, 0.035) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; z-index: 0; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem; background: rgba(0, 0, 0, 0.7); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; }
+        .logo { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--primary-color); }
+        main { padding: 3rem 4rem; max-width: 1600px; margin: 0 auto; min-height: calc(100vh - 200px); }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto; }
+        @media (min-width: 1000px) { .games-grid { grid-template-columns: repeat(3, 1fr); } }
+    </style>
+
+    <!-- Asynchronous CSS Loading -->
+    <link rel="preload" href="assets/css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="assets/css/style.css"></noscript>
+    
     <link rel="stylesheet" href="assets/css/features/gamedle.css">
     <link rel="stylesheet" href="assets/css/features/minigames-modal.css">
     <link rel="stylesheet" href="assets/css/features/theme-gallery.css">
@@ -531,6 +558,20 @@
     <script src="assets/js/piola-chat.js" defer></script>
     <!-- Inicializa los iconos Lucide una vez que el DOM está completo -->
     <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
+    <!-- Registro de Service Worker para caché offline estricta -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW Piola activado: ', registration.scope);
+                })
+                .catch(err => {
+                    console.warn('SW falló (ignorar si es entorno local sin https): ', err);
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>
