@@ -1,40 +1,4 @@
-# Node
-node_modules/
-
-# sistema
-.DS_Store
-Thumbs.db
-*.log
-
-# configuración local
-package-lock.json
-package.json
-
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# temporales
-*.tmp
-*.temp
-
-# build
-dist/
-build/
-
-#caché
-.cache/
-.parcel-cache/
-
-# Backups
-*-backup.json
-links-backup.json
-
-# Archivos sensibles
-*.env
-.env*
-secrets/
-
+.agent
+checklist_output.txt
+plan.md
 logros.txt
-.agent/
