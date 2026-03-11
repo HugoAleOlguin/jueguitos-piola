@@ -1,6 +1,7 @@
 .agent
 checklist_output.txt
 plan.md
+plan-organizacion.md
 logros.txt
 links-backup.json
 security-audit.js
