@@ -1,60 +1,99 @@
 /**
- * Admin Panel Logic
- * Author: Hugo Ale Olguin
+ * ============================================================
+ * ADMIN PANEL - JUEGUITOS PIOLA
+ * ============================================================
+ * Panel de administración para gestionar juegos
+ * 
+ * Funciones principales:
+ * - Login con contraseña (159 159)
+ * - CRUD de juegos (crear, leer, actualizar, eliminar)
+ * - Subir cambios a GitHub via API
+ * - Token de GitHub con opción "recordar por 7 días"
+ * 
+ * Seguridad:
+ * - Contraseña hasheada con SHA-256
+ * - Token en sessionStorage (se borra al cerrar navegador)
+ * - Opcional: token en localStorage con expiry de 7 días
+ * 
+ * @author Hugo Ale Olguin
  */
 
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
+
 const CONFIG = {
+    // Repo de GitHub
     REPO_OWNER: 'HugoAleOlguin',
     REPO_NAME: 'jueguitos-piola',
     FILE_PATH: 'assets/js/games.js',
     VERSION_PATH: 'assets/data/version.json',
     BRANCH: 'gh-pages',
+
+    // Contraseña: "159 159" hasheada con SHA-256
+    // NO cambiar este hash a menos que cambie la contraseña
     PASSWORD_HASH: '8f03db6b63d7319da347b6feebe9999cbab2d234b997dfdc39998482018153ba'
 };
 
-// State
+// ============================================================
+// ESTADO DE LA APP
+// ============================================================
+
 let state = {
-    games: [],
-    pendingChanges: [],
-    originalSha: null,
+    games: [],           // Lista de juegos cargados desde GitHub
+    pendingChanges: [],  // Cambios sin guardar
+    originalSha: null,   // SHA del archivo original (para actualizar)
     isAuthenticated: false,
-    editingIndex: null
+    editingIndex: null   // Índice del juego que se está editando
 };
 
-// =============================================================================
-// AUTHENTICATION
-// =============================================================================
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
 
 async function init() {
-    // Check Session
+    // ¿Ya está logueado en esta sesión?
     if (sessionStorage.getItem('adminAuth') === 'true') {
         showAdminPanel();
     } else {
+        // Mostrar pantalla de login
         document.getElementById('loginScreen').classList.remove('hidden');
     }
 
-    // Enter key support
+    // Soporte para tecla Enter en password
     document.getElementById('passwordInput').addEventListener('keyup', (e) => {
         if (e.key === 'Enter') login();
     });
 
-    // Sidebar navigation
+    // Navegación del sidebar
     document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-            switchTab(item.dataset.tab);
-        });
+        item.addEventListener('click', () => switchTab(item.dataset.tab));
     });
 
-    // Initial Load
+    // Carga inicial
     loadTags();
-    resetForm(); // Ensure default state with one button
+    resetForm();
+}
+if (state.isAuthenticated) {
+    showAdminPanel();
+} else {
+    document.getElementById('loginScreen').classList.remove('hidden');
 }
 
+// ============================================================
+// AUTENTICACIÓN
+// ============================================================
+
+/**
+ * Verifica la contraseña del admin
+ * Contraseña: 159 159
+ */
 async function login() {
     const input = document.getElementById('passwordInput').value;
     const hash = await sha256(input);
 
     if (hash === CONFIG.PASSWORD_HASH) {
+        // Guardar flag de sesión
         sessionStorage.setItem('adminAuth', 'true');
         showAdminPanel();
     } else {
@@ -63,17 +102,29 @@ async function login() {
     }
 }
 
+/**
+ * Cierra la sesión y recarga la página
+ */
 function logout() {
     sessionStorage.removeItem('adminAuth');
+    sessionStorage.removeItem('githubToken');
     location.reload();
 }
 
+/**
+ * Muestra el panel de admin después del login
+ */
 function showAdminPanel() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('appContainer').style.display = 'block';
     checkToken();
 }
 
+/**
+ * Hashea un string con SHA-256
+ * @param {string} message - String a hashear
+ * @returns {string} Hash en hex
+ */
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -81,31 +132,95 @@ async function sha256(message) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// =============================================================================
-// GITHUB API INTERACTION
-// =============================================================================
+// ============================================================
+// GITHUB API - TOKEN
+// ============================================================
 
+/**
+ * Obtiene el token de GitHub
+ * Busca primero en sessionStorage (sesión actual)
+ * Si no está, busca en localStorage con expiry de 7 días
+ */
 function getToken() {
-    return localStorage.getItem('githubToken');
+    // 1. Verificar sessionStorage (prioridad)
+    const sessionToken = sessionStorage.getItem('githubToken');
+    if (sessionToken) return sessionToken;
+
+    // 2. Verificar localStorage con expiry
+    const stored = localStorage.getItem('githubTokenWithExpiry');
+    if (stored) {
+        try {
+            const data = JSON.parse(stored);
+            if (data.expiry > Date.now()) {
+                // Restaurar a sessionStorage para esta sesión
+                sessionStorage.setItem('githubToken', data.token);
+                return data.token;
+            } else {
+                // Expirado, borrar
+                localStorage.removeItem('githubTokenWithExpiry');
+            }
+        } catch (e) {
+            localStorage.removeItem('githubTokenWithExpiry');
+        }
+    }
+
+    return null;
 }
 
+/**
+ * Guarda el token de GitHub
+ * @param {boolean} remember - Si true, guarda por 7 días en localStorage
+ */
+function saveToken(remember = false) {
+    const inputModal = document.getElementById('tokenInput');
+    const inputSettings = document.getElementById('tokenSettingsInput');
+    const token = (inputModal?.value.trim() || inputSettings?.value.trim() || '');
+
+    if (!token) {
+        showToast('Ingresa un token válido', 'error');
+        return;
+    }
+
+    // Siempre guardar en sessionStorage
+    sessionStorage.setItem('githubToken', token);
+
+    // Si pidió recordar, guardar en localStorage con expiry de 7 días
+    if (remember) {
+        const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
+        localStorage.setItem('githubTokenWithExpiry', JSON.stringify({
+            token: token,
+            expiry: expiry
+        }));
+        showToast('Token guardado por 7 días', 'success');
+    }
+
+    // Ocultar modales y cargar datos
+    const tokenModal = document.getElementById('tokenModal');
+    if (tokenModal) tokenModal.classList.add('hidden');
+
+    loadData();
+}
+
+/**
+ * Verifica si hay token disponible
+ */
 function checkToken() {
     if (!getToken()) {
-        document.getElementById('tokenModal').classList.remove('hidden');
+        const tokenModal = document.getElementById('tokenModal');
+        if (tokenModal) tokenModal.classList.remove('hidden');
     } else {
         loadData();
     }
 }
 
-function saveToken() {
-    const token = document.getElementById('tokenInput').value.trim() || document.getElementById('tokenSettingsInput').value.trim();
-    if (token) {
-        localStorage.setItem('githubToken', token);
-        document.getElementById('tokenModal').classList.add('hidden');
-        loadData();
-    }
-}
+// ============================================================
+// CARGAR / GUARDAR DATOS
+// ============================================================
 
+/**
+ * Carga los juegos desde GitHub
+ * Descarga el archivo games.js y lo parsea
+ */
 async function loadData() {
     try {
         setLoading(true);
@@ -145,22 +260,29 @@ async function fetchFile(path) {
     return await response.json();
 }
 
+// ============================================================
+// SUBIR CAMBIOS A GITHUB
+// ============================================================
+
+/**
+ * Envía los cambios pendientes a GitHub
+ * Usa GitHub API para crear un commit
+ */
 async function commitChanges() {
     if (state.pendingChanges.length === 0) return;
 
     try {
         setLoading(true, 'Sincronizando con GitHub...');
 
-        // 1. Get HEAD Ref
+        // 1. Obtener referencia del branch actual
         const refData = await fetchAPI(`git/refs/heads/${CONFIG.BRANCH}`);
         const latestCommitSha = refData.object.sha;
 
-        // 2. Get Tree of HEAD
+        // 2. Obtener el tree del último commit
         const commitData = await fetchAPI(`git/commits/${latestCommitSha}`);
         const baseTreeSha = commitData.tree.sha;
 
-        // 3. Prepare Blobs (Content)
-        // Custom Serializer for Compact Games Data
+        // 3. Preparar el contenido (serializar juegos)
         function serializeGames(games) {
             const lines = games.map(game => {
                 let props = [];
@@ -894,122 +1016,8 @@ function handleRestore(input) {
         }
     };
     reader.readAsText(file);
-    input.value = ''; // Reset
+    input.value = '';
 }
 
-function clearCache() {
-    if (confirm('¿Borrar credenciales y caché local? Tendrás que iniciar sesión de nuevo.')) {
-        localStorage.removeItem('githubToken');
-        sessionStorage.removeItem('adminAuth');
-        location.reload();
-    }
-}
-
-// =============================================================================
-// ADMIN TOOLS (HEALTH & STATS)
-// =============================================================================
-
-// --- Improved Health Check ---
-async function runHealthCheck() {
-    const output = document.getElementById('toolsOutput');
-    output.classList.remove('hidden');
-    output.innerHTML = '<span style="color:var(--warning)">⏳ Iniciando escaneo profundo...</span><br>';
-
-    let issues = 0;
-    const seenIds = new Set();
-    const checks = [];
-
-    // 1. Scan Duplicates & Empty Data
-    state.games.forEach((game, idx) => {
-        // Check Duplicates
-        if (seenIds.has(game.id)) {
-            output.innerHTML += `<span style="color:var(--danger)">[ID DUPLICADO]</span> ${game.id} (en "${game.title}")<br>`;
-            issues++;
-        }
-        seenIds.add(game.id);
-
-        // Check Mandatory Fields
-        if (!game.id || !game.title) {
-            output.innerHTML += `<span style="color:var(--danger)">[DATA CRITICA]</span> Juego #${idx} sin ID o Título<br>`;
-            issues++;
-        }
-
-        // Check Links
-        if (!game.downloadUrl && (!game.buttons || game.buttons.length === 0)) {
-            output.innerHTML += `<span style="color:var(--warning)">[SIN LINKS]</span> ${game.title}<br>`;
-            issues++;
-        }
-
-        // 2. Queue Image Check
-        if (game.image) {
-            checks.push(checkImage(game.image).then(ok => {
-                if (!ok) {
-                    output.innerHTML += `<span style="color:var(--danger)">[IMG ROTA]</span> ${game.title}<br>`;
-                    issues++;
-                }
-            }));
-        } else {
-            output.innerHTML += `<span style="color:var(--text-muted)">[SIN IMG]</span> ${game.title}<br>`;
-            issues++; // Count as minor issue
-        }
-    });
-
-    await Promise.all(checks);
-
-    if (issues === 0) {
-        output.innerHTML += '<br><span style="color:var(--success)">✅ Sistema Impecable. 0 Errores.</span>';
-    } else {
-        output.innerHTML += `<br><span style="color:var(--text-main)">Escaneo completo. <strong>${issues} incidencias detectadas.</strong></span>`;
-    }
-}
-
-function checkImage(url) {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = url;
-    });
-}
-
-function showStats() {
-    const output = document.getElementById('toolsOutput');
-    output.classList.remove('hidden');
-
-    const total = state.games.length;
-    const tagsCount = {};
-    let noImg = 0;
-    let noDesc = 0;
-
-    state.games.forEach(g => {
-        if (!g.image) noImg++;
-        if (!g.description) noDesc++;
-        if (g.tags) {
-            g.tags.forEach(t => {
-                tagsCount[t] = (tagsCount[t] || 0) + 1;
-            });
-        }
-    });
-
-    // Top Tags
-    const topTags = Object.entries(tagsCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 8) // Top 8
-        .map(([t, c]) => `<span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px">${t}: ${c}</span>`)
-        .join(' ');
-
-    output.innerHTML = `
-        <strong style="color:var(--primary)">📊 ESTADÍSTICAS DEL CATÁLOGO</strong><br>
-        <div style="display:grid; grid-template-columns:1fr 1fr; margin-top:8px; gap:8px">
-            <div>Total Juegos: <strong>${total}</strong></div>
-            <div>Sin Imagen: <strong style="color:${noImg > 0 ? 'var(--warning)' : 'inherit'}">${noImg}</strong></div>
-            <div>Sin Descripción: <strong>${noDesc}</strong></div>
-        </div>
-        <div style="margin-top:10px">
-            <strong>Etiquetas Populares:</strong><br>
-            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px">${topTags}</div>
-        </div>
-    `;
-}
-
+// Iniciar app cuando el DOM esté listo
 window.addEventListener('DOMContentLoaded', init);

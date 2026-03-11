@@ -905,98 +905,32 @@
                 <div id="settingsView" class="view-section hidden">
                     <!-- GitHub Token -->
                     <div class="form-section">
-                        <h2>🔑 Credenciales</h2>
-                        <p class="text-sm" style="margin-bottom:1rem">Token necesario para guardar
-                            cambios en GitHub.
-                        </p>
+                        <h2>🔑 Token de GitHub</h2>
+                        <p class="text-sm" style="margin-bottom:1rem">Necesario para guardar cambios.</p>
                         <div class="form-group">
                             <input type="password" id="tokenSettingsInput" class="input-field" placeholder="ghp_..."
-                                aria-label="Token de GitHub">
+                                aria-label="Token de GitHub" onkeydown="if(event.key==='Enter')saveToken(document.getElementById('rememberTokenSettings').checked)">
                         </div>
-                        <button onclick="saveToken()" class="btn btn-primary">Actualizar
-                            Token</button>
+                        <label style="display:flex; align-items:center; gap:8px; margin-bottom:1rem; cursor:pointer;">
+                            <input type="checkbox" id="rememberTokenSettings" style="width:18px; height:18px;">
+                            <span style="color:#aaa; font-size:0.9rem;">Recordar por 7 días</span>
+                        </label>
+                        <button onclick="saveToken(document.getElementById('rememberTokenSettings').checked)" class="btn btn-primary">Guardar Token</button>
                     </div>
 
-                    <!-- Tools Section -->
+                    <!-- Backup -->
                     <div class="form-section">
-                        <h2>🛠️ Herramientas de Mantenimiento</h2>
-                        <div class="form-row" style="margin-top:1rem; grid-template-columns: 1fr 1fr;">
-                            <!-- Health Check -->
-                            <div>
-                                <h3>
-                                    🔍 Diagnóstico
-                                </h3>
-                                <p class="text-sm" style="margin-bottom:10px">Busca imágenes rotas y
-                                    enlaces vacíos.</p>
-                                <button onclick="runHealthCheck()" class="btn btn-ghost">
-                                    Ejecutar Diagnóstico
-                                </button>
+                        <h2>💾 Backup</h2>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <div style="flex: 1;">
+                                <p class="text-sm" style="margin-bottom:0.5rem">Descargar copia</p>
+                                <button onclick="downloadBackup()" class="btn btn-ghost">⬇️ Descargar</button>
                             </div>
-
-                            <!-- Stats -->
-                            <div>
-                                <h3>
-                                    📊 Estadísticas
-                                </h3>
-                                <p class="text-sm" style="margin-bottom:10px">Ver resumen del
-                                    catálogo.</p>
-                                <button onclick="showStats()" class="btn btn-ghost">
-                                    Ver Reporte
-                                </button>
+                            <div style="flex: 1;">
+                                <p class="text-sm" style="margin-bottom:0.5rem">Restaurar desde archivo</p>
+                                <input type="file" id="restoreInput" style="display:none" onchange="handleRestore(this)" accept=".json">
+                                <button onclick="document.getElementById('restoreInput').click()" class="btn btn-ghost">⬆️ Subir</button>
                             </div>
-                        </div>
-                        <!-- Console Output for Tools -->
-                        <div id="toolsOutput" class="hidden"
-                            style="margin-top:1rem; background:rgba(0,0,0,0.3); padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem; max-height:200px; overflow-y:auto; border:1px solid var(--border)">
-                        </div>
-                    </div>
-
-                    <!-- Data Management -->
-                    <div class="form-section">
-                        <h2>💾 Gestión de Datos</h2>
-                        <div class="form-row" style="margin-top:1rem">
-                            <div>
-                                <h3>
-                                    Copia de Seguridad
-                                </h3>
-                                <p class="text-sm" style="margin-bottom:10px">Descarga todo el
-                                    catálogo en formato JSON.
-                                </p>
-                                <button onclick="downloadBackup()" class="btn btn-ghost">
-                                    ⬇️ Descargar Backup
-                                </button>
-                            </div>
-                            <div>
-                                <h3>
-                                    Restaurar Datos
-                                </h3>
-                                <p class="text-sm" style="margin-bottom:10px">Importar un archivo
-                                    JSON (Sobrescribe
-                                    todo).</p>
-                                <input type="file" id="restoreInput" style="display:none" onchange="handleRestore(this)"
-                                    aria-label="Seleccionar archivo de respaldo">
-                                <button onclick="document.getElementById('restoreInput').click()" class="btn btn-ghost">
-                                    ⬆️ Subir Archivo
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Danger Zone -->
-                    <div class="form-section"
-                        style="border-color: rgba(255, 71, 87, 0.3); background: rgba(255, 71, 87, 0.05);">
-                        <h2 style="color:var(--danger)">⚠️ Zona de Peligro</h2>
-                        <p class="text-sm" style="margin-bottom:1rem">Acciones destructivas o de
-                            cierre de sesión.</p>
-
-                        <div style="display:flex; gap:10px; flex-wrap:wrap">
-                            <button onclick="clearCache()" class="btn btn-danger">
-                                🗑️ Borrar Caché Local
-                            </button>
-                            <button onclick="logout()" class="btn btn-ghost"
-                                style="color:var(--danger); border-color:var(--danger)">
-                                🚪 Cerrar Sesión Global
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1024,9 +958,12 @@
             <p style="margin: 1rem 0; color: #aaa;">Para administrar este sitio, necesitas un <strong>GitHub Personal
                     Access Token</strong> con permisos de "repo".</p>
             <input type="password" id="tokenInput" class="input-field" placeholder="Pega tu token aquí"
-                aria-label="Token de GitHub">
-            <br><br>
-            <button onclick="saveToken()" class="btn btn-primary">Guardar y Continuar</button>
+                aria-label="Token de GitHub" onkeydown="if(event.key==='Enter')saveToken(false)">
+            <label style="display:flex; align-items:center; gap:8px; margin:1rem 0; cursor:pointer;">
+                <input type="checkbox" id="rememberToken" style="width:18px; height:18px;">
+                <span style="color:#aaa; font-size:0.9rem;">Recordar por 7 días</span>
+            </label>
+            <button onclick="saveToken(document.getElementById('rememberToken').checked)" class="btn btn-primary">Guardar y Continuar</button>
         </div>
     </div>
 
