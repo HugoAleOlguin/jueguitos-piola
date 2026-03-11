@@ -56,6 +56,28 @@
         .logo { font-family: 'Orbitron', sans-serif; }
         body { font-family: 'Roboto', sans-serif; }
     </style>
+    <!-- Preload Fondo Guardado y Tema -->
+    <script>
+        (function() {
+            try {
+                var bgType = localStorage.getItem('jueguitos_settings_bg_type');
+                if (bgType === 'url') {
+                    var bgValue = localStorage.getItem('jueguitos_settings_bg_value');
+                    if (bgValue) {
+                        var link = document.createElement('link');
+                        link.rel = 'preload';
+                        link.as = 'image';
+                        link.href = bgValue;
+                        document.head.appendChild(link);
+                    }
+                }
+                var color = localStorage.getItem('jueguitos_settings_color');
+                if (color) {
+                    document.documentElement.style.setProperty('--primary-color', color);
+                }
+            } catch(e) {}
+        })();
+    </script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <!-- Botón Configuración Avanzada -->
@@ -455,11 +477,8 @@
     <script src="assets/js/app.js" defer></script>
     <script src="assets/js/theme.js?v=VOID" defer></script>
     <script src="assets/js/settings.js" defer></script>
-    <script src="assets/js/achievements.js" defer></script>
-    <script src="assets/js/versus.js" defer></script>
-    <script src="assets/js/gamedle.js" defer></script>
-    <script src="assets/js/minigames-modal.js" defer></script>
-    <script src="assets/js/free-games.js" defer></script>
+    <!-- Módulos no críticos cargados asíncronamente (Lazy Loader) -->
+    <script src="assets/js/lazy-loader.js" defer></script>
 
     <noscript>
         <div style="padding: 20px; text-align: center; color: white;">
