@@ -260,6 +260,15 @@ Historial de cambios estructurales y visuales del proyecto.
 - **Código muerto eliminado**: `status`, `currentGame`, `_detectCurrentGame()`, `_sendActivityEvent()`, `_getGameTitle()`, parámetro `gameName` de `_updatePresence()`.
 - **Tenor API eliminada**: Reemplazada por auto-detección de URLs, sin necesidad de API key ni setup.
 
+## [3.5.0] - 2026-03-11
+
+### Added
+- **Service Worker** (caché offline)
+- **Precarga de fondo** (optimización de rendimiento)
+
+### Changed
+- **Chat**: Se puso la fecha en los mensajes y se corrigio el problema de que no se mostraran los mensajes nuevos.
+
 ## Versiones Principales
 
 | Versión | Fecha | Cambio Principal |

@@ -15,7 +15,7 @@
 ## 🚀 Demo en vivo
 
 <p align="center">
-  <b>Versión 3.4 — SPA con Chat en Tiempo Real, Giveaways y Galería de Temas</b>
+  <b>Versión 3.5 — SPA con Chat en Tiempo Real, Regalos y Galería de Temas</b>
 </p>
 
 | 🟢 Sitio Oficial |
@@ -66,10 +66,11 @@ Esto es un side-project, así que avanzo a mi ritmo:
 - [x] **Perfil unificado** (chat + galería)
 - [x] **GIFs/Imágenes inline** (auto-detección de URLs)
 - [x] **Perfiles en Firestore** (editables desde consola)
+- [x] **Service Worker** (caché offline)
+- [x] **Precarga de fondo** (optimización de rendimiento)
 
 ### 🚧 Pendiente
 - [ ] Más easter eggs
-- [ ] Lazy loading para imágenes
 - [ ] Mejoras del chat
 - [ ] Mejor integracion de juegos gratis
 
@@ -86,9 +87,10 @@ Esto es un side-project, así que avanzo a mi ritmo:
       <b><a href="https://github.com/HugoAleOlguin">HugoAleOlguin</a></b><br>
       <i>Estudiante de Desarrollo de Software</i>
       <br><br>
-      Me gusta diseñar en CSS y optimizar la experiencia de usuario. Hago cosas sencillas pero funcionales.
+      Me gusta diseñar en CSS y optimizar la experiencia de usuario.
+      <br>
       Siempre estoy aprendiendo algo nuevo — Frontend, Backend, o jugando con el diseño.
-      <br><br>
+      <br>
       <ul>
         <li>🔗 <b>GitHub:</b> <a href="https://github.com/HugoAleOlguin">Perfil</a></li>
         <li>🛠️ <b>Tech:</b> HTML, CSS, JS, Cloudflare Workers.</li>
