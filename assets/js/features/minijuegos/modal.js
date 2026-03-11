@@ -14,13 +14,7 @@ let miniGamesModal = {
 };
 
 // Event Listeners para minijuegos
-document.addEventListener('DOMContentLoaded', () => {
-    // Botón abrir minijuegos
-    const btnMiniGames = document.getElementById('btnMiniGames');
-    if (btnMiniGames) {
-        btnMiniGames.addEventListener('click', () => miniGamesModal.open());
-    }
-    
+miniGamesModal.init = () => {
     // Botón cerrar modal minijuegos
     const closeBtn = document.getElementById('miniGamesCloseBtn');
     if (closeBtn) {
@@ -58,4 +52,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
+};

@@ -26,6 +26,8 @@
 
 /* === Features / Modales === */
 @import url('features/settings-modal.css');
+@import url('features/minigames-modal.css');
+@import url('features/gamedle.css');
 @import url('features/roulette.css');
 @import url('features/versus.css');
 @import url('features/achievements.css');

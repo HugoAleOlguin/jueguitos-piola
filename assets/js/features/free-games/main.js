@@ -3,19 +3,8 @@
     Sección de Giveaways usando GamerPower API (con CORS habilitado)
 */
 
-document.addEventListener('DOMContentLoaded', () => {
-    setupFreeGamesUI();
-
-    // Interceptar el logo para ocultar la vista si estamos en ella
-    const logo = document.querySelector('.logo');
-    if (logo) {
-        logo.addEventListener('click', () => {
-            closeFreeGamesView();
-        });
-    }
-});
-
-function setupFreeGamesUI() {
+// Exponer setup globalmente para que lazy-loader lo invoque
+window.setupFreeGamesUI = () => {
     // Inyectar el botón en el Nav
     const nav = document.querySelector('header nav');
     if (nav && !document.getElementById('btnFreeGames')) {
@@ -30,6 +19,14 @@ function setupFreeGamesUI() {
             history.pushState(null, '', '?view=juegos-gratis');
             openFreeGamesView();
         });
+    }
+
+    // Interceptar el logo para ocultar la vista si estamos en ella
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        // Avoid double binding if called multiple times by accident
+        logo.removeEventListener('click', closeFreeGamesView);
+        logo.addEventListener('click', closeFreeGamesView);
     }
 
     // Inyectar el contenedor en main si no existe

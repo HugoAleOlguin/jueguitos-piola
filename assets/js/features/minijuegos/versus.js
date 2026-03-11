@@ -5,25 +5,25 @@
  */
 
 const VersusManager = (() => {
-    // === ELEMENTOS DOM ===
-    const modal = document.getElementById('versusModal');
-    const closeBtn = document.getElementById('btnCloseVersus');
-    const openBtn = document.getElementById('btnVersus');
+    // === ELEMENTOS DOM (obtenidos en init para asegurar que el DOM está listo) ===
+    let modal, closeBtn, openBtn, stageSelection, stageDuel, stageWinner;
+    let fighter1, fighter2, roundIndicator;
+    let winnerCard, btnPlay, btnRestart;
 
-    // Etapas del torneo
-    const stageSelection = document.getElementById('vsStageSelection');
-    const stageDuel = document.getElementById('vsStageDuel');
-    const stageWinner = document.getElementById('vsStageWinner');
-
-    // Elementos del duelo
-    const fighter1 = document.getElementById('fighter1');
-    const fighter2 = document.getElementById('fighter2');
-    const roundIndicator = document.getElementById('roundIndicator');
-
-    // Elementos del ganador
-    const winnerCard = document.getElementById('winnerCard');
-    const btnPlay = document.getElementById('btnPlayWinner');
-    const btnRestart = document.getElementById('btnRestartVs');
+    const cacheElements = () => {
+        modal = document.getElementById('versusModal');
+        closeBtn = document.getElementById('btnCloseVersus');
+        openBtn = document.getElementById('btnVersus');
+        stageSelection = document.getElementById('vsStageSelection');
+        stageDuel = document.getElementById('vsStageDuel');
+        stageWinner = document.getElementById('vsStageWinner');
+        fighter1 = document.getElementById('fighter1');
+        fighter2 = document.getElementById('fighter2');
+        roundIndicator = document.getElementById('roundIndicator');
+        winnerCard = document.getElementById('winnerCard');
+        btnPlay = document.getElementById('btnPlayWinner');
+        btnRestart = document.getElementById('btnRestartVs');
+    };
 
     // === ESTADO ===
     let currentBracket = [];    // Juegos de la ronda actual
@@ -35,6 +35,8 @@ const VersusManager = (() => {
 
     // === INICIALIZACIÓN ===
     const init = () => {
+        cacheElements();
+
         if (openBtn) openBtn.addEventListener('click', openModal);
         if (closeBtn) closeBtn.addEventListener('click', closeModal);
 
@@ -51,7 +53,13 @@ const VersusManager = (() => {
         // Jugar al ganador
         if (btnPlay) btnPlay.addEventListener('click', () => {
             closeModal();
-            if (finalWinner) showGame(finalWinner.id); // showGame() viene de app.js
+            if (finalWinner) {
+                if (typeof Router !== 'undefined') {
+                    Router.navigateTo('?id=' + finalWinner.id);
+                } else {
+                    window.location.href = '?id=' + finalWinner.id;
+                }
+            }
         });
     };
 
@@ -213,7 +221,8 @@ const VersusManager = (() => {
     return { init, openModal };
 })();
 
-document.addEventListener('DOMContentLoaded', VersusManager.init);
 
-// Exponer globalmente para minigames modal
+
+// Exponer globalmente para minigames modal y lazy-loader
+window.VersusManager = VersusManager;
 window.openVersus = () => VersusManager.openModal();

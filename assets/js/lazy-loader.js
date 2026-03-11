@@ -9,35 +9,84 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadedScripts = new Set();
 
     const loadScript = (src) => {
-        if (loadedScripts.has(src) || document.querySelector(`script[src="${src}"]`)) return;
+        return new Promise((resolve, reject) => {
+            if (loadedScripts.has(src) || document.querySelector(`script[src="${src}"]`)) {
+                resolve();
+                return;
+            }
 
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = true;
-        document.body.appendChild(script);
-        loadedScripts.add(src);
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            script.onload = () => {
+                loadedScripts.add(src);
+                resolve();
+            };
+            script.onerror = () => reject(new Error(`Error loading script ${src}`));
+            document.body.appendChild(script);
+        });
     };
 
     // 1. Minijuegos (Versus, Gamedle, Modal)
     // Se cargan agresivamente solo si se intenta interactuar con el botón
     const btnMiniGames = document.getElementById('btnMiniGames');
     if (btnMiniGames) {
-        const loadMiniGames = () => {
-            loadScript('assets/js/minigames-modal.js');
-            loadScript('assets/js/gamedle.js');
-            loadScript('assets/js/versus.js');
+        let isMiniGamesLoadingPromise = null;
+        
+        const prefetchMiniGames = () => {
+            if (!isMiniGamesLoadingPromise) {
+                isMiniGamesLoadingPromise = (async () => {
+                    try {
+                        await loadScript('assets/js/features/minijuegos/modal.js');
+                        await loadScript('assets/js/features/minijuegos/gamedle.js');
+                        await loadScript('assets/js/features/minijuegos/versus.js');
+                        
+                        // Initialize modules if not already initialized
+                        if (typeof miniGamesModal !== 'undefined' && miniGamesModal.init) {
+                            miniGamesModal.init();
+                            miniGamesModal.init = null; // Prevent double init
+                        }
+                        if (typeof window.initGamedleUI === 'function') {
+                            window.initGamedleUI();
+                            window.initGamedleUI = null;
+                        }
+                        if (typeof window.VersusManager !== 'undefined' && window.VersusManager.init) {
+                            window.VersusManager.init();
+                            window.VersusManager.init = null;
+                        }
+                    } catch (e) {
+                        console.error("Error loading minigames:", e);
+                    }
+                })();
+            }
+            return isMiniGamesLoadingPromise;
         };
 
-        btnMiniGames.addEventListener('mouseenter', loadMiniGames, { once: true });
-        btnMiniGames.addEventListener('touchstart', loadMiniGames, { once: true });
-        btnMiniGames.addEventListener('click', loadMiniGames);
+        const openMiniGames = async (e) => {
+            if (e) e.preventDefault();
+            await prefetchMiniGames();
+            if (typeof miniGamesModal !== 'undefined') {
+                miniGamesModal.open();
+            }
+        };
+
+        btnMiniGames.addEventListener('mouseenter', prefetchMiniGames, { once: true });
+        btnMiniGames.addEventListener('touchstart', prefetchMiniGames, { once: true });
+        btnMiniGames.addEventListener('click', openMiniGames);
     }
 
     // 2. Logros (Modal explícito)
     const btnAchievements = document.getElementById('btnAchievementsFab');
     if (btnAchievements) {
-        const loadAchievements = () => {
-            loadScript('assets/js/achievements.js');
+        const loadAchievements = async () => {
+            try {
+                await loadScript('assets/js/features/achievements/main.js');
+                if (typeof AchievementManager !== 'undefined') {
+                    AchievementManager.init();
+                }
+            } catch (e) {
+                console.error("Error loading achievements:", e);
+            }
         };
 
         btnAchievements.addEventListener('mouseenter', loadAchievements, { once: true });
@@ -46,8 +95,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Deferred Scripts (Free Games)
     // Se cargan cuando hay tiempo inactivo para no estorbar a Firebase
-    const loadIdleScripts = () => {
-        loadScript('assets/js/free-games.js');
+    const loadIdleScripts = async () => {
+        try {
+            await loadScript('assets/js/features/free-games/main.js');
+            if (typeof window.setupFreeGamesUI === 'function') {
+                window.setupFreeGamesUI();
+            }
+        } catch(e) {
+            console.error("Error loading free games:", e);
+        }
     };
 
     if ('requestIdleCallback' in window) {

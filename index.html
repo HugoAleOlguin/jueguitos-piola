@@ -17,7 +17,7 @@
 
     <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com;">
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com https://corsproxy.io https://api.codetabs.com https://*.workers.dev;">
 
     <!-- SEO Meta Tags -->
     <meta name="description"
@@ -585,6 +585,13 @@
 
     <!-- Scripts con defer para no bloquear el renderizado inicial -->
     <script src="assets/js/games.js"></script>
+
+    <!-- CORE & GAMES (NUEVO) -->
+    <script src="assets/js/core/router.js" defer></script>
+    <script src="assets/js/games/grid.js" defer></script>
+    <script src="assets/js/games/detail.js" defer></script>
+    <script src="assets/js/games/search.js" defer></script>
+    <script src="assets/js/games/roulette.js" defer></script>
     
     <!-- FEATURES: Settings -->
     <script src="assets/js/features/settings/core.js" defer></script>
@@ -649,6 +656,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
     <script src="assets/js/theme-gallery.js" defer></script>
+    <script src="assets/js/features/chat/helpers.js" defer></script>
+    <script src="assets/js/features/chat/profile.js" defer></script>
+    <script src="assets/js/features/chat/firestore.js" defer></script>
+    <script src="assets/js/features/chat/ui.js" defer></script>
+    <script src="assets/js/features/chat/main.js" defer></script>
     <script src="assets/js/piola-chat.js" defer></script>
     <!-- Inicializa los iconos Lucide una vez que el DOM está completo -->
     <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>

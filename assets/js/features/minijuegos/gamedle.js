@@ -27,7 +27,16 @@ function saveGamedleStats() {
         totalScore: gamedleState.totalScore,
         totalGames: gamedleState.totalGames
     }));
-} function initGamedle() {
+}
+
+function updateStatsDisplay() {
+    const puntajeEl = document.getElementById('gamedlePuntaje');
+    const jugadosEl = document.getElementById('gamedleJugados');
+    if (puntajeEl) puntajeEl.textContent = `Puntaje: ${gamedleState.totalScore || 0}`;
+    if (jugadosEl) jugadosEl.textContent = `Jugados: ${gamedleState.totalGames || 0}`;
+}
+
+function initGamedle() {
     // Filtrar juegos: todos menos ocultos
     gamedleState.gamesList = window.gamesData.filter(g => !g.hidden);
     startNewGame();
@@ -335,21 +344,12 @@ function closeGamedle() {
     modal.classList.remove('open');
     document.body.style.overflow = 'auto';
 }
-// Inicializar cuando esté listo
-if (window.gamesData) {
-    loadGamedleStats();
-    initGamedle();
-} else {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (window.gamesData) {
-            loadGamedleStats();
-            initGamedle();
-        }
-    });
-}
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', () => {
+window.initGamedleUI = () => {
+    if (window.gamesData) {
+        loadGamedleStats();
+        initGamedle();
+    }
+    
     const input = document.getElementById('gamedleInput');
     const closeBtn = document.getElementById('gamedleCloseBtn');
     const nextBtn = document.getElementById('gamedleNextBtn');
@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Escape') closeGamedle();
         });
     }
-});
+};
 
 // Exponer funciones globales
 window.openGamedle = openGamedle;

@@ -418,4 +418,3 @@ const AchievementManager = (() => {
 
 })();
 
-document.addEventListener('DOMContentLoaded', AchievementManager.init);
