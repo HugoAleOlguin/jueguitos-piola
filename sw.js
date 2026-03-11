@@ -12,7 +12,24 @@ const STATIC_ASSETS = [
     '/assets/css/features/settings-modal.css',
     '/assets/css/features/piola-chat.css',
     '/favicon.png',
-    '/assets/css/features/null_.png'
+    '/assets/css/features/null_.png',
+
+    // CSS de features
+    '/assets/css/features/versus.css',
+    '/assets/css/features/gamedle.css',
+    '/assets/css/features/achievements.css',
+    '/assets/css/features/minigames-modal.css',
+    '/assets/css/features/theme-gallery.css',
+    '/assets/css/features/roulette.css',
+    '/assets/css/features/extras.css',
+    '/assets/css/animations.css',
+    '/assets/css/responsive.css',
+
+    // JS crítico
+    '/assets/js/games.js',
+    '/assets/js/theme.js',
+    '/assets/js/settings.js',
+    '/assets/js/achievements.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -61,7 +78,7 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(
             caches.match(event.request).then((cachedResponse) => {
                 if (cachedResponse) return cachedResponse;
-                
+
                 return fetch(event.request).then((networkResponse) => {
                     if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic' || networkResponse.type === 'cors') {
                         const responseToCache = networkResponse.clone();
