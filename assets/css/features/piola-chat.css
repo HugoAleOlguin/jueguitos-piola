@@ -257,6 +257,25 @@
     margin-right: 4px;
 }
 
+/* --- Separador de Fecha estilo WhatsApp --- */
+.chat-date-divider {
+    text-align: center;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(0, 0, 0, 0.08);
+    /* Fondo sutil */
+    padding: 4px 12px;
+    border-radius: 12px;
+    display: inline-block;
+    align-self: center;
+    /* Para centrarlo en el flex column */
+    font-weight: 50;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
 /* --- Input --- */
 .piola-chat-input-area {
     display: flex;

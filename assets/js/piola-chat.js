@@ -775,17 +775,61 @@ const PiolaChat = (() => {
         if (!container) return;
 
         // Save scroll position relative to bottom
-        const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+        // Aumentamos el margen de tolerancia a 120px para no perder el tracking
+        const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 120;
+        const offsetFromBottom = container.scrollHeight - container.scrollTop;
 
         container.innerHTML = '';
+        
+        let lastDateFormatted = null;
+
         currentMessages.forEach(doc => {
-            _renderMessage(container, doc.data());
+            const msgData = doc.data();
+            let msgDate = null;
+            if (msgData.createdAt) {
+                msgDate = msgData.createdAt.toDate();
+            }
+
+            // Separador de fecha estilo WhatsApp
+            if (msgDate) {
+                const currentDateFormatted = msgDate.toLocaleDateString(undefined, {
+                    day: 'numeric', month: 'numeric', year: 'numeric'
+                });
+                
+                if (currentDateFormatted !== lastDateFormatted) {
+                    const dateDivider = document.createElement('div');
+                    dateDivider.className = 'chat-date-divider';
+                    
+                    // Lógica para mostrar "Hoy", "Ayer", o la fecha
+                    const today = new Date();
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    let displayDate = currentDateFormatted;
+                    if (currentDateFormatted === today.toLocaleDateString(undefined, { day: 'numeric', month: 'numeric', year: 'numeric' })) {
+                        displayDate = 'Hoy';
+                    } else if (currentDateFormatted === yesterday.toLocaleDateString(undefined, { day: 'numeric', month: 'numeric', year: 'numeric' })) {
+                        displayDate = 'Ayer';
+                    }
+
+                    dateDivider.textContent = displayDate;
+                    container.appendChild(dateDivider);
+                    lastDateFormatted = currentDateFormatted;
+                }
+            }
+
+            _renderMessage(container, msgData);
         });
 
-        // Maintain scroll intelligently
-        if (isAtBottom) {
-            _scrollToBottom();
-        }
+        // Maintain scroll intelligently (usamos setTimeout para que el navegador haya computado alturas, por los divs/fuentes)
+        setTimeout(() => {
+            if (isAtBottom) {
+                container.scrollTop = container.scrollHeight;
+            } else {
+                // Restauramos la distancia hacia el fondo para no saltar al inicio
+                container.scrollTop = container.scrollHeight - offsetFromBottom;
+            }
+        }, 30);
     };
     const _renderMessage = (container, msg) => {
         // Actividad
@@ -855,7 +899,9 @@ const PiolaChat = (() => {
         if (!text) return;
 
         input.value = '';
-        input.focus();
+
+        // Si enviaste TU el mensaje, force scroll a bottom
+        const shouldScroll = true;
 
         // Si el texto es una URL de imagen/GIF, guardar como tipo 'gif'
         const isImage = _isImageUrl(text);
@@ -873,6 +919,10 @@ const PiolaChat = (() => {
             }
 
             await db.collection(COLLECTION_MESSAGES).add(msgData);
+            
+            if (shouldScroll) {
+                _scrollToBottom();
+            }
         } catch (err) {
             console.error('[PiolaChat] Error al enviar mensaje:', err);
         }
@@ -903,9 +953,9 @@ const PiolaChat = (() => {
     const _scrollToBottom = () => {
         const container = document.getElementById('piolaChatMessages');
         if (container) {
-            requestAnimationFrame(() => {
+            setTimeout(() => {
                 container.scrollTop = container.scrollHeight;
-            });
+            }, 50);
         }
     };
 
