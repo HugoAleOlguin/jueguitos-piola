@@ -1,0 +1,9 @@
+/* =====================================================
+   CONTENIDO PRINCIPAL
+   ===================================================== */
+main {
+    padding: 3rem 4rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    min-height: calc(100vh - 200px);
+}
