@@ -11,17 +11,8 @@ if (typeof window.ThemeGallery === 'undefined') {
     window.ThemeGallery = (() => {
 
         // =====================================================================
-        // CONFIGURACIÓN FIREBASE
+        // CONFIGURACIÓN
         // =====================================================================
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDcO_CpJ4x8DK2_t-obafVM0m2Pu9cKGWM",
-            authDomain: "jueguitos-piola.firebaseapp.com",
-            projectId: "jueguitos-piola",
-            storageBucket: "jueguitos-piola.firebasestorage.app",
-            messagingSenderId: "372800075568",
-            appId: "1:372800075568:web:80e91799d1340d1a85faf5"
-        };
-
         const FIRESTORE_COLLECTION = 'themes';
         const COLLECTION_USERS = 'users';
         const CHAT_PROFILE_KEY = 'piola_chat_profile';
@@ -32,16 +23,16 @@ if (typeof window.ThemeGallery === 'undefined') {
         // =====================================================================
         // INICIALIZACIÓN
         // =====================================================================
-        const init = () => {
+        const init = async () => {
             try {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(FIREBASE_CONFIG);
-                }
-                db = firebase.firestore();
-                isFirebaseReady = true;
+                // Inicializar Firebase usando el módulo centralizado
+                const firebaseResult = await window.FirebaseManager.initialize();
+                db = firebaseResult.db;
+                isFirebaseReady = firebaseResult.isInitialized;
                 console.info('[ThemeGallery] Firebase conectado ✓');
             } catch (err) {
                 console.error('[ThemeGallery] Error al inicializar Firebase:', err);
+                isFirebaseReady = false;
             }
         };
 
@@ -344,9 +335,14 @@ const waitForGalleryFirebase = () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await waitForGalleryFirebase();
-    // Inicializar ThemeGallery solo si el usuario tiene perfil
+    // Inicializar Firebase sin importar si hay perfil (para que otros módulos lo puedan usar)
+    if (window.ThemeGallery) {
+        window.ThemeGallery.init();
+    }
+    // Inicializar funcionalidades de ThemeGallery solo si hay perfil
     const profile = JSON.parse(localStorage.getItem('piola_chat_profile') || 'null');
     if (profile && window.ThemeGallery) {
-        window.ThemeGallery.init();
+        // Ya está inicializado arriba, pero podemos hacer operaciones adicionales si necesitamos
+        // Por ahora, la inicialización ya happened en init()
     }
 });

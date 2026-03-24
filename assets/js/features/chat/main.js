@@ -11,16 +11,20 @@ const ChatCore = (() => {
         unreadCount: 0
     };
 
-    const init = () => {
+    const init = async () => {
         try {
-            if (!firebase.apps.length) {
+            // Initialize Firebase using centralized manager
+            const firebaseResult = await window.FirebaseManager.initialize();
+            state.db = firebaseResult.db;
+            state.isReady = firebaseResult.isInitialized;
+            
+            if (!state.isReady) {
                 console.warn('[PiolaChat] Firebase no inicializado.');
                 return;
             }
-            state.db = firebase.firestore();
-            state.isReady = true;
         } catch (err) {
-            console.error('[PiolaChat] Error al obtener Firestore:', err);
+            console.error('[PiolaChat] Error al inicializar Firebase:', err);
+            state.isReady = false;
             return;
         }
 
