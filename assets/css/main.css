@@ -38,6 +38,8 @@
 @import url('features/achievements.css');
 @import url('features/extras.css');
 @import url('features/theme-gallery.css');
+@import url('features/piola-chat.css');
+@import url('features/card-styles.css');
 
 /* === Temas === */
 @import url('themes/lite-mode.css');
@@ -48,4 +50,3 @@
 @import url('utils/responsive.css');
 
 /* === Páginas específicas (al final para máxima especificidad) === */
-@import url('pages/free-games.css');

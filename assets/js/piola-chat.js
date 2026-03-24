@@ -26,21 +26,14 @@ const PiolaChat = (() => {
 })();
 
 const waitForFirebase = () => {
-    return new Promise((resolve) => {
-        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-            resolve();
-        } else {
-            const check = setInterval(() => {
-                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-                    clearInterval(check);
-                    resolve();
-                }
-            }, 100);
-            setTimeout(() => {
-                clearInterval(check);
-                resolve();
-            }, 5000);
-        }
+    return window.FirebaseManager.initialize().then(() => {
+        // Firebase está listo
+        return;
+    }).catch(() => {
+        // Even if it fails, we resolve to prevent blocking
+        // The individual modules will handle their own errors
+        console.warn('[PiolaChat] Firebase initialization failed, but continuing anyway');
+        return;
     });
 };
 
