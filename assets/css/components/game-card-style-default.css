@@ -1,0 +1,5 @@
+/* Estilo de tarjeta por defecto: sigue la apariencia base de game-card.css */
+body.card-style-default .game-card {
+    /* Sin cambios especiales, es la configuración estándar */
+    transition: none;
+}
