@@ -34,15 +34,13 @@
         0 0 30px rgba(0, 243, 255, 0.05);
     /* Subtle glow */
     border-radius: 24px;
-    width: 90%;
-    max-width: 580px;
-    /* Wider for better layout */
+    width: 95%;
+    max-width: 760px;
     transform: scale(0.9) translateY(40px);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    /* Bouncy enter */
     display: flex;
     flex-direction: column;
-    max-height: 85vh;
+    max-height: 88vh;
     animation: modalGlow 5s infinite alternate;
 }
 
@@ -107,21 +105,13 @@
     transform: rotate(90deg) scale(1.1);
 }
 
-/* --- Body --- */
-.settings-body {
-    padding: 2rem 2.5rem;
-    overflow-y: auto;
+/* --- Tabbed Layout --- */
+.settings-layout {
+    display: grid;
+    grid-template-columns: 150px 1fr;
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
-
-/* Divisor entre secciones */
-.settings-body>.settings-section+.settings-section {
-    margin-top: 0;
+    min-height: 0;
+    overflow: hidden;
 }
 
 /* Override de color para secciones especiales */
@@ -711,4 +701,150 @@
 
 .card-style-option.active .card-style-label {
     color: var(--primary-color);
+}
+
+/* =====================================================
+   SIDEBAR DE NAVEGACIÓN
+   ===================================================== */
+
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 1rem 0.75rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.settings-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-align: left;
+    transition: all 0.2s ease;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.nav-tab svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.nav-tab:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.75);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.nav-tab.active {
+    background: rgba(0, 243, 255, 0.08);
+    border-color: rgba(0, 243, 255, 0.2);
+    color: var(--primary-color);
+    box-shadow: inset 3px 0 0 var(--primary-color);
+}
+
+.nav-tab.active svg {
+    opacity: 1;
+}
+
+/* =====================================================
+   PANEL DE CONTENIDO Y PESTAÑAS
+   ===================================================== */
+
+.settings-panel {
+    overflow-y: auto;
+    padding: 1.5rem 1.75rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.settings-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+/* Pestañas: ocultas por defecto */
+.tab-pane {
+    display: none;
+    animation: tabFadeIn 0.2s ease forwards;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   MOBILE — chips horizontales en lugar de sidebar
+   @max-width: 600px
+   ===================================================== */
+
+@media (max-width: 600px) {
+    .settings-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .settings-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.6rem 0.75rem;
+        gap: 6px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-tab {
+        flex-shrink: 0;
+        padding: 7px 12px;
+        font-size: 0.78rem;
+        border-radius: 20px;
+        box-shadow: none;
+    }
+
+    /* En chips, el borde neon va por la parte inferior */
+    .nav-tab.active {
+        box-shadow: none;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .settings-panel {
+        padding: 1.25rem 1rem;
+    }
+
+    .settings-modal {
+        max-height: 90vh;
+        border-radius: 16px;
+    }
 }

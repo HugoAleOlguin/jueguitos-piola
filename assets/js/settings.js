@@ -107,6 +107,7 @@ if (typeof window.SettingsManager === 'undefined') {
 
             document.getElementById('btnSavePreset').onclick = savePreset;
             loadPresetsList();
+            initTabs();
         };
 
         const populateModalUI = () => {
@@ -153,6 +154,10 @@ if (typeof window.SettingsManager === 'undefined') {
             void modal.offsetWidth;
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+
+            // Restaurar la pestaña activa de la sesión anterior
+            const lastTab = sessionStorage.getItem('settings_active_tab') || 'appearance';
+            switchTab(lastTab);
         };
 
         const closeModal = () => {
@@ -165,6 +170,42 @@ if (typeof window.SettingsManager === 'undefined') {
             document.body.style.overflow = '';
             setTimeout(() => modal.style.display = 'none', 300);
         };
+
+        // ========================================================================
+        // TAB NAVIGATION
+        // ========================================================================
+
+        /**
+         * Inicializa listeners de las pestañas del sidebar de configuración.
+         */
+        const initTabs = () => {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.onclick = () => switchTab(tab.dataset.tab);
+            });
+        };
+
+        /**
+         * Activa la pestaña indicada y desactiva las demás.
+         * Persiste la selección en sessionStorage para restaurarla al reabrir.
+         * @param {string} tabId - valor del data-tab del botón (ej: 'appearance')
+         */
+        const switchTab = (tabId) => {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            // Fallback: si el tabId no existe, usamos el primero
+            const validIds = [...tabs].map(t => t.dataset.tab);
+            const resolved = validIds.includes(tabId) ? tabId : (validIds[0] || 'appearance');
+
+            tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === resolved));
+            panes.forEach(p => p.classList.toggle('active', p.id === `tab-${resolved}`));
+
+            sessionStorage.setItem('settings_active_tab', resolved);
+        };
+
+        // ========================================================================
+        // SAVE FROM UI
+        // ========================================================================
 
         const saveFromUI = async () => {
             const btn = document.getElementById('btnSaveSettings');
