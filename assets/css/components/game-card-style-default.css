@@ -1,5 +1,87 @@
-/* Estilo de tarjeta por defecto: sigue la apariencia base de game-card.css */
+/* =====================================================
+   ESTILO DE TARJETA: DEFAULT (Estándar)
+   Activo cuando body tiene la clase .card-style-default
+   Replica el diseño original con imagen arriba y
+   contenido de texto debajo.
+   ===================================================== */
+
+/* --- Tarjeta --- */
 body.card-style-default .game-card {
-    /* Sin cambios especiales, es la configuración estándar */
-    transition: none;
+    background: rgba(15, 15, 15, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s var(--ease-out-expo);
+}
+
+/* Borde neon en hover via ::before */
+body.card-style-default .game-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(135deg, transparent 40%, var(--primary-color) 50%, transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0%, #fff 100%) content-box, linear-gradient(#fff 0%, #fff 100%);
+    mask: linear-gradient(#fff 0%, #fff 100%) content-box, linear-gradient(#fff 0%, #fff 100%);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-smooth);
+    pointer-events: none;
+}
+
+body.card-style-default .game-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 20px 40px rgba(0, 243, 255, 0.15), 0 0 0 1px rgba(0, 243, 255, 0.1);
+}
+
+body.card-style-default .game-card:hover::before {
+    opacity: 1;
+}
+
+body.card-style-default .game-card:active {
+    transform: translateY(-4px) scale(1.01);
+    transition-duration: 0.1s;
+}
+
+/* --- Imagen --- */
+body.card-style-default .card-image {
+    height: 180px;
+}
+
+/* Brillo diagonal en hover */
+body.card-style-default .card-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--ease-smooth);
+}
+
+body.card-style-default .game-card:hover .card-image::before {
+    transform: translateX(100%);
+}
+
+/* Degradado oscuro en la parte inferior de la imagen */
+body.card-style-default .card-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+/* --- Contenido de texto --- */
+body.card-style-default .card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+}
+
+body.card-style-default .game-card:hover .card-title {
+    color: var(--primary-color);
+}
+
+body.card-style-default .card-desc {
+    margin-bottom: 1rem;
 }

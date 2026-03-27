@@ -345,7 +345,36 @@
                         aria-label="Subir cursor personalizado">
                 </div>
 
-                <!-- 4. PRESETS -->
+                <!-- 4. ESTILO DE TARJETAS -->
+                <div class="settings-section">
+                    <h3><i data-lucide="layout-grid" style="width:16px;height:16px;vertical-align:middle;"></i> Estilo de Tarjetas</h3>
+                    <div class="card-style-selector">
+                        <button class="card-style-option active" data-style="default" title="Imagen arriba, contenido debajo">
+                            <div class="card-style-preview card-style-preview--default">
+                                <div class="csp-image"></div>
+                                <div class="csp-content">
+                                    <div class="csp-bar csp-bar--title"></div>
+                                    <div class="csp-bar csp-bar--desc"></div>
+                                </div>
+                            </div>
+                            <span class="card-style-label">Estándar</span>
+                        </button>
+                        <button class="card-style-option" data-style="compact" title="Solo foto — info visible al pasar el mouse">
+                            <div class="card-style-preview card-style-preview--compact">
+                                <div class="csp-image csp-image--full"></div>
+                                <div class="csp-hover-info">
+                                    <div class="csp-bar csp-bar--title"></div>
+                                    <div class="csp-bar csp-bar--desc"></div>
+                                </div>
+                            </div>
+                            <span class="card-style-label">Compacto <small>hover</small></span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="settingCardStyle" value="default">
+                </div>
+
+                <!-- 5. PRESETS -->
+
                 <div class="settings-section">
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">

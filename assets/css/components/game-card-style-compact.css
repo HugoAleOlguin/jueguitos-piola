@@ -1,53 +1,120 @@
-/* Estilo Compacto (hover info sobre portada) */
+/* =====================================================
+   ESTILO DE TARJETA: COMPACTO
+   Activo cuando body tiene la clase .card-style-compact
+   Solo muestra la foto a pantalla completa.
+   Al hacer hover, el fondo se oscurece y aparece
+   el título, descripción y tags superpuestos.
+   ===================================================== */
+
+/* --- Tarjeta --- */
 body.card-style-compact .game-card {
-    background: #171717;
+    background: #111;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    position: relative;
-    min-height: 260px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+    /* Altura mínima para que la imagen tenga espacio */
+    min-height: 220px;
+    transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s ease;
 }
 
+body.card-style-compact .game-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+}
+
+body.card-style-compact .game-card:active {
+    transform: scale(1.01);
+    transition-duration: 0.1s;
+}
+
+/* --- Imagen ocupa toda la tarjeta --- */
 body.card-style-compact .card-image {
+    /* Usamos height:100% con position absolute para que la imagen llene todo */
+    position: absolute;
+    inset: 0;
     height: 100%;
     width: 100%;
-    transition: transform 0.35s ease, filter 0.35s ease;
+    transition: filter 0.35s ease;
 }
 
+body.card-style-compact .game-card:hover .card-image {
+    /* Oscurecemos la imagen al pasar el mouse */
+    filter: brightness(0.35);
+}
+
+/* --- Contenido superpuesto (título, desc, tags) --- */
 body.card-style-compact .card-content {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    color: #fff;
-    display: flex;
-    flex-direction: column;
+    padding: 1.25rem;
     justify-content: center;
     align-items: center;
     text-align: center;
+    background: transparent; /* El oscurecimiento lo hace la imagen, no un overlay */
+
+    /* Oculto por defecto */
     opacity: 0;
     transition: opacity 0.28s ease;
     pointer-events: none;
 }
 
-body.card-style-compact .card-content .card-desc,
-body.card-style-compact .card-content .card-tags { opacity: 0; transition: opacity 0.25s ease; }
-
-body.card-style-compact .card-title { color: #fff; }
-
 body.card-style-compact .game-card:hover .card-content {
     opacity: 1;
+    pointer-events: auto;
 }
 
-body.card-style-compact .game-card:hover .card-image {
-    transform: scale(1.08);
-    filter: brightness(0.45) blur(1.4px);
+body.card-style-compact .card-title {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
 }
 
-body.card-style-compact .card-tags { justify-content: center; gap: 0.32rem; }
+body.card-style-compact .card-desc {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 0.8rem;
+    /* Limitar a 3 líneas para que no desborde en tarjetas chicas */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 
-@media (max-width: 900px) {
-    body.card-style-compact .card-content { opacity: 1; background: rgba(0, 0, 0, 0.55); }
-    body.card-style-compact .card-image { filter: none; transform: none; }
+body.card-style-compact .card-tags {
+    justify-content: center;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+}
+
+/* =====================================================
+   MOBILE — sin hover se muestra el info siempre
+   En touch no existe hover, así que en pantallas
+   pequeñas se muestra el contenido de forma permanente
+   pero con un overlay suave para que se lea bien.
+   ===================================================== */
+@media (max-width: 768px) {
+    body.card-style-compact .game-card {
+        min-height: 180px;
+    }
+
+    /* En mobile mostramos info siempre visible */
+    body.card-style-compact .card-content {
+        opacity: 1;
+        /* Fondo degradado oscuro desde abajo para leer bien */
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+        justify-content: flex-end;
+        align-items: flex-start;
+        text-align: left;
+        padding: 0.75rem 1rem;
+    }
+
+    /* En mobile no oscurecemos la imagen */
+    body.card-style-compact .game-card:hover .card-image {
+        filter: none;
+    }
+
+    body.card-style-compact .card-desc {
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
 }
