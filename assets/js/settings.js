@@ -23,6 +23,11 @@ if (typeof window.SettingsManager === 'undefined') {
 
             document.body.classList.toggle('lite-mode', isLite);
 
+            // Aplicar clase de estilo de tarjetas
+            const cardStyle = config.cardStyle || 'default';
+            document.body.classList.remove('card-style-default', 'card-style-compact');
+            document.body.classList.add(`card-style-${cardStyle}`);
+
             await BackgroundManager.apply(config.bgType, config.bgValue, isLite);
             AppearanceManager.apply(config.blur, config.themeColor, isLite);
             await CursorManager.set(config.cursor, BackgroundManager.ImageCacheStore);
@@ -91,8 +96,18 @@ if (typeof window.SettingsManager === 'undefined') {
                 };
             }
 
+            // Selector de estilo de tarjetas
+            document.querySelectorAll('.card-style-option').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.card-style-option').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('settingCardStyle').value = btn.dataset.style;
+                };
+            });
+
             document.getElementById('btnSavePreset').onclick = savePreset;
             loadPresetsList();
+            initTabs();
         };
 
         const populateModalUI = () => {
@@ -110,6 +125,13 @@ if (typeof window.SettingsManager === 'undefined') {
             document.getElementById('settingParticles').checked = config.particles === 'true';
             document.getElementById('settingCursorTrail').checked = config.trail === 'true';
             document.getElementById('settingUiSounds').checked = config.uiSounds === 'true';
+
+            // Marcar el estilo de tarjetas activo
+            const activeCardStyle = config.cardStyle || 'default';
+            document.getElementById('settingCardStyle').value = activeCardStyle;
+            document.querySelectorAll('.card-style-option').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.style === activeCardStyle);
+            });
 
             document.querySelectorAll('.option-card').forEach(c => {
                 c.classList.toggle('active', c.dataset.cursor === config.cursor);
@@ -132,6 +154,10 @@ if (typeof window.SettingsManager === 'undefined') {
             void modal.offsetWidth;
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+
+            // Restaurar la pestaña activa de la sesión anterior
+            const lastTab = sessionStorage.getItem('settings_active_tab') || 'appearance';
+            switchTab(lastTab);
         };
 
         const closeModal = () => {
@@ -144,6 +170,42 @@ if (typeof window.SettingsManager === 'undefined') {
             document.body.style.overflow = '';
             setTimeout(() => modal.style.display = 'none', 300);
         };
+
+        // ========================================================================
+        // TAB NAVIGATION
+        // ========================================================================
+
+        /**
+         * Inicializa listeners de las pestañas del sidebar de configuración.
+         */
+        const initTabs = () => {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.onclick = () => switchTab(tab.dataset.tab);
+            });
+        };
+
+        /**
+         * Activa la pestaña indicada y desactiva las demás.
+         * Persiste la selección en sessionStorage para restaurarla al reabrir.
+         * @param {string} tabId - valor del data-tab del botón (ej: 'appearance')
+         */
+        const switchTab = (tabId) => {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            // Fallback: si el tabId no existe, usamos el primero
+            const validIds = [...tabs].map(t => t.dataset.tab);
+            const resolved = validIds.includes(tabId) ? tabId : (validIds[0] || 'appearance');
+
+            tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === resolved));
+            panes.forEach(p => p.classList.toggle('active', p.id === `tab-${resolved}`));
+
+            sessionStorage.setItem('settings_active_tab', resolved);
+        };
+
+        // ========================================================================
+        // SAVE FROM UI
+        // ========================================================================
 
         const saveFromUI = async () => {
             const btn = document.getElementById('btnSaveSettings');
@@ -160,6 +222,7 @@ if (typeof window.SettingsManager === 'undefined') {
                 const particles = document.getElementById('settingParticles').checked;
                 const trail = document.getElementById('settingCursorTrail').checked;
                 const uiSounds = document.getElementById('settingUiSounds').checked;
+                const cardStyle = document.getElementById('settingCardStyle').value || 'default';
 
                 let type = 'default';
                 let value = '';
@@ -193,6 +256,7 @@ if (typeof window.SettingsManager === 'undefined') {
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.PARTICLES, particles);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.TRAIL, trail);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.UI_SOUNDS, uiSounds);
+                localStorage.setItem(SettingsCore.STORAGE_KEYS.CARD_STYLE, cardStyle);
 
                 if (typeof AchievementManager !== 'undefined') {
                     if (parseInt(blur) >= 20) AchievementManager.unlock('blur');
@@ -202,7 +266,7 @@ if (typeof window.SettingsManager === 'undefined') {
                 SettingsCore.setAll({
                     bgType: type, bgValue: value, blur, themeColor: color,
                     liteMode: String(isLite), cursor, particles: String(particles),
-                    trail: String(trail), uiSounds: String(uiSounds)
+                    trail: String(trail), uiSounds: String(uiSounds), cardStyle
                 });
 
                 await applySettings();

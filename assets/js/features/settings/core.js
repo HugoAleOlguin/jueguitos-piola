@@ -8,7 +8,8 @@ const SettingsCore = (() => {
         CURSOR: 'jueguitos_settings_cursor',
         PARTICLES: 'jueguitos_settings_particles',
         TRAIL: 'jueguitos_settings_trail',
-        UI_SOUNDS: 'jueguitos_settings_uisounds'
+        UI_SOUNDS: 'jueguitos_settings_uisounds',
+        CARD_STYLE: 'jueguitos_settings_card_style'
     };
 
     const DEFAULTS = {
@@ -20,7 +21,8 @@ const SettingsCore = (() => {
         CURSOR: 'default',
         PARTICLES: 'true',
         TRAIL: 'false',
-        UI_SOUNDS: 'false'
+        UI_SOUNDS: 'false',
+        CARD_STYLE: 'default'
     };
 
     let currentSettings = {};
@@ -35,7 +37,8 @@ const SettingsCore = (() => {
             cursor: localStorage.getItem(STORAGE_KEYS.CURSOR) || DEFAULTS.CURSOR,
             particles: localStorage.getItem(STORAGE_KEYS.PARTICLES) || DEFAULTS.PARTICLES,
             trail: localStorage.getItem(STORAGE_KEYS.TRAIL) || DEFAULTS.TRAIL,
-            uiSounds: localStorage.getItem(STORAGE_KEYS.UI_SOUNDS) || DEFAULTS.UI_SOUNDS
+            uiSounds: localStorage.getItem(STORAGE_KEYS.UI_SOUNDS) || DEFAULTS.UI_SOUNDS,
+            cardStyle: localStorage.getItem(STORAGE_KEYS.CARD_STYLE) || DEFAULTS.CARD_STYLE
         };
     };
 

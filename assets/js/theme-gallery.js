@@ -100,6 +100,7 @@ if (typeof window.ThemeGallery === 'undefined') {
                     blur: preset.blur || '0',
                     themeColor: preset.themeColor || '#00f3ff',
                     cursor: preset.cursor || 'default',
+                    cardStyle: preset.cardStyle || 'default',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
@@ -248,6 +249,7 @@ if (typeof window.ThemeGallery === 'undefined') {
                     localStorage.setItem('jueguitos_settings_blur', theme.blur || '0');
                     localStorage.setItem('jueguitos_settings_color', theme.themeColor || '#00f3ff');
                     localStorage.setItem('jueguitos_settings_cursor', theme.cursor || 'default');
+                    localStorage.setItem('jueguitos_settings_card_style', theme.cardStyle || 'default');
 
                     if (typeof SettingsManager.loadAndApply === 'function') {
                         SettingsManager.loadAndApply();

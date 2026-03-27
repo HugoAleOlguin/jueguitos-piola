@@ -261,26 +261,56 @@ Historial de cambios estructurales y visuales del proyecto.
 - **Tenor API eliminada**: Reemplazada por auto-detección de URLs, sin necesidad de API key ni setup.
 
 ## [3.5.0] - 2026-03-11
+ 
+ ### Added
+ - **Service Worker** (caché offline)
+ - **Precarga de fondo** (optimización de rendimiento)
+ 
+ ### Changed
+ - **Chat**: Se puso la fecha en los mensajes y se corrigio el problema de que no se mostraran los mensajes nuevos.
+ 
++## [3.6.0] - 2026-03-25
++
++### Added
++- **Sistema Modular de Tarjetas**:
++  - Opción de alternar entre estilo **Estándar** (diseño clásico) y **Compacto** (minimalista).
++  - **Estilo Compacto**: Imagen al 100% con efecto "hover reveal" para mostrar la información del juego.
++  - **Refactor CSS**: Separación de estilos en `game-card.css` (estructura), `game-card-style-default.css` y `game-card-style-compact.css`.
++  - **Persistencia en la Nube**: El estilo de tarjeta ahora se guarda en Firebase junto con los temas compartidos.
++
++### Changed
++- **Mobile Fallback**: En dispositivos móviles, el estilo compacto muestra la información de forma permanente con un degradado para asegurar la legibilidad sin necesidad de hover.
++- **Optimización de Carga**: Pre-aplicación de la clase de estilo en el arranque para evitar destellos visuales (FOUC).
++
++## [3.7.0] - 2026-03-27
++
++### Added
++- **Rediseño Total del Modal de Configuración**:
++  - Nueva interfaz con **navegación por pestañas (Tabs)** para una mejor organización.
++  - **Sidebar de Navegación** en pantallas grandes para acceso rápido a categorías (Fondo, Estilo, FX, Temas, Config).
++  - **Mobile UI**: Las pestañas se transforman en una cinta de "chips" horizontales scrolleables en móviles.
++  - Persistencia de pestaña activa durante la sesión (`sessionStorage`).
++  - Mayor área de interacción y previews visuales mejoradas.
++
++### Fixed
++- Limpieza de redundancias en el HTML del modal y consolidación de inputs ocultos para mejor compatibilidad con scripts legacy.
++
+ ## Versiones Principales
+ 
+ | Versión | Fecha | Cambio Principal |
+ |---------|-------|------------------|
++| **3.7** | Mar 2026 | Modal de Configuración por Pestañas |
++| **3.6** | Mar 2026 | Sistema de Tarjetas (Estándar/Compacto) |
+ | **3.4** | Mar 2026 | PiolaChat, Perfil unificado, GIFs |
+ | **3.3** | Mar 2026 | Galería de Temas Comunitaria |
+ | **3.2** | Feb 2026 | Giveaways en tiempo real |
+ | **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
+ | **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
+ | **2.0** | Mar 2025 | Rediseño completo |
+ | **1.0** | Ene 2025 | Lanzamiento inicial |
+ 
+ ---
+ 
+-**240+ commits** | **Ene 2025 → Mar 2026**
++**260+ commits** | **Ene 2025 → Mar 2026**
 
-### Added
-- **Service Worker** (caché offline)
-- **Precarga de fondo** (optimización de rendimiento)
-
-### Changed
-- **Chat**: Se puso la fecha en los mensajes y se corrigio el problema de que no se mostraran los mensajes nuevos.
-
-## Versiones Principales
-
-| Versión | Fecha | Cambio Principal |
-|---------|-------|------------------|
-| **3.4** | Mar 2026 | PiolaChat, Perfil unificado, GIFs |
-| **3.3** | Mar 2026 | Galería de Temas Comunitaria |
-| **3.2** | Feb 2026 | Giveaways en tiempo real |
-| **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
-| **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
-| **2.0** | Mar 2025 | Rediseño completo |
-| **1.0** | Ene 2025 | Lanzamiento inicial |
-
----
-
-**240+ commits** | **Ene 2025 → Mar 2026**
