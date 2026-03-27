@@ -307,26 +307,22 @@
 
                         <div class="settings-section" style="margin-top: 1rem;">
                             <h3><i data-lucide="layout-grid" style="width:16px;height:16px;vertical-align:middle;"></i> Estilo de Tarjetas</h3>
-                            <div class="card-style-selector">
-                                <button class="card-style-option active" data-style="default" title="Imagen arriba, contenido debajo">
-                                    <div class="card-style-preview card-style-preview--default">
-                                        <div class="csp-image"></div>
-                                        <div class="csp-content">
-                                            <div class="csp-bar csp-bar--title"></div>
-                                            <div class="csp-bar csp-bar--desc"></div>
-                                        </div>
-                                    </div>
-                                    <span class="card-style-label">Est&#225;ndar</span>
+                            <div class="card-style-chips">
+                                <button class="card-chip active" data-style="default" title="Diseño clásico con info debajo">
+                                    <span class="card-chip-icon">▤</span>
+                                    <span class="card-chip-label">Estándar</span>
                                 </button>
-                                <button class="card-style-option" data-style="compact" title="Solo foto — info visible al pasar el mouse">
-                                    <div class="card-style-preview card-style-preview--compact">
-                                        <div class="csp-image csp-image--full"></div>
-                                        <div class="csp-hover-info">
-                                            <div class="csp-bar csp-bar--title"></div>
-                                            <div class="csp-bar csp-bar--desc"></div>
-                                        </div>
-                                    </div>
-                                    <span class="card-style-label">Compacto <small>hover</small></span>
+                                <button class="card-chip" data-style="compact" title="Solo foto — info al hacer hover">
+                                    <span class="card-chip-icon">⊡</span>
+                                    <span class="card-chip-label">Compacto</span>
+                                </button>
+                                <button class="card-chip" data-style="rainbow" title="Borde multicolor animado">
+                                    <span class="card-chip-icon">◈</span>
+                                    <span class="card-chip-label">Rainbow</span>
+                                </button>
+                                <button class="card-chip" data-style="cyber" title="Estilo cyberpunk con scan lines">
+                                    <span class="card-chip-icon">⬡</span>
+                                    <span class="card-chip-label">Cyber</span>
                                 </button>
                             </div>
                             <input type="hidden" id="settingCardStyle" value="default">

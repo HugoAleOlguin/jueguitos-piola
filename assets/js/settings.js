@@ -25,8 +25,10 @@ if (typeof window.SettingsManager === 'undefined') {
 
             // Aplicar clase de estilo de tarjetas
             const cardStyle = config.cardStyle || 'default';
-            document.body.classList.remove('card-style-default', 'card-style-compact');
+            const allCardStyles = ['default', 'compact', 'rainbow', 'cyber'];
+            document.body.classList.remove(...allCardStyles.map(s => `card-style-${s}`));
             document.body.classList.add(`card-style-${cardStyle}`);
+            _applyCyberElements(cardStyle === 'cyber');
 
             await BackgroundManager.apply(config.bgType, config.bgValue, isLite);
             AppearanceManager.apply(config.blur, config.themeColor, isLite);
@@ -96,10 +98,10 @@ if (typeof window.SettingsManager === 'undefined') {
                 };
             }
 
-            // Selector de estilo de tarjetas
-            document.querySelectorAll('.card-style-option').forEach(btn => {
+            // Selector de estilo de tarjetas (chip buttons)
+            document.querySelectorAll('.card-chip').forEach(btn => {
                 btn.onclick = () => {
-                    document.querySelectorAll('.card-style-option').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.card-chip').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     document.getElementById('settingCardStyle').value = btn.dataset.style;
                 };
@@ -126,10 +128,10 @@ if (typeof window.SettingsManager === 'undefined') {
             document.getElementById('settingCursorTrail').checked = config.trail === 'true';
             document.getElementById('settingUiSounds').checked = config.uiSounds === 'true';
 
-            // Marcar el estilo de tarjetas activo
+            // Marcar el chip de estilo activo
             const activeCardStyle = config.cardStyle || 'default';
             document.getElementById('settingCardStyle').value = activeCardStyle;
-            document.querySelectorAll('.card-style-option').forEach(btn => {
+            document.querySelectorAll('.card-chip').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.style === activeCardStyle);
             });
 
@@ -284,6 +286,32 @@ if (typeof window.SettingsManager === 'undefined') {
             if (confirm('¿Restaurar todo a fábrica?')) {
                 Object.values(SettingsCore.STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
                 location.reload();
+            }
+        };
+
+        // ========================================================================
+        // CYBER CARD — Inyección de elementos DOM
+        // Las scan-lines y cyber-lines necesitan nodos reales porque los
+        // pseudo-elementos no pueden usarse con overflow:hidden en tarjetas dinámicas.
+        // ========================================================================
+        const _applyCyberElements = (enable) => {
+            const cards = document.querySelectorAll('.game-card');
+            if (enable) {
+                cards.forEach(card => {
+                    if (card.querySelector('.cyber-scan-line')) return; // Evitar duplicados
+                    const scan = document.createElement('div');
+                    scan.className = 'cyber-scan-line';
+                    const line1 = document.createElement('div');
+                    line1.className = 'cyber-line';
+                    const line2 = document.createElement('div');
+                    line2.className = 'cyber-line';
+                    const line3 = document.createElement('div');
+                    line3.className = 'cyber-line';
+                    card.append(scan, line1, line2, line3);
+                });
+            } else {
+                // Limpiar elementos cuando se cambia de estilo
+                document.querySelectorAll('.cyber-scan-line, .cyber-line').forEach(el => el.remove());
             }
         };
 
