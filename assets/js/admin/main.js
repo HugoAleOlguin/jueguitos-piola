@@ -498,14 +498,19 @@ function addLinkRow(label = '', url = '', style = 'button') {
 }
 
 function updatePreview() {
-    window.updatePreviewGlobal = true; // Expose for inline toggles
     DOM.preview.title.textContent = DOM.form.title.value || 'Título...';
-    DOM.preview.desc.textContent = DOM.form.desc.value || 'Resumen corto...';
-    
-    const imgUrl = DOM.form.image.value || '../favicon.png';
-    DOM.preview.img.src = imgUrl;
-    DOM.preview.img.style.display = 'block';
-    
+    DOM.preview.desc.textContent  = DOM.form.desc.value  || 'Resumen corto...';
+
+    // Mostrar imagen solo si el usuario escribio una URL
+    const imgUrl = DOM.form.image.value.trim();
+    if (imgUrl) {
+        DOM.preview.img.src     = imgUrl;
+        DOM.preview.img.style.display = 'block';
+    } else {
+        DOM.preview.img.src     = '';
+        DOM.preview.img.style.display = 'none';
+    }
+
     const activeTags = Array.from(DOM.tagsContainer.querySelectorAll('.active')).map(b => b.textContent);
     DOM.preview.tags.innerHTML = activeTags.map(t => `<span>${t}</span>`).join('');
 }
