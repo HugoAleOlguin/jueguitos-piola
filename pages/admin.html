@@ -33,9 +33,6 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>Admin</h2>
-            <span class="text-muted" style="font-size:12px;">
-                <span class="status-dot"></span>Online
-            </span>
         </div>
 
         <nav class="sidebar-nav">
@@ -132,8 +129,9 @@
                 <div class="editor-preview">
                     <label>Vista previa</label>
                     <div class="preview-card">
-                        <div class="preview-img">
-                            <img id="prevImg" src="" alt="">
+                        <div class="preview-img" id="prevImgWrapper">
+                            <img id="prevImg" src="" alt="" style="display:none;">
+                        </div>
                         </div>
                         <div class="preview-content">
                             <h3 id="prevTitle">Título</h3>

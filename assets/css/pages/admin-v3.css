@@ -128,7 +128,7 @@ button {
 .sidebar {
     background: var(--bg-surface);
     border-right: 1px solid var(--border);
-    padding: 1.25rem 1rem;
+    padding: 1rem 0.875rem;
     display: flex;
     flex-direction: column;
     position: sticky;
@@ -136,7 +136,7 @@ button {
     height: 100vh;
     overflow-y: auto;
 }
-.sidebar-header { margin-bottom: 1.5rem; padding: 0 0.25rem; }
+.sidebar-header { margin-bottom: 1.25rem; padding: 0 0.25rem; }
 .sidebar-header h2 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 
 .status-dot {
@@ -185,15 +185,15 @@ button {
     padding-bottom: 80px;
 }
 
-.view-panel { padding: 2rem; display: none; }
+.view-panel { padding: 1.25rem 1.5rem; display: none; }
 .view-panel.active { display: block; }
 
 .view-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border);
     gap: 1rem;
 }
@@ -252,12 +252,12 @@ button {
 /* ===================== EDITOR ===================== */
 .editor-grid {
     display: grid;
-    grid-template-columns: 1fr 260px;
-    gap: 2rem;
+    grid-template-columns: 1fr 240px;
+    gap: 1.5rem;
     align-items: start;
 }
 
-.form-group { margin-bottom: 1rem; }
+.form-group { margin-bottom: 0.75rem; }
 .form-group label {
     display: block;
     font-size: 11px;
