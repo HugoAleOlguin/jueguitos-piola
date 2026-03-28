@@ -206,18 +206,18 @@ async function fetchAPI(endpoint, method = 'GET', body = null) {
 
 async function fetchInitialData() {
     try {
-        toast('Sincronizando con GitHub...', '');
+        toast('Cargando datos...');
         const data = await fetchAPI(`contents/${CONFIG.FILE_PATH}?ref=${CONFIG.BRANCH}`);
         const content = decodeURIComponent(escape(atob(data.content)));
         
-        // Parse raw JS safely
+        // Parsear JS del catálogo de forma segura
         const match = content.match(/(?:window\.|const\s+)gamesData\s*=\s*\[([\s\S]*)\];/);
         if (match) {
             state.games = new Function(`return [${match[1]}]`)();
             state.originalSha = data.sha;
             renderList();
             renderTagsPicker();
-            toast('Datos cargados', 'success');
+            toast(`${state.games.length} juegos cargados`, 'success');
         }
     } catch (e) {
         toast('Error al descargar datos: Verifica el Token', 'error');
@@ -234,23 +234,22 @@ async function commitToGithub() {
         btn.textContent = 'Publicando...';
         btn.disabled = true;
         
-        // 1. Get Latest Commit
+        // 1. Obtener ultimo commit
         const ref = await fetchAPI(`git/refs/heads/${CONFIG.BRANCH}`);
         const latestCommitSha = ref.object.sha;
         
-        // 2. Format JS File
+        // 2. Serializar juegos
         const fileContent = serializeGamesInfo(state.games);
         
-        // 3. Create Blobs
+        // 3. Crear blobs
         const jsBlob = await fetchAPI('git/blobs', 'POST', { content: fileContent, encoding: 'utf-8' });
         
-        // Version update (Simulated minimal versioning)
         const now = new Date();
         const vDate = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
         const verStr = JSON.stringify({ version: vDate, updated: now.toISOString() }, null, 4);
         const verBlob = await fetchAPI('git/blobs', 'POST', { content: verStr, encoding: 'utf-8' });
 
-        // 4. Create Tree
+        // 4. Crear tree
         const parentCommit = await fetchAPI(`git/commits/${latestCommitSha}`);
         const newTree = await fetchAPI('git/trees', 'POST', {
             base_tree: parentCommit.tree.sha,
@@ -260,9 +259,8 @@ async function commitToGithub() {
             ]
         });
 
-        // 5. Commit & Push
-        const changesArr = Array.from(state.pendingChanges);
-        const commitMsg = `Admin Update: ${changesArr.join(', ')} (v${vDate})`;
+        // 5. Commit & Push con mensaje compacto
+        const commitMsg = buildCommitMessage(vDate);
         const newCommit = await fetchAPI('git/commits', 'POST', {
             message: commitMsg,
             tree: newTree.sha,
@@ -273,14 +271,38 @@ async function commitToGithub() {
         
         state.pendingChanges.clear();
         updatePendingUI();
-        toast('Cambios publicados exitosamente🚀', 'success');
+        toast('Publicado correctamente', 'success');
         
     } catch (e) {
-        toast(`Error publicando: ${e.message}`, 'error');
+        toast(`Error al publicar: ${e.message}`, 'error');
     } finally {
-        btn.textContent = '🚀 Publicar a GitHub';
+        btn.textContent = 'Publicar cambios';
         btn.disabled = false;
     }
+}
+
+/**
+ * Genera un mensaje de commit compacto y legible.
+ * Si hay 1 cambio, lo muestra con su prefijo (+/-/~).
+ * Si hay mas de 1, agrupa en una linea compacta.
+ */
+function buildCommitMessage(vDate) {
+    const changes = Array.from(state.pendingChanges);
+    let summary;
+    if (changes.length === 1) {
+        summary = changes[0];
+    } else {
+        // Contar tipos
+        const adds    = changes.filter(c => c.startsWith('+')).length;
+        const deletes = changes.filter(c => c.startsWith('-')).length;
+        const edits   = changes.filter(c => c.startsWith('~')).length;
+        const parts   = [];
+        if (adds)    parts.push(`${adds} nuevo${adds > 1 ? 's' : ''}`);
+        if (edits)   parts.push(`${edits} editado${edits > 1 ? 's' : ''}`);
+        if (deletes) parts.push(`${deletes} eliminado${deletes > 1 ? 's' : ''}`);
+        summary = `juegos: ${parts.join(', ')}`;
+    }
+    return `${summary} (v${vDate})`;
 }
 
 function serializeGamesInfo(games) {
@@ -309,20 +331,26 @@ function renderList() {
     const list = DOM.gamesList;
     const term = DOM.searchFilter.value.toLowerCase();
     
+    // SVG icons inline para evitar dependencias externas
+    const iconEye     = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const iconEyeOff  = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/></svg>`;
+    const iconTrash   = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+    const iconGrip    = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`;
+
     list.innerHTML = state.games
         .map((g, i) => ({ ...g, oIndex: i }))
         .filter(g => g.title.toLowerCase().includes(term) || g.id.toLowerCase().includes(term))
         .map(g => `
-            <li class="game-row ${g.hidden ? 'ghost' : ''}" data-index="${g.oIndex}" draggable="true">
-                <div class="drag-handle" title="Reordenar">☰</div>
-                <img src="${g.image || '../favicon.png'}" class="game-thumb" loading="lazy">
+            <li class="game-row ${g.hidden ? 'is-hidden' : ''}" data-index="${g.oIndex}" draggable="true">
+                <div class="drag-handle" title="Arrastrar para reordenar">${iconGrip}</div>
+                <img src="${g.image || '../favicon.png'}" class="game-thumb" loading="lazy" onerror="this.src='../favicon.png'">
                 <div class="game-info">
-                    <h4>${g.title} ${g.hidden ? '<span class="text-muted">(Oculto)</span>' : ''}</h4>
+                    <h4>${g.title}${g.hidden ? ' <span class="text-muted">(oculto)</span>' : ''}</h4>
                     <p>${g.id}</p>
                 </div>
                 <div class="row-actions">
-                    <button class="btn-ghost action-btn" data-action="toggle" data-i="${g.oIndex}">${g.hidden ? '👁️‍🗨️' : '👁️'}</button>
-                    <button class="btn-ghost action-btn" data-action="delete" data-i="${g.oIndex}" style="color:var(--danger)">🗑</button>
+                    <button class="action-icon-btn" data-action="toggle" data-i="${g.oIndex}" title="${g.hidden ? 'Mostrar' : 'Ocultar'}">${g.hidden ? iconEyeOff : iconEye}</button>
+                    <button class="action-icon-btn danger" data-action="delete" data-i="${g.oIndex}" title="Eliminar">${iconTrash}</button>
                 </div>
             </li>
         `).join('');
@@ -340,11 +368,12 @@ function setupListEvents() {
             
             if (action === 'toggle') {
                 state.games[index].hidden = !state.games[index].hidden;
-                logChange(`Visibilidad: ${state.games[index].title}`);
+                logChange(`~${state.games[index].title}`);
                 renderList();
             } else if (action === 'delete') {
-                if(confirm(`¿ELIMINAR "${state.games[index].title}"?`)){
-                    logChange(`Borrado: ${state.games[index].title}`);
+                const title = state.games[index].title;
+                if (confirm(`Eliminar "${title}"?`)) {
+                    logChange(`-${title}`);
                     state.games.splice(index, 1);
                     renderList();
                 }
@@ -368,12 +397,13 @@ function setupListEvents() {
     });
 }
 
-// Drag Handlers
+// Drag Handlers — Solo desde el drag-handle por usabilidad
 function handleDragStart(e) {
-    if(!e.target.closest('.drag-handle')) { e.preventDefault(); return; }
+    if (!e.target.closest('.drag-handle')) { e.preventDefault(); return; }
     state.dragSrcIndex = parseInt(this.dataset.index);
     e.dataTransfer.effectAllowed = 'move';
-    setTimeout(() => this.style.opacity = '0.4', 0);
+    e.dataTransfer.setData('text/plain', state.dragSrcIndex);
+    setTimeout(() => this.style.opacity = '0.35', 0);
 }
 function handleDragOver(e) {
     e.preventDefault();
@@ -383,12 +413,13 @@ function handleDragOver(e) {
 function handleDrop(e) {
     e.stopPropagation();
     const destIndex = parseInt(this.dataset.index);
-    if (state.dragSrcIndex !== destIndex) {
+    if (state.dragSrcIndex !== null && state.dragSrcIndex !== destIndex) {
         const item = state.games.splice(state.dragSrcIndex, 1)[0];
         state.games.splice(destIndex, 0, item);
-        logChange(`Reorganización de lista`);
+        logChange('~orden');
         renderList();
     }
+    state.dragSrcIndex = null;
     return false;
 }
 function handleDragEnd(e) {
@@ -400,7 +431,7 @@ function handleDragEnd(e) {
 // ==========================================================================
 function openEditor(index = null) {
     state.editingIndex = index;
-    DOM.editorTitle.textContent = index === null ? '🌟 Nuevo Juego' : '✏️ Editar Juego';
+    DOM.editorTitle.textContent = index === null ? 'Nuevo Juego' : 'Editar Juego';
     
     if (index !== null) {
         const g = state.games[index];
@@ -506,15 +537,15 @@ function saveGameLocal() {
 
     if (state.editingIndex !== null) {
         state.games[state.editingIndex] = { ...state.games[state.editingIndex], ...newData };
-        logChange(`Edición: ${newData.title}`);
+        logChange(`~${newData.title}`);
     } else {
-        if(state.games.some(g => g.id === idStr)) return toast('El ID ya existe', 'error');
+        if (state.games.some(g => g.id === idStr)) return toast('El ID ya existe', 'error');
         state.games.push(newData);
-        logChange(`Nuevo: ${newData.title}`);
+        logChange(`+${newData.title}`);
     }
 
     resetEditor();
-    toast('Juego guardado en memoria', 'success');
+    toast('Guardado localmente', 'success');
 }
 
 // ==========================================================================
@@ -526,15 +557,20 @@ function logChange(msg) {
 }
 
 function updatePendingUI() {
-    const active = state.pendingChanges.size > 0;
-    DOM.pendingCount.textContent = state.pendingChanges.size;
-    
-    if (active) {
+    const total = state.pendingChanges.size;
+    if (total > 0) {
+        // Resumen compacto: "~Raft, +Nuevo" o "3 cambios sin publicar"
+        const changes = Array.from(state.pendingChanges);
+        const summaryText = total <= 2
+            ? changes.join(', ')
+            : `${total} cambios sin publicar`;
+        document.getElementById('pendingSummary').textContent = summaryText;
         DOM.pendingBar.classList.remove('hidden');
-        DOM.pendingBar.classList.add('show');
+        // Siguiente frame para que la transicion funcione
+        requestAnimationFrame(() => DOM.pendingBar.classList.add('show'));
     } else {
         DOM.pendingBar.classList.remove('show');
-        setTimeout(() => DOM.pendingBar.classList.add('hidden'), 300);
+        setTimeout(() => DOM.pendingBar.classList.add('hidden'), 280);
     }
 }
 

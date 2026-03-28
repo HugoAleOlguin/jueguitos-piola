@@ -1,197 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administración | Jueguitos Piola</title>
     <meta name="robots" content="noindex, nofollow">
-
-    <!-- Minimalist Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Strict Utilitarian Styles -->
     <link rel="stylesheet" href="../assets/css/pages/admin-v3.css">
 </head>
-
 <body>
-    <!-- Notificaciones (Toasts) -->
-    <div id="toastContainer" class="toast-container"></div>
 
-    <!-- PANTALLA DE LOGIN -->
-    <main id="loginScreen" class="login-wrapper">
-        <form id="loginForm" class="login-panel">
-            <h1 class="login-title">Acceso Restringido</h1>
-            <p class="text-muted">Ingresa la clave maestra para continuar.</p>
-            
-            <input type="password" id="passwordInput" class="input-flat" placeholder="Contraseña..." autofocus required>
-            <button type="submit" class="btn-solid btn-primary">Ingresar</button>
-            <div id="loginError" class="login-error hidden">Clave incorrecta.</div>
-        </form>
-    </main>
+<!-- Toasts -->
+<div id="toastContainer" class="toast-container"></div>
 
-    <!-- APLICACIÓN PRINCIPAL (Oculta hasta login) -->
-    <main id="appScreen" class="app-layout hidden">
-        <!-- Barra Lateral -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Panel Admin</h2>
-                <div class="status-indicator" id="syncStatus">
-                    <span class="dot"></span> Online
-                </div>
-            </div>
+<!-- LOGIN -->
+<main id="loginScreen" class="login-wrapper">
+    <form id="loginForm" class="login-panel">
+        <h1>Panel de Administración</h1>
+        <p class="text-muted">Ingresa la clave de acceso.</p>
+        <input type="password" id="passwordInput" class="input-flat" placeholder="Contraseña..." autofocus required>
+        <button type="submit" class="btn-solid btn-primary">Ingresar</button>
+        <span id="loginError" class="login-error hidden">Clave incorrecta.</span>
+    </form>
+</main>
 
-            <nav class="sidebar-nav">
-                <button class="nav-btn active" data-view="dashboard">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"></path></svg>
-                    Dashboard
-                </button>
-                <button class="nav-btn" data-view="editor">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
-                    Nuevo Juego
-                </button>
-                <div class="nav-divider"></div>
-                <button class="nav-btn" data-view="settings">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.8.97 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    Ajustes
-                </button>
-            </nav>
+<!-- APP -->
+<div id="appScreen" class="app-layout hidden">
 
-            <div class="sidebar-footer">
-                <button id="logoutBtn" class="btn-ghost" style="width: 100%;">Cerrar Sesión</button>
-            </div>
-        </aside>
-
-        <!-- Contenido Central -->
-        <section class="content-area">
-            
-            <!-- VISTA: DASHBOARD -->
-            <div id="view-dashboard" class="view-panel active">
-                <header class="view-header">
-                    <h2>Catálogo de Juegos</h2>
-                    <div class="header-actions">
-                        <input type="text" id="searchFilter" class="input-flat" placeholder="Buscar juego...">
-                    </div>
-                </header>
-
-                <div class="games-list-wrapper">
-                    <!-- Lista arrastrable -->
-                    <ul id="gamesList" class="games-list">
-                        <!-- Items inyectados por JS -->
-                    </ul>
-                </div>
-            </div>
-
-            <!-- VISTA: EDITOR -->
-            <div id="view-editor" class="view-panel">
-                <header class="view-header">
-                    <h2 id="editorTitle">Nuevo Juego</h2>
-                    <div class="header-actions">
-                        <button type="button" class="btn-ghost" id="cancelEditBtn">Cancelar</button>
-                        <button type="button" class="btn-solid btn-primary" id="saveGameBtn">Guardar Local</button>
-                    </div>
-                </header>
-
-                <div class="editor-grid">
-                    <!-- Formulario -->
-                    <div class="editor-form">
-                        <div class="form-group row-2">
-                            <div>
-                                <label>ID (Identificador único)</label>
-                                <input type="text" id="inpId" class="input-flat" placeholder="ej: mi-juego">
-                            </div>
-                            <div>
-                                <label>Título</label>
-                                <input type="text" id="inpTitle" class="input-flat" placeholder="Nombre completo">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Imagen Portada (URL o /assets/...)</label>
-                            <input type="text" id="inpImage" class="input-flat" placeholder="Ruta de la imagen">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Descripción Corta (Tarjeta)</label>
-                            <textarea id="inpDesc" class="input-flat" rows="2" placeholder="Un breve resumen..."></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Descripción Completa (Modal)</label>
-                            <textarea id="inpFullDesc" class="input-flat" rows="4" placeholder="Detalles, instrucciones... (acepta saltos de línea)"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Etiquetas</label>
-                            <div id="tagsContainer" class="tags-picker"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="display:flex; justify-content:space-between; align-items:center;">
-                                Enlaces y Botones
-                                <button type="button" id="addLinkBtn" class="btn-ghost btn-sm">Añadir Botón</button>
-                            </label>
-                            <div id="linksContainer" class="links-list">
-                                <!-- Botones inyectados por JS -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Previsualización -->
-                    <div class="editor-preview">
-                        <label>Vista Previa (Tarjeta)</label>
-                        <div class="preview-card">
-                            <div class="preview-img">
-                                <img id="prevImg" src="" alt="preview" onerror="this.style.display='none'">
-                            </div>
-                            <div class="preview-content">
-                                <h3 id="prevTitle">Título</h3>
-                                <p id="prevDesc">Descripción corta de previsualización.</p>
-                                <div id="prevTags" class="preview-tags"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VISTA: AJUSTES -->
-            <div id="view-settings" class="view-panel">
-                <header class="view-header">
-                    <h2>Ajustes del Sistema</h2>
-                </header>
-                <div class="settings-card">
-                    <h3>Token de GitHub</h3>
-                    <p class="text-muted" style="margin-bottom: 1rem;">Para sincronizar cambios en vivo necesitas un Token de Acceso Personal (PAT) de GitHub con permisos de commit.</p>
-                    <input type="password" id="githubTokenInput" class="input-flat" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-                    <button class="btn-solid btn-primary" id="saveTokenBtn" style="margin-top:1rem;">Guardar Token</button>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- Barra Inferior (Commit Pending) -->
-        <div id="pendingBar" class="pending-sync-bar hidden">
-            <div class="pending-info">
-                <strong><span id="pendingCount">0</span> Cambios Locales</strong>
-                <p>Presiona [Publicar Cambios] para sincronizar con GitHub.</p>
-            </div>
-            <button id="commitBtn" class="btn-solid btn-accent">🚀 Publicar a GitHub</button>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Admin</h2>
+            <span class="text-muted" style="font-size:12px;">
+                <span class="status-dot"></span>Online
+            </span>
         </div>
-    </main>
 
-    <!-- Modal Token Cero -->
-    <div id="setupModal" class="modal-overlay hidden">
-        <div class="modal-panel">
-            <h2>Configuración Inicial</h2>
-            <p>Ingresa tu Token de GitHub para poder obtener los datos.</p>
-            <input type="password" id="setupTokenInput" class="input-flat" placeholder="ghp_...">
-            <button id="setupTokenBtn" class="btn-solid btn-primary" style="margin-top: 1rem; width: 100%;">Conectar</button>
+        <nav class="sidebar-nav">
+            <button class="nav-btn active" data-view="dashboard">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+                Catálogo
+            </button>
+            <button class="nav-btn" data-view="editor">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                Nuevo Juego
+            </button>
+            <div class="nav-divider"></div>
+            <button class="nav-btn" data-view="settings">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Ajustes
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="btn-ghost" style="width:100%; text-align:left;">Cerrar sesión</button>
         </div>
+    </aside>
+
+    <!-- Contenido -->
+    <section class="content-area">
+
+        <!-- VISTA: Catálogo -->
+        <div id="view-dashboard" class="view-panel active">
+            <header class="view-header">
+                <h2>Catálogo de Juegos</h2>
+                <div class="header-actions">
+                    <input type="text" id="searchFilter" class="input-flat" placeholder="Buscar..." style="width:200px;">
+                </div>
+            </header>
+            <ul id="gamesList" class="games-list"></ul>
+        </div>
+
+        <!-- VISTA: Editor -->
+        <div id="view-editor" class="view-panel">
+            <header class="view-header">
+                <h2 id="editorTitle">Nuevo Juego</h2>
+                <div class="header-actions">
+                    <button type="button" class="btn-ghost" id="cancelEditBtn">Cancelar</button>
+                    <button type="button" class="btn-solid btn-primary" id="saveGameBtn">Guardar local</button>
+                </div>
+            </header>
+
+            <div class="editor-grid">
+                <!-- Columna Formulario -->
+                <div class="editor-form">
+
+                    <div class="form-group row-2">
+                        <div>
+                            <label>ID único</label>
+                            <input type="text" id="inpId" class="input-flat" placeholder="ej: mi-juego">
+                        </div>
+                        <div>
+                            <label>Título</label>
+                            <input type="text" id="inpTitle" class="input-flat" placeholder="Nombre del juego">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Imagen (URL o ruta)</label>
+                        <input type="text" id="inpImage" class="input-flat" placeholder="../assets/img/...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción corta (tarjeta)</label>
+                        <textarea id="inpDesc" class="input-flat" rows="2" placeholder="Breve resumen..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción completa (modal)</label>
+                        <textarea id="inpFullDesc" class="input-flat" rows="4" placeholder="Detalles, instrucciones... (acepta saltos de línea)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Etiquetas</label>
+                        <div id="tagsContainer" class="tags-picker"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label>Botones / Enlace</label>
+                            <button type="button" id="addLinkBtn" class="btn-solid btn-sm">+ Añadir</button>
+                        </div>
+                        <div id="linksContainer" class="links-list"></div>
+                    </div>
+
+                </div>
+
+                <!-- Columna Preview -->
+                <div class="editor-preview">
+                    <label>Vista previa</label>
+                    <div class="preview-card">
+                        <div class="preview-img">
+                            <img id="prevImg" src="" alt="">
+                        </div>
+                        <div class="preview-content">
+                            <h3 id="prevTitle">Título</h3>
+                            <p id="prevDesc">Descripción corta.</p>
+                            <div id="prevTags" class="preview-tags"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA: Ajustes -->
+        <div id="view-settings" class="view-panel">
+            <header class="view-header">
+                <h2>Ajustes</h2>
+            </header>
+            <div class="settings-card">
+                <h3>Token de GitHub</h3>
+                <p class="text-muted" style="margin-bottom:12px;">Token de Acceso Personal (PAT) con permiso de commit para sincronizar cambios.</p>
+                <input type="password" id="githubTokenInput" class="input-flat" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                <button id="saveTokenBtn" class="btn-solid btn-primary" style="margin-top:10px;">Guardar token</button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Barra de cambios pendientes -->
+    <div id="pendingBar" class="pending-sync-bar hidden">
+        <div class="pending-info">
+            <strong id="pendingSummary">Cambios sin publicar</strong>
+            <p>Pulsa "Publicar" para sincronizar con GitHub.</p>
+        </div>
+        <button id="commitBtn" class="btn-solid btn-accent">Publicar cambios</button>
     </div>
 
-    <!-- Modulos JS -->
-    <script src="../assets/js/admin/main.js"></script>
+</div>
+
+<!-- Modal: Token inicial -->
+<div id="setupModal" class="modal-overlay hidden">
+    <div class="modal-panel">
+        <h2>Configuración inicial</h2>
+        <p>Ingresa tu Token de GitHub para poder cargar y guardar juegos.</p>
+        <input type="password" id="setupTokenInput" class="input-flat" placeholder="ghp_...">
+        <button id="setupTokenBtn" class="btn-solid btn-primary" style="margin-top:12px; width:100%;">Conectar</button>
+    </div>
+</div>
+
+<script src="../assets/js/admin/main.js"></script>
 </body>
 </html>
