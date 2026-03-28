@@ -4,972 +4,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración | Jueguitos Piola</title>
-    <script>
-        // Suppress external extension errors
-        window.addEventListener('unhandledrejection', (event) => {
-            if (event.reason && (event.reason.toString().includes('onMessage') || event.reason.toString().includes('Extension') || event.reason.toString().includes('installHook'))) {
-                event.preventDefault();
-                console.warn('Ignored external extension error:', event.reason);
-            }
-        });
-    </script>
-    <link rel="icon" href="../favicon.png">
-
-    <!-- FIX: Hide from Search Engines since robots.txt is ignored in subdirectories -->
+    <title>Administración | Jueguitos Piola</title>
     <meta name="robots" content="noindex, nofollow">
 
-    <!-- Fonts -->
+    <!-- Minimalist Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Main Styles & Settings -->
-    <link rel="stylesheet" href="../assets/css/main.css">
-    <script src="../assets/js/settings.js"></script>
-    <script src="../assets/js/achievements.js"></script>
-
-    <style>
-        :root {
-            /* Map Admin Variables to Main Theme Variables */
-            --primary: var(--primary-color, #00f3ff);
-            --primary-dark: #00a8b3;
-            --danger: var(--accent-red, #ff4757);
-            --success: var(--accent-green, #2ecc71);
-            --warning: var(--accent-orange, #f1c40f);
-
-            --bg-dark: var(--bg-color, #0a0a0f);
-            --bg-panel: var(--card-bg, rgba(15, 15, 15, 0.9));
-
-            --text-main: var(--text-color, #ffffff);
-            --text-muted: var(--text-muted, #888888);
-
-            --border: var(--glass-border, rgba(255, 255, 255, 0.1));
-            --glass: var(--glass-bg, rgba(20, 20, 30, 0.6));
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-main, 'Inter', sans-serif);
-            /* Background handled by style.css and settings.js */
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            animation: fadeInBody 0.5s ease forwards;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInBody {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Typography */
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--primary);
-        }
-
-        /* Login Screen */
-        .login-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .login-box {
-            background: rgba(20, 20, 30, 0.95);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            border-radius: 16px;
-            padding: 2.5rem;
-            width: 340px;
-            text-align: center;
-            animation: fadeIn 0.5s ease-out;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .login-box h2 {
-            margin-bottom: 1.5rem;
-            letter-spacing: 2px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .input-sm {
-            padding: 6px 10px;
-            font-size: 0.85rem;
-            border-radius: 6px;
-        }
-
-        .select-sm {
-            padding: 6px 10px;
-            background: rgb(20, 20, 25);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 8px;
-            border-radius: 6px;
-            align-items: center;
-            border: 1px solid transparent;
-            transition: border-color 0.2s;
-        }
-
-        .btn-row:focus-within {
-            border-color: var(--primary);
-        }
-
-        .btn-row .input-sm,
-        .btn-row .select-sm {
-            background: transparent;
-            border: none;
-            padding: 4px 8px;
-        }
-
-        .btn-row .input-sm:focus {
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #000;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
-        }
-
-        .btn-danger {
-            background: rgba(255, 71, 87, 0.1);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-        }
-
-        .btn-danger:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-        }
-
-        .btn-ghost:hover {
-            border-color: white;
-            color: white;
-        }
-
-        /* Layout */
-        .app-container {
-            display: none;
-            max-width: 1600px;
-            /* Match style.css main max-width approx */
-            margin: 0 auto;
-            width: 100%;
-            /* height: 100vh;  Removed to allow natural flow */
-            /* padding-top: 2rem; Removed to avoid header push */
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        /* .app-header removed to use global header styles */
-
-        .main-layout {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 2rem;
-            padding: 2rem 4rem;
-            /* Match main padding */
-            /* height: calc(100vh - 100px); Removed */
-        }
-
-        /* Sidebar */
-        .sidebar {
-            background: var(--bg-panel);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            padding: 1rem;
-            height: fit-content;
-        }
-
-        .nav-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s;
-            /* Button Reset */
-            width: 100%;
-            background: transparent;
-            border: 1px solid transparent;
-            text-align: left;
-            font-family: inherit;
-            font-size: 1rem;
-        }
-
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-        }
-
-        .nav-item.active {
-            background: rgba(0, 243, 255, 0.1);
-            color: var(--primary);
-            border-left: 3px solid var(--primary);
-        }
-
-        /* Content Area */
-        .content-area {
-            background: var(--bg-panel);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            padding: 2rem;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        /* Editor Layout (Form + Preview) */
-        .editor-container {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        /* Preview Card Style */
-        .preview-sticky {
-            position: sticky;
-            top: 0;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--primary);
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .preview-card {
-            background: #1a1a24;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s;
-        }
-
-        .preview-img-container {
-            width: 100%;
-            height: 180px;
-            overflow: hidden;
-            background: #000;
-        }
-
-        .preview-img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .preview-content {
-            padding: 1rem;
-            text-align: left;
-        }
-
-        .preview-content h3 {
-            font-size: 1.1rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
-        }
-
-        .preview-content p {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 1rem;
-        }
-
-        .preview-tags span {
-            display: inline-block;
-            background: rgba(0, 243, 255, 0.1);
-            color: var(--primary);
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-right: 4px;
-            margin-bottom: 4px;
-        }
-
-        /* Forms */
-        .form-section {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border);
-        }
-
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        textarea.input-field {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        /* Tags */
-        .tags-wrapper {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .tag-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-            /* Button Reset */
-            color: var(--text-muted);
-            font-family: inherit;
-        }
-
-        .tag-badge:hover {
-            border-color: var(--primary);
-        }
-
-        .tag-badge.selected {
-            background: rgba(0, 243, 255, 0.2);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        /* Drag & Drop Styles */
-        .game-card-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin-bottom: 0.8rem;
-            transition: transform 0.2s, background 0.2s;
-            cursor: default;
-        }
-
-        .game-card-item.dragging {
-            opacity: 0.5;
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px dashed var(--primary);
-        }
-
-        .game-card-item.drag-over {
-            border-top: 2px solid var(--primary);
-        }
-
-        .drag-handle {
-            cursor: grab;
-            color: var(--text-muted);
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            user-select: none;
-        }
-
-        .drag-handle:hover {
-            color: var(--primary);
-        }
-
-        .game-thumb {
-            width: 120px;
-            height: 68px;
-            object-fit: cover;
-            border-radius: 4px;
-            flex-shrink: 0;
-            background: #000;
-        }
-
-        /* Smooth Sortable Styles */
-        .sortable-ghost {
-            opacity: 0.2;
-            background: rgba(0, 243, 255, 0.05);
-            border: 1px dashed var(--primary);
-        }
-
-        .sortable-drag {
-            position: fixed;
-            /* Fixed prevents scroll issues */
-            z-index: 9999;
-            pointer-events: none;
-            background: var(--bg-panel);
-            border: 1px solid var(--primary);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transform: rotate(2deg) scale(1.02);
-            width: var(--drag-width);
-            opacity: 0.95;
-            list-style: none;
-            /* Safekeeping */
-        }
-
-        /* Notification Bar (Refined) */
-        .pending-bar {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: auto;
-            width: auto;
-            min-width: 320px;
-            background: rgba(20, 20, 30, 0.95);
-            border: 1px solid #ff9f43;
-            /* var(--warning) hardcoded for safety */
-            padding: 1rem;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            backdrop-filter: blur(10px);
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            animation: slideIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
-
-        .pending-bar-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #ff9f43;
-            font-weight: 600;
-        }
-
-        .pending-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            width: 100%;
-        }
-
-        .status-toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .status-toast.success {
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .status-toast.error {
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        /* Warning Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        /* Utilities */
-        .hidden {
-            display: none !important;
-        }
-
-        .text-sm {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        /* =========================================
-           RESPONSIVE DESIGN
-           ========================================= */
-        @media (max-width: 1024px) {
-            .editor-container {
-                grid-template-columns: 1fr;
-                /* Stack form and preview */
-            }
-
-            .preview-column {
-                order: -1;
-                /* Show preview on top */
-                margin-bottom: 2rem;
-            }
-
-            .preview-sticky {
-                position: relative;
-                top: 0;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .app-container {
-                padding-top: 0;
-                height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .app-header {
-                padding: 1rem;
-                margin-bottom: 0;
-                background: var(--bg-panel);
-                position: sticky;
-                top: 0;
-                z-index: 50;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .main-layout {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-                height: auto;
-                overflow-y: visible;
-                display: block;
-                /* Remove grid height restriction */
-            }
-
-            .sidebar {
-                margin-bottom: 1.5rem;
-                padding: 0.5rem;
-                border: none;
-                background: transparent;
-            }
-
-            .sidebar nav {
-                display: flex;
-                overflow-x: auto;
-                gap: 10px;
-                padding-bottom: 5px;
-                /* Scrollbar space */
-            }
-
-            .nav-item {
-                white-space: nowrap;
-                margin-bottom: 0;
-                background: var(--bg-panel);
-                border: 1px solid var(--border);
-            }
-
-            .nav-item.active {
-                border-left: 1px solid var(--primary);
-                /* Reset border */
-                border: 1px solid var(--primary);
-            }
-
-            .content-area {
-                padding: 1rem;
-                height: auto;
-                border: none;
-                background: transparent;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .pending-bar {
-                left: 10px;
-                right: 10px;
-                bottom: 10px;
-                width: auto;
-                min-width: 0;
-            }
-
-            .status-toast {
-                left: 20px;
-                right: auto;
-                bottom: 80px;
-                /* Above pending bar */
-            }
-        }
-
-        /* Layout */
-        .app-container {
-            display: none;
-            width: 100%;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .main-layout {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 2rem;
-            padding: 2rem 4rem;
-            max-width: 1600px;
-            /* Centered Content */
-            margin: 0 auto;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            background: var(--bg-panel);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            padding: 1rem;
-            height: fit-content;
-            position: sticky;
-            top: 100px;
-            /* Sticky sidebar below header */
-        }
-    </style>
+    <!-- Strict Utilitarian Styles -->
+    <link rel="stylesheet" href="../assets/css/pages/admin-v3.css">
 </head>
 
 <body>
+    <!-- Notificaciones (Toasts) -->
+    <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-screen hidden">
-        <div class="login-box">
-            <h2>ACCESO ADMIN</h2>
-            <div class="form-group">
-                <input type="password" id="passwordInput" class="input-field" placeholder="Contraseña de acceso"
-                    autofocus aria-label="Contraseña de acceso">
+    <!-- PANTALLA DE LOGIN -->
+    <main id="loginScreen" class="login-wrapper">
+        <form id="loginForm" class="login-panel">
+            <h1 class="login-title">Acceso Restringido</h1>
+            <p class="text-muted">Ingresa la clave maestra para continuar.</p>
+            
+            <input type="password" id="passwordInput" class="input-flat" placeholder="Contraseña..." autofocus required>
+            <button type="submit" class="btn-solid btn-primary">Ingresar</button>
+            <div id="loginError" class="login-error hidden">Clave incorrecta.</div>
+        </form>
+    </main>
+
+    <!-- APLICACIÓN PRINCIPAL (Oculta hasta login) -->
+    <main id="appScreen" class="app-layout hidden">
+        <!-- Barra Lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Panel Admin</h2>
+                <div class="status-indicator" id="syncStatus">
+                    <span class="dot"></span> Online
+                </div>
             </div>
-            <button onclick="login()" class="btn btn-primary">
-                <span>Ingresar al Sistema</span>
-            </button>
-        </div>
-    </div>
 
-    <!-- Main Application -->
-    <div id="appContainer" class="app-container">
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-view="dashboard">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"></path></svg>
+                    Dashboard
+                </button>
+                <button class="nav-btn" data-view="editor">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                    Nuevo Juego
+                </button>
+                <div class="nav-divider"></div>
+                <button class="nav-btn" data-view="settings">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.8.97 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Ajustes
+                </button>
+            </nav>
 
-        <header>
-            <div style="display:flex; align-items:center; gap:15px">
-                <h1
-                    style="margin:0; font-family: 'Orbitron', sans-serif; color:var(--primary-color); font-size: 1.5rem;">
-                    PANEL DE CONTROL
-                </h1>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn-ghost" style="width: 100%;">Cerrar Sesión</button>
             </div>
-            <button onclick="logout()" class="btn btn-ghost btn-sm" style="border-radius:20px">Cerrar Sesión</button>
-        </header>
+        </aside>
 
-        <div class="main-layout">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <nav>
-                    <button class="nav-item active" data-tab="add" type="button">
-                        <span>➕</span> Agregar Juego
-                    </button>
-                    <button class="nav-item" data-tab="list" type="button">
-                        <span>📋</span> Lista de Juegos
-                    </button>
-                    <button class="nav-item" data-tab="settings" type="button">
-                        <span>⚙️</span> Configuración
-                    </button>
-                </nav>
-            </aside>
+        <!-- Contenido Central -->
+        <section class="content-area">
+            
+            <!-- VISTA: DASHBOARD -->
+            <div id="view-dashboard" class="view-panel active">
+                <header class="view-header">
+                    <h2>Catálogo de Juegos</h2>
+                    <div class="header-actions">
+                        <input type="text" id="searchFilter" class="input-flat" placeholder="Buscar juego...">
+                    </div>
+                </header>
 
-            <!-- Content Area -->
-            <main class="content-area">
+                <div class="games-list-wrapper">
+                    <!-- Lista arrastrable -->
+                    <ul id="gamesList" class="games-list">
+                        <!-- Items inyectados por JS -->
+                    </ul>
+                </div>
+            </div>
 
-                <!-- View: Add / Edit -->
-                <div id="addView" class="view-section">
-                    <div class="editor-container">
-                        <!-- Form Column -->
-                        <div class="form-column">
-                            <div class="form-section">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:1rem">
-                                    <h2 id="formTitle" style="font-size: 1.5rem; margin: 0;">Agregar Nuevo Juego</h2>
-                                    <button onclick="resetForm()" class="btn btn-ghost"
-                                        style="padding:4px 8px">Limpiar</button>
-                                </div>
+            <!-- VISTA: EDITOR -->
+            <div id="view-editor" class="view-panel">
+                <header class="view-header">
+                    <h2 id="editorTitle">Nuevo Juego</h2>
+                    <div class="header-actions">
+                        <button type="button" class="btn-ghost" id="cancelEditBtn">Cancelar</button>
+                        <button type="button" class="btn-solid btn-primary" id="saveGameBtn">Guardar Local</button>
+                    </div>
+                </header>
 
-                                <form id="gameForm" onsubmit="handleFormSubmit(event)">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="inpId">ID Único (slug)</label>
-                                            <input type="text" id="inpId" class="input-field"
-                                                placeholder="ej: lethal-company" required oninput="updatePreview()">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="inpTitle">Título del Juego</label>
-                                            <input type="text" id="inpTitle" class="input-field"
-                                                placeholder="ej: Lethal Company" required oninput="updatePreview()">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="inpDesc">Descripción Corta (Tarjeta)</label>
-                                        <input type="text" id="inpDesc" class="input-field" required
-                                            oninput="updatePreview()">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="inpFullDesc">Descripción Completa
-                                            (Opcional)</label>
-                                        <textarea id="inpFullDesc" class="input-field"
-                                            placeholder="Detalles, instrucciones, updates..."></textarea>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="inpImage">URL de Imagen</label>
-                                        <input type="url" id="inpImage" class="input-field" placeholder="https://..."
-                                            required oninput="updatePreview()">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <span class="label-text"
-                                            style="display:block; color:var(--text-muted); margin-bottom:0.5rem; font-size:0.9rem;">Etiquetas</span>
-                                        <div id="tagsSelector" class="tags-wrapper"></div>
-                                    </div>
-
-                                    <div class="form-section">
-                                        <div
-                                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                            <h3 style="margin:0; font-size:0.9rem; color:#888;">
-                                                Botones del Juego</h3>
-                                            <button type="button" onclick="addDynamicButton()"
-                                                class="btn btn-ghost btn-sm"
-                                                style="font-size:0.8rem; padding: 4px 8px; background: rgba(255,255,255,0.05)">+
-                                                Agregar Otro</button>
-                                        </div>
-                                        <div id="dynamicButtonsList"
-                                            style="display:flex; flex-direction:column; gap:6px;">
-                                            <!-- Buttons dynamic rows -->
-                                        </div>
-                                    </div>
-
-                                    <button type="submit" class="btn btn-primary" id="finalSubmitBtn">
-                                        <span id="submitBtnText">Agregar a la lista</span>
-                                    </button>
-                                </form>
+                <div class="editor-grid">
+                    <!-- Formulario -->
+                    <div class="editor-form">
+                        <div class="form-group row-2">
+                            <div>
+                                <label>ID (Identificador único)</label>
+                                <input type="text" id="inpId" class="input-flat" placeholder="ej: mi-juego">
+                            </div>
+                            <div>
+                                <label>Título</label>
+                                <input type="text" id="inpTitle" class="input-flat" placeholder="Nombre completo">
                             </div>
                         </div>
 
-                        <!-- Preview Column -->
-                        <div class="preview-column">
-                            <div class="preview-sticky">
-                                <h4 style="margin-bottom: 1rem; color: var(--text-muted)">Vista
-                                    Previa</h4>
-                                <div class="preview-card">
-                                    <div class="preview-img-container">
-                                        <img id="previewImgEl" style="display:none" alt="Preview">
-                                    </div>
-                                    <div class="preview-content">
-                                        <h3 id="previewTitleEl" class="card-title">Título del Juego
-                                        </h3>
-                                        <p id="previewDescEl" class="card-desc">Descripción corta
-                                            del juego...</p>
-                                        <div id="previewTagsEl" class="preview-tags">
-                                            <!-- Tags -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- View: List -->
-                <div id="listView" class="view-section hidden">
-                    <div style="margin-bottom: 1rem;">
-                        <input type="text" id="searchGames" class="input-field" placeholder="Buscar juego..."
-                            onkeyup="renderGamesList()" aria-label="Buscar juego">
-                    </div>
-                    <div id="gamesList">
-                        <!-- Items rendered via JS -->
-                    </div>
-                </div>
-
-                <!-- View: Settings -->
-                <div id="settingsView" class="view-section hidden">
-                    <!-- GitHub Token -->
-                    <div class="form-section">
-                        <h2>🔑 Token de GitHub</h2>
-                        <p class="text-sm" style="margin-bottom:1rem">Necesario para guardar cambios.</p>
                         <div class="form-group">
-                            <input type="password" id="tokenSettingsInput" class="input-field" placeholder="ghp_..."
-                                aria-label="Token de GitHub" onkeydown="if(event.key==='Enter')saveToken(document.getElementById('rememberTokenSettings').checked)">
+                            <label>Imagen Portada (URL o /assets/...)</label>
+                            <input type="text" id="inpImage" class="input-flat" placeholder="Ruta de la imagen">
                         </div>
-                        <label style="display:flex; align-items:center; gap:8px; margin-bottom:1rem; cursor:pointer;">
-                            <input type="checkbox" id="rememberTokenSettings" style="width:18px; height:18px;">
-                            <span style="color:#aaa; font-size:0.9rem;">Recordar por 7 días</span>
-                        </label>
-                        <button onclick="saveToken(document.getElementById('rememberTokenSettings').checked)" class="btn btn-primary">Guardar Token</button>
+
+                        <div class="form-group">
+                            <label>Descripción Corta (Tarjeta)</label>
+                            <textarea id="inpDesc" class="input-flat" rows="2" placeholder="Un breve resumen..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Descripción Completa (Modal)</label>
+                            <textarea id="inpFullDesc" class="input-flat" rows="4" placeholder="Detalles, instrucciones... (acepta saltos de línea)"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Etiquetas</label>
+                            <div id="tagsContainer" class="tags-picker"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display:flex; justify-content:space-between; align-items:center;">
+                                Enlaces y Botones
+                                <button type="button" id="addLinkBtn" class="btn-ghost btn-sm">Añadir Botón</button>
+                            </label>
+                            <div id="linksContainer" class="links-list">
+                                <!-- Botones inyectados por JS -->
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Backup -->
-                    <div class="form-section">
-                        <h2>💾 Backup</h2>
-                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                            <div style="flex: 1;">
-                                <p class="text-sm" style="margin-bottom:0.5rem">Descargar copia</p>
-                                <button onclick="downloadBackup()" class="btn btn-ghost">⬇️ Descargar</button>
+                    <!-- Previsualización -->
+                    <div class="editor-preview">
+                        <label>Vista Previa (Tarjeta)</label>
+                        <div class="preview-card">
+                            <div class="preview-img">
+                                <img id="prevImg" src="" alt="preview" onerror="this.style.display='none'">
                             </div>
-                            <div style="flex: 1;">
-                                <p class="text-sm" style="margin-bottom:0.5rem">Restaurar desde archivo</p>
-                                <input type="file" id="restoreInput" style="display:none" onchange="handleRestore(this)" accept=".json">
-                                <button onclick="document.getElementById('restoreInput').click()" class="btn btn-ghost">⬆️ Subir</button>
+                            <div class="preview-content">
+                                <h3 id="prevTitle">Título</h3>
+                                <p id="prevDesc">Descripción corta de previsualización.</p>
+                                <div id="prevTags" class="preview-tags"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-            </main>
-        </div>
-
-        <!-- Pending Changes Bar (Subtle) -->
-        <div id="pendingBar" class="pending-bar hidden">
-            <div class="pending-bar-header">
-                <span>⚠️ Cambios pendientes: <span id="pendingCount">0</span></span>
             </div>
-            <div class="pending-actions">
-                <button onclick="discardChanges()" class="btn btn-ghost btn-sm">Descartar</button>
-                <button onclick="commitChanges()" class="btn btn-primary btn-sm">Publicar</button>
-            </div>
-        </div>
 
+            <!-- VISTA: AJUSTES -->
+            <div id="view-settings" class="view-panel">
+                <header class="view-header">
+                    <h2>Ajustes del Sistema</h2>
+                </header>
+                <div class="settings-card">
+                    <h3>Token de GitHub</h3>
+                    <p class="text-muted" style="margin-bottom: 1rem;">Para sincronizar cambios en vivo necesitas un Token de Acceso Personal (PAT) de GitHub con permisos de commit.</p>
+                    <input type="password" id="githubTokenInput" class="input-flat" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                    <button class="btn-solid btn-primary" id="saveTokenBtn" style="margin-top:1rem;">Guardar Token</button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Barra Inferior (Commit Pending) -->
+        <div id="pendingBar" class="pending-sync-bar hidden">
+            <div class="pending-info">
+                <strong><span id="pendingCount">0</span> Cambios Locales</strong>
+                <p>Presiona [Publicar Cambios] para sincronizar con GitHub.</p>
+            </div>
+            <button id="commitBtn" class="btn-solid btn-accent">🚀 Publicar a GitHub</button>
+        </div>
+    </main>
+
+    <!-- Modal Token Cero -->
+    <div id="setupModal" class="modal-overlay hidden">
+        <div class="modal-panel">
+            <h2>Configuración Inicial</h2>
+            <p>Ingresa tu Token de GitHub para poder obtener los datos.</p>
+            <input type="password" id="setupTokenInput" class="input-flat" placeholder="ghp_...">
+            <button id="setupTokenBtn" class="btn-solid btn-primary" style="margin-top: 1rem; width: 100%;">Conectar</button>
+        </div>
     </div>
 
-    <!-- Token Modal (Initial Setup) -->
-    <div id="tokenModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3>Configuración Inicial</h3>
-            <p style="margin: 1rem 0; color: #aaa;">Para administrar este sitio, necesitas un <strong>GitHub Personal
-                    Access Token</strong> con permisos de "repo".</p>
-            <input type="password" id="tokenInput" class="input-field" placeholder="Pega tu token aquí"
-                aria-label="Token de GitHub" onkeydown="if(event.key==='Enter')saveToken(false)">
-            <label style="display:flex; align-items:center; gap:8px; margin:1rem 0; cursor:pointer;">
-                <input type="checkbox" id="rememberToken" style="width:18px; height:18px;">
-                <span style="color:#aaa; font-size:0.9rem;">Recordar por 7 días</span>
-            </label>
-            <button onclick="saveToken(document.getElementById('rememberToken').checked)" class="btn btn-primary">Guardar y Continuar</button>
-        </div>
-    </div>
-
-
-
-    <script src="../assets/js/admin.js"></script>
+    <!-- Modulos JS -->
+    <script src="../assets/js/admin/main.js"></script>
 </body>
-
 </html>
