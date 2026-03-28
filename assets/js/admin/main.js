@@ -360,7 +360,7 @@ function renderList() {
 
 function setupListEvents() {
     // Actions delegation
-    DOM.gamesList.querySelectorAll('.action-btn').forEach(btn => {
+    DOM.gamesList.querySelectorAll('.action-icon-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const action = btn.dataset.action;
@@ -372,7 +372,7 @@ function setupListEvents() {
                 renderList();
             } else if (action === 'delete') {
                 const title = state.games[index].title;
-                if (confirm(`Eliminar "${title}"?`)) {
+                if (confirm(`¿Eliminar "${title}"?`)) {
                     logChange(`-${title}`);
                     state.games.splice(index, 1);
                     renderList();
@@ -384,7 +384,8 @@ function setupListEvents() {
     // Row Edit
     DOM.gamesList.querySelectorAll('.game-row').forEach(row => {
         row.addEventListener('click', (e) => {
-            if(!e.target.closest('.action-btn') && !e.target.closest('.drag-handle')){
+            // No abrir editor si se hizo click en botones o drag handle
+            if (!e.target.closest('.action-icon-btn') && !e.target.closest('.drag-handle')) {
                 openEditor(parseInt(row.dataset.index));
             }
         });
