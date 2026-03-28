@@ -268,49 +268,65 @@ Historial de cambios estructurales y visuales del proyecto.
  
  ### Changed
  - **Chat**: Se puso la fecha en los mensajes y se corrigio el problema de que no se mostraran los mensajes nuevos.
- 
-+## [3.6.0] - 2026-03-25
-+
-+### Added
-+- **Sistema Modular de Tarjetas**:
-+  - Opción de alternar entre estilo **Estándar** (diseño clásico) y **Compacto** (minimalista).
-+  - **Estilo Compacto**: Imagen al 100% con efecto "hover reveal" para mostrar la información del juego.
-+  - **Refactor CSS**: Separación de estilos en `game-card.css` (estructura), `game-card-style-default.css` y `game-card-style-compact.css`.
-+  - **Persistencia en la Nube**: El estilo de tarjeta ahora se guarda en Firebase junto con los temas compartidos.
-+
-+### Changed
-+- **Mobile Fallback**: En dispositivos móviles, el estilo compacto muestra la información de forma permanente con un degradado para asegurar la legibilidad sin necesidad de hover.
-+- **Optimización de Carga**: Pre-aplicación de la clase de estilo en el arranque para evitar destellos visuales (FOUC).
-+
-+## [3.7.0] - 2026-03-27
-+
-+### Added
-+- **Rediseño Total del Modal de Configuración**:
-+  - Nueva interfaz con **navegación por pestañas (Tabs)** para una mejor organización.
-+  - **Sidebar de Navegación** en pantallas grandes para acceso rápido a categorías (Fondo, Estilo, FX, Temas, Config).
-+  - **Mobile UI**: Las pestañas se transforman en una cinta de "chips" horizontales scrolleables en móviles.
-+  - Persistencia de pestaña activa durante la sesión (`sessionStorage`).
-+  - Mayor área de interacción y previews visuales mejoradas.
-+
-+### Fixed
-+- Limpieza de redundancias en el HTML del modal y consolidación de inputs ocultos para mejor compatibilidad con scripts legacy.
-+
- ## Versiones Principales
- 
- | Versión | Fecha | Cambio Principal |
- |---------|-------|------------------|
-+| **3.7** | Mar 2026 | Modal de Configuración por Pestañas |
-+| **3.6** | Mar 2026 | Sistema de Tarjetas (Estándar/Compacto) |
- | **3.4** | Mar 2026 | PiolaChat, Perfil unificado, GIFs |
- | **3.3** | Mar 2026 | Galería de Temas Comunitaria |
- | **3.2** | Feb 2026 | Giveaways en tiempo real |
- | **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
- | **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
- | **2.0** | Mar 2025 | Rediseño completo |
- | **1.0** | Ene 2025 | Lanzamiento inicial |
- 
- ---
- 
--**240+ commits** | **Ene 2025 → Mar 2026**
-+**260+ commits** | **Ene 2025 → Mar 2026**
 
+## [3.6.0] - 2026-03-25
+
+### Added
+- **Sistema Modular de Tarjetas**:
+  - Opción de alternar entre estilo **Estándar** (diseño clásico) y **Compacto** (minimalista).
+  - **Estilo Compacto**: Imagen al 100% con efecto "hover reveal" para mostrar la información del juego.
+  - **Refactor CSS**: Separación de estilos en `game-card.css` (estructura), `game-card-style-default.css` y `game-card-style-compact.css`.
+  - **Persistencia en la Nube**: El estilo de tarjeta ahora se guarda en Firebase junto con los temas compartidos.
+
+### Changed
+- **Mobile Fallback**: En dispositivos móviles, el estilo compacto muestra la información de forma permanente con un degradado para asegurar la legibilidad sin necesidad de hover.
+- **Optimización de Carga**: Pre-aplicación de la clase de estilo en el arranque para evitar destellos visuales (FOUC).
+
+## [3.7.0] - 2026-03-27
+
+### Added
+- **Rediseño Total del Modal de Configuración**:
+  - Nueva interfaz con **navegación por pestañas (Tabs)** para una mejor organización.
+  - **Sidebar de Navegación** en pantallas grandes para acceso rápido a categorías (Fondo, Estilo, FX, Temas, Config).
+  - **Mobile UI**: Las pestañas se transforman en una cinta de "chips" horizontales scrolleables en móviles.
+  - Persistencia de pestaña activa durante la sesión (`sessionStorage`).
+  - Mayor área de interacción y previews visuales mejoradas.
+
+### Fixed
+- Limpieza de redundancias en el HTML del modal y consolidación de inputs ocultos para mejor compatibilidad con scripts legacy.
+
+## [4.0.0] - 2026-03-28
+
+### Added
+- **Admin Panel v3 (Rediseño SPA)**:
+  - Reescritura total del panel de administración como una **SPA (Single Page Application)** ultraligera y rápida.
+  - Diseño **Utilitario & Legible**: Optimizado para aprovechar el 100% de la pantalla (`100vh`). Tipografía base de `15px` e inputs generosos.
+  - **Github API Integración**: Sincronización directa de la base de datos `games.js` mediante GitData API v3.
+  - **Sistema de Commits Compactos**: Agrupa cambios locales (añadir, editar, ocultar, reordenar) en un único envío descriptivo y versionado.
+  - **Editor Mejorado**: Previsualización real integrada (solo activa con URL válida), etiquetas por chips inteligentes y multienlaces por juego.
+
+### Changed
+- **Acceso Privado**: Eliminación de accesos públicos al panel desde el index principal para mayor seguridad y discreción.
+
+### Fixed
+- **Bugs de Interacción**: Corregida la propagación de eventos en el catálogo; ya no se abre el editor al intentar borrar, ocultar o reordenar un juego.
+- Eliminación masiva de código basura (legacy) y simplificación de la estructura de archivos del panel.
+
+## Versiones Principales
+
+| Versión | Fecha | Cambio Principal |
+|---------|-------|------------------|
+| **4.0** | Mar 2026 | **Panel Admin SPA v3** (GitHub API) |
+| **3.7** | Mar 2026 | Modal de Configuración por Pestañas |
+| **3.6** | Mar 2026 | Sistema de Tarjetas (Estándar/Compacto) |
+| **3.4** | Mar 2026 | PiolaChat, Perfil unificado, GIFs |
+| **3.3** | Mar 2026 | Galería de Temas Comunitaria |
+| **3.2** | Feb 2026 | Giveaways en tiempo real |
+| **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
+| **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
+| **2.0** | Mar 2025 | Rediseño completo |
+| **1.0** | Ene 2025 | Lanzamiento inicial |
+
+---
+
+**280+ commits** | **Ene 2025 → Mar 2026**
