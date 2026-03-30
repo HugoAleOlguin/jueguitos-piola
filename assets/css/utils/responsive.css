@@ -398,6 +398,59 @@
     #cursor-follow-dot {
         display: none !important;
     }
+
+    /* ---- PÁGINA DE DETALLE DEL JUEGO ---- */
+    .game-detail-container {
+        padding: 1.5rem 1rem !important;
+        margin: 0.5rem !important;
+        border-radius: 16px !important;
+    }
+
+    .game-header {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        align-items: center;
+        text-align: center;
+    }
+
+    .game-poster {
+        width: 100% !important;
+        max-width: 320px;
+        margin: 0 auto;
+        border-radius: 12px !important;
+    }
+
+    .game-info-header {
+        width: 100%;
+    }
+
+    .game-info-header h1 {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .game-meta {
+        justify-content: center;
+        gap: 0.5rem !important;
+    }
+
+    .game-description {
+        font-size: 0.9rem !important;
+        line-height: 1.6 !important;
+        margin-bottom: 1.5rem !important;
+        text-align: center;
+    }
+
+    .game-actions-row {
+        flex-direction: column !important;
+        width: 100%;
+        gap: 0.75rem !important;
+    }
+
+    .game-actions-row .btn-neon {
+        width: 100% !important;
+        justify-content: center;
+    }
 }
 
 /* =====================================================
