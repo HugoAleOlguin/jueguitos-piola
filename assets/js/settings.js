@@ -32,10 +32,14 @@ if (typeof window.SettingsManager === 'undefined') {
 
             await BackgroundManager.apply(config.bgType, config.bgValue, isLite);
             AppearanceManager.apply(config.blur, config.themeColor, isLite);
-            await CursorManager.set(config.cursor, BackgroundManager.ImageCacheStore);
-            ParticleSystem.start(config.particles === 'true' && !isLite, config.themeColor);
-            CursorManager.setTrail(config.trail === 'true' && !isLite, config.themeColor);
-            EffectsManager.enableSounds(config.uiSounds === 'true');
+            
+            // Efectos desactivados permanentemente para máxima simplicidad
+            if (window.CursorManager) {
+                CursorManager.set('default', BackgroundManager.ImageCacheStore);
+                CursorManager.setTrail(false);
+            }
+            if (window.ParticleSystem) ParticleSystem.start(false);
+            if (window.EffectsManager) EffectsManager.enableSounds(false);
         };
 
         // ========================================================================
@@ -56,47 +60,14 @@ if (typeof window.SettingsManager === 'undefined') {
                 file: document.getElementById('settingBgFile'),
                 blur: document.getElementById('settingBlur'),
                 color: document.getElementById('settingColor'),
-                presets: document.querySelectorAll('.color-btn'),
-                cursorCards: document.querySelectorAll('.option-card'),
-                particles: document.getElementById('settingParticles'),
-                trail: document.getElementById('settingCursorTrail'),
-                uiSounds: document.getElementById('settingUiSounds')
+                presets: document.querySelectorAll('.color-btn')
             };
 
             if (inputs.url) inputs.url.oninput = (e) => BackgroundManager.updatePreviewLocally(e.target.value);
             if (inputs.file) inputs.file.onchange = (e) => BackgroundManager.updatePreviewLocally(null, e.target.files[0]);
-
             if (inputs.blur) inputs.blur.oninput = (e) => document.documentElement.style.setProperty('--glass-blur', `${e.target.value}px`);
-
             if (inputs.color) inputs.color.oninput = (e) => AppearanceManager.updateColor(e.target.value);
             inputs.presets.forEach(btn => btn.onclick = () => AppearanceManager.updateColor(btn.dataset.color, btn));
-
-            const cursorCards = document.querySelectorAll('.option-card[data-cursor]');
-            cursorCards.forEach(card => card.onclick = () => {
-                document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                const cursorVal = card.dataset.cursor;
-                document.getElementById('settingCursor').value = cursorVal;
-                if (cursorVal !== 'custom') CursorManager.set(cursorVal, BackgroundManager.ImageCacheStore);
-            });
-
-            const btnCustom = document.getElementById('btnCustomCursor');
-            const fileInput = document.getElementById('settingCursorFile');
-
-            if (btnCustom && fileInput) {
-                btnCustom.onclick = () => fileInput.click();
-                fileInput.onchange = (e) => {
-                    if (e.target.files && e.target.files[0]) {
-                        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
-                        btnCustom.classList.add('active');
-                        document.getElementById('settingCursor').value = 'custom';
-                        const tempUrl = URL.createObjectURL(e.target.files[0]);
-                        document.documentElement.style.cursor = `url('${tempUrl}'), auto`;
-                        document.body.style.cursor = `url('${tempUrl}'), auto`;
-                        btnCustom.dataset.cursor = 'custom';
-                    }
-                };
-            }
 
             // Selector de estilo de tarjetas (chip buttons)
             document.querySelectorAll('.card-chip').forEach(btn => {
@@ -124,22 +95,12 @@ if (typeof window.SettingsManager === 'undefined') {
             document.getElementById('settingBlur').value = config.blur;
             document.getElementById('settingColor').value = config.themeColor;
             document.getElementById('settingLiteMode').checked = config.liteMode === 'true';
-            const particlesInput = document.getElementById('settingParticles');
-            if (particlesInput) particlesInput.checked = config.particles === 'true';
-            document.getElementById('settingCursorTrail').checked = config.trail === 'true';
-            document.getElementById('settingUiSounds').checked = config.uiSounds === 'true';
-
             // Marcar el chip de estilo activo
             const activeCardStyle = config.cardStyle || 'default';
             document.getElementById('settingCardStyle').value = activeCardStyle;
             document.querySelectorAll('.card-chip').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.style === activeCardStyle);
             });
-
-            document.querySelectorAll('.option-card').forEach(c => {
-                c.classList.toggle('active', c.dataset.cursor === config.cursor);
-            });
-            document.getElementById('settingCursor').value = config.cursor;
 
             const isUrl = config.bgType === 'url';
             document.getElementById('settingBgPreview').style.backgroundImage = isUrl ? `url('${config.bgValue}')` : '';
@@ -196,9 +157,9 @@ if (typeof window.SettingsManager === 'undefined') {
             const tabs = document.querySelectorAll('.nav-tab');
             const panes = document.querySelectorAll('.tab-pane');
 
-            // Fallback: si el tabId no existe, usamos el primero
-            const validIds = [...tabs].map(t => t.dataset.tab);
-            const resolved = validIds.includes(tabId) ? tabId : (validIds[0] || 'appearance');
+            // Solo 3 categorías ahora: Fondo, Estilo, Temas
+            const validIds = ['appearance', 'style', 'themes'];
+            const resolved = validIds.includes(tabId) ? tabId : 'appearance';
 
             tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === resolved));
             panes.forEach(p => p.classList.toggle('active', p.id === `tab-${resolved}`));
@@ -221,11 +182,13 @@ if (typeof window.SettingsManager === 'undefined') {
                 const blur = document.getElementById('settingBlur').value;
                 const color = document.getElementById('settingColor').value;
                 const isLite = document.getElementById('settingLiteMode').checked;
-                const cursor = document.getElementById('settingCursor').value;
-                const particlesInput = document.getElementById('settingParticles');
-                const particles = particlesInput ? particlesInput.checked : false;
-                const trail = document.getElementById('settingCursorTrail').checked;
-                const uiSounds = document.getElementById('settingUiSounds').checked;
+                
+                // Forzar valores desactivados (ya no están en la UI)
+                const cursor = 'default';
+                const particles = 'false';
+                const trail = 'false';
+                const uiSounds = 'false';
+                
                 const cardStyle = document.getElementById('settingCardStyle').value || 'default';
 
                 let type = 'default';
@@ -246,20 +209,15 @@ if (typeof window.SettingsManager === 'undefined') {
                     value = savedBgValue;
                 }
 
-                const cursorFile = document.getElementById('settingCursorFile').files[0];
-                if (cursorFile) {
-                    await BackgroundManager.ImageCacheStore.saveBlob('custom_cursor', cursorFile);
-                }
-
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.BG_TYPE, type);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.BG_VALUE, value);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.BLUR, blur);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.THEME_COLOR, color);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.LITE_MODE, isLite);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.CURSOR, cursor);
-                localStorage.setItem(SettingsCore.STORAGE_KEYS.PARTICLES, 'false'); // Forzado a false
-                localStorage.setItem(SettingsCore.STORAGE_KEYS.TRAIL, trail);
-                localStorage.setItem(SettingsCore.STORAGE_KEYS.UI_SOUNDS, uiSounds);
+                localStorage.setItem(SettingsCore.STORAGE_KEYS.PARTICLES, 'false');
+                localStorage.setItem(SettingsCore.STORAGE_KEYS.TRAIL, 'false');
+                localStorage.setItem(SettingsCore.STORAGE_KEYS.UI_SOUNDS, 'false');
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.CARD_STYLE, cardStyle);
 
                 if (typeof AchievementManager !== 'undefined') {
@@ -270,7 +228,7 @@ if (typeof window.SettingsManager === 'undefined') {
                 SettingsCore.setAll({
                     bgType: type, bgValue: value, blur, themeColor: color,
                     liteMode: String(isLite), cursor, particles: 'false',
-                    trail: String(trail), uiSounds: String(uiSounds), cardStyle
+                    trail: 'false', uiSounds: 'false', cardStyle
                 });
 
                 await applySettings();
