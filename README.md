@@ -15,7 +15,7 @@
 ## 🚀 Demo en vivo
 
 <p align="center">
-  <b>Versión 3.7 — Configuración por Pestañas, Estilos de Tarjeta y Chat en Tiempo Real</b>
+  <b>Versión 3.8 — Página de detalle del juego y responsive</b>
 </p>
 
 | 🟢 Sitio Oficial |

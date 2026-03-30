@@ -295,22 +295,46 @@ Historial de cambios estructurales y visuales del proyecto.
 +### Fixed
 +- Limpieza de redundancias en el HTML del modal y consolidación de inputs ocultos para mejor compatibilidad con scripts legacy.
 +
- ## Versiones Principales
- 
- | Versión | Fecha | Cambio Principal |
- |---------|-------|------------------|
-+| **3.7** | Mar 2026 | Modal de Configuración por Pestañas |
-+| **3.6** | Mar 2026 | Sistema de Tarjetas (Estándar/Compacto) |
- | **3.4** | Mar 2026 | PiolaChat, Perfil unificado, GIFs |
- | **3.3** | Mar 2026 | Galería de Temas Comunitaria |
- | **3.2** | Feb 2026 | Giveaways en tiempo real |
- | **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
- | **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
- | **2.0** | Mar 2025 | Rediseño completo |
- | **1.0** | Ene 2025 | Lanzamiento inicial |
- 
- ---
- 
--**240+ commits** | **Ene 2025 → Mar 2026**
-+**260+ commits** | **Ene 2025 → Mar 2026**
+ ## [3.8.0] - 2026-03-30
+
+### Added
+- **Diseño Hiper-Compacto**: Reducción general de rellenos (padding), tamaños de fuente y márgenes en el modal de ajustes para una navegación más rápida y menos scroll.
+- **Responsive Pro Max**: 
+  - **Página de Detalle**: Rediseño vertical completo con póster adaptable al 100% del ancho y botones apilados para móviles.
+  - **Tablets**: Optimización de la cuadrícula de juegos para mostrar 3 columnas en pantallas medianas (769px-1100px).
+  - **Header Móvil**: Distribución de botones compactos en filas (2 por fila) para evitar un menú excesivamente largo.
+
+### Changed
+- **Minimalismo Extremo**: El menú de ajustes se redujo a solo 3 pestañas esenciales: **Fondo**, **Diseño** y **Temas**.
+- **Bypass de Rendimiento**: Desactivación forzada de los sistemas de partículas, rastro de ratón y sonidos de interfaz para maximizar la velocidad en dispositivos de gama baja.
+- **Navegación Móvil**: El menú hamburguesa ahora se cierra automáticamente al seleccionar secciones como "Regalos" (Juegos Gratis).
+
+### Fixed
+- **Error de Fuentes**: Se corrigió el fallo de carga (CORS/URI) de la fuente *Orbitron* desde Google Fonts.
+- **Iconos**: Corrección del error de JavaScript al alternar el icono del menú hamburguesa (i vs svg).
+- **Preview**: Restauración del cuadro de vista previa de fondo eliminado accidentalmente.
+
+### Removed
+- **FX (Efectos Visuales)**: Se eliminó la pestaña de FX, junto con las opciones de cursores personalizados, partículas y rastro de mouse, simplificando radicalmente la UI.
+- **Animaciones Molestas**: Eliminación de efectos "pulsing" y brillos palpitantes en modales y botones.
+
+## Versiones Principales
+
+| Versión | Fecha | Cambio Principal |
+|---------|-------|------------------|
+| **3.8** | Mar 2026 | Rediseño Minimalista e Hiper-Compacto |
+| **3.7** | Mar 2026 | Modal de Configuración por Pestañas |
+| **3.6** | Mar 2026 | Sistema de Tarjetas (Estándar/Compacto) |
+| **3.4** | Mar 2026 | PiolaChat, Perfil unificado, GIFs |
+| **3.3** | Mar 2026 | Galería de Temas Comunitaria |
+| **3.2** | Feb 2026 | Giveaways en tiempo real |
+| **3.0** | Ene 2026 | SPA, Rediseño Oficial, Configuración Avanzada |
+| **Beta** | Dic 2025 | Nueva arquitectura, efectos JS |
+| **2.0** | Mar 2025 | Rediseño completo |
+| **1.0** | Ene 2025 | Lanzamiento inicial |
+
+---
+
+**280+ commits** | **Ene 2025 → Mar 2026**
+
 
