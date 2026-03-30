@@ -19,7 +19,7 @@ const SettingsCore = (() => {
         THEME_COLOR: '#00f3ff',
         LITE_MODE: 'false',
         CURSOR: 'default',
-        PARTICLES: 'true',
+        PARTICLES: 'false',
         TRAIL: 'false',
         UI_SOUNDS: 'false',
         CARD_STYLE: 'default'

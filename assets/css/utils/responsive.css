@@ -51,47 +51,67 @@
    ===================================================== */
 @media (max-width: 768px) {
 
-    /* ---- HEADER ---- */
+    /* ---- HEADER MODERNO ---- */
     header {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-        padding: 0.75rem 1rem;
+        padding: 0.8rem 1.2rem;
         position: sticky;
         top: 0;
-        z-index: 200;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.9);
+        border-bottom: 1px solid var(--glass-border);
     }
 
-    .logo {
-        font-size: 1rem;
-        letter-spacing: 1.5px;
-        flex-shrink: 0;
+    .menu-toggle-mobile {
+        display: block !important;
     }
 
-    /* Nav: solo íconos, sin barra de búsqueda */
-    header nav {
-        display: flex !important;
-        gap: 0.5rem;
-        align-items: center;
-        margin-left: auto;
+    #mainNav {
+        position: fixed;
+        top: 60px; /* altura del header */
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: rgba(2, 2, 2, 0.98);
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+        transition: height 0.3s var(--ease-smooth);
+        z-index: 999;
+        backdrop-filter: blur(20px);
+        padding: 0;
+        gap: 2rem;
     }
 
-    /* Ocultar barra de búsqueda en mobile */
-    .search-bar {
-        display: none !important;
+    #mainNav.active {
+        height: calc(100vh - 60px);
+        padding: 3rem 2rem;
     }
 
-    /* Botones del header más compactos */
+    .nav-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+    }
+
     .theme-toggle {
-        padding: 0.4rem 0.6rem;
-        font-size: 1rem;
-        border-radius: 10px;
+        width: 100%;
+        justify-content: center;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
     }
 
-    .theme-toggle svg,
-    .theme-toggle i svg {
-        width: 18px;
-        height: 18px;
+    .search-bar {
+        display: flex !important;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .search-bar input {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 12px;
     }
 
     /* ---- MAIN CONTENT ---- */
@@ -101,191 +121,95 @@
 
     /* ---- GRID DE JUEGOS ---- */
     .games-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.75rem;
     }
 
     /* ---- CARDS más compactas ---- */
     .game-card {
-        border-radius: 14px;
-        /* Desactivar animaciones pesadas en mobile */
+        border-radius: 12px;
         animation: none;
         opacity: 1;
-        will-change: auto;
         transition: transform 0.2s ease;
     }
 
-    /* Sin hover fantasía en mobile */
-    .game-card:hover {
-        transform: none;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
-
-    .game-card::before {
-        display: none;
-    }
-
     .card-image {
-        height: 100px;
-    }
-
-    /* Ocultar efecto shimmer de la card-image */
-    .card-image::before {
-        display: none;
-    }
-
-    .card-content {
-        padding: 0.75rem;
-        gap: 0.25rem;
+        height: 110px;
     }
 
     .card-title {
-        font-size: 0.85rem;
-        margin-bottom: 0;
+        font-size: 0.8rem;
     }
 
-    /* Ocultar descripción en mobile para ahorrar espacio */
     .card-desc {
-        display: none;
+        display: none !important;
     }
 
-    /* Tags más chicos */
-    .tag {
-        font-size: 0.6rem;
-        padding: 2px 6px;
-    }
-
-    /* ---- DETALLE DEL JUEGO ---- */
-    .game-detail-container {
-        padding: 1.25rem;
-        margin: 0.5rem;
-        border-radius: 16px;
-    }
-
-    .game-detail-container::before {
-        display: none;
-    }
-
-    .game-header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 1rem;
-    }
-
-    .game-poster {
-        width: 100%;
-        max-width: 280px;
-    }
-
-    .game-poster:hover {
-        transform: none;
-    }
-
-    .game-info-header h1 {
-        font-size: 1.4rem;
-    }
-
-    .game-meta {
-        justify-content: center;
-    }
-
-    .game-meta span {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.6rem;
-    }
-
-    .game-description {
-        font-size: 0.9rem;
-    }
-
-    /* ---- BOTONES DE ACCIÓN (Descargar, etc) ---- */
-    .action-buttons {
-        flex-direction: column;
-        width: 100%;
-        gap: 0.6rem;
-    }
-
-    .btn,
-    .button,
-    .btn-secondary,
-    .button-secondary {
-        width: 100%;
-        justify-content: center;
-        padding: 0.7rem 1.2rem;
-        font-size: 0.78rem;
-        box-sizing: border-box;
-    }
-
-    /* Evitar overflow de botones largos */
-    .btn,
-    .button {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-    }
-
-    .game-specs {
-        grid-template-columns: 1fr;
-    }
-
-    .tabla-datos {
-        font-size: 0.75rem;
-    }
-
-    .tabla-datos th,
-    .tabla-datos td {
-        padding: 0.6rem;
-    }
-
-    /* ---- SETTINGS MODAL ---- */
+    /* ---- SETTINGS MODAL SIMPLIFICADO ---- */
     .settings-modal {
-        width: 96% !important;
-        max-width: none !important;
-        max-height: 90vh !important;
-        border-radius: 16px;
-        margin: 0 2%;
-        /* Desactivar animación glow pulsante — muy costosa en mobile */
-        animation: none !important;
+        width: 92% !important;
+        height: 85vh !important;
+        display: flex;
+        flex-direction: column;
     }
 
-    .settings-header {
-        padding: 1rem 1.25rem;
+    .settings-layout {
+        flex-direction: column !important;
+        overflow-y: auto;
+        padding-bottom: 2rem;
     }
 
-    .settings-header h2 {
-        font-size: 1.1rem;
+    .settings-nav {
+        width: 100% !important;
+        height: auto !important;
+        flex-direction: row !important;
+        overflow-x: auto;
+        padding: 10px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--glass-border);
+        position: sticky;
+        top: 0;
+        background: var(--bg-color);
+        z-index: 10;
+        gap: 10px !important;
     }
 
-    .settings-body {
-        padding: 1rem 1.25rem;
+    .nav-tab {
+        padding: 8px 15px !important;
+        border-radius: 8px !important;
+        background: rgba(255, 255, 255, 0.03);
+        flex-shrink: 0;
+        font-size: 0.8rem !important;
+    }
+
+    .nav-tab i {
+        display: none !important; /* Ocultar iconos en mobile para ahorrar espacio horizontal */
+    }
+
+    .nav-tab.active {
+        background: var(--primary-color) !important;
+        color: #000 !important;
+    }
+
+    .settings-panel {
+        padding: 1rem !important;
+        width: 100% !important;
     }
 
     .settings-section {
         padding: 1rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-
-    .settings-section h3 {
-        font-size: 0.88rem;
-        margin-bottom: 0.75rem !important;
-    }
-
-    /* Clases de visibilidad móvil */
-    .settings-hide-mobile {
-        display: none !important;
-    }
-
-    /* Botón "Explorar Temas" más chico */
-    .gallery-toggle-btn {
-        font-size: 0.65rem;
-        padding: 4px 8px;
+        margin-bottom: 1.5rem !important;
+        border-radius: 12px !important;
     }
 
     .settings-footer {
-        padding: 0.75rem 1.25rem;
-        gap: 0.5rem;
+        padding: 1rem;
+        background: var(--bg-color);
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .settings-author-links {
+        display: none !important;
     }
 
     /* ---- MODALES: tamaño y posición correctos ---- */
