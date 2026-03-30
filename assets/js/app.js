@@ -28,13 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (menuToggle && mainNav) {
         menuToggle.addEventListener('click', () => {
             mainNav.classList.toggle('active');
-            const icon = menuToggle.querySelector('i');
+            const icon = menuToggle.querySelector('[data-lucide]');
             if (mainNav.classList.contains('active')) {
-                icon.setAttribute('data-lucide', 'x');
+                icon?.setAttribute('data-lucide', 'x');
             } else {
-                icon.setAttribute('data-lucide', 'menu');
+                icon?.setAttribute('data-lucide', 'menu');
             }
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         });
 
         // Cerrar menú al hacer click en cualquier botón del nav
