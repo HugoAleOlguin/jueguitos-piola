@@ -6,3 +6,4 @@ logros.txt
 links-backup.json
 security-audit.js
 audit.js
+*.py

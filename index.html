@@ -99,151 +99,111 @@
 
         .logo {
             font-family: var(--font-display);
-            font-size: 1.4rem;
-            font-weight: 700;
+            font-size: 1.25rem;
             color: var(--primary-color);
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+            cursor: pointer;
+            user-select: none;
         }
 
-        main {
-            padding: 3rem 4rem;
-            max-width: 1600px;
-            margin: 0 auto;
-            min-height: calc(100vh - 200px);
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
         }
 
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1100px;
-            margin: 0 auto;
+        .btn-icon {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-smooth);
         }
 
-        @media (min-width: 1000px) {
-            .games-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 243, 255, 0.1);
+        }
+
+        /* --- Estilo para Lucide Icons --- */
+        .lucide {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
         }
     </style>
 
-    <!-- Asynchronous CSS Loading -->
-     <link rel="preload" href="assets/css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-     <noscript>
-         <link rel="stylesheet" href="assets/css/main.css">
-     </noscript>
-    <link rel="icon" href="favicon.png">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet" crossorigin="anonymous">
-    <style>
-        /* Fallback mientras carga la fuente */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
+    <!-- Google Fonts con precarga -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
-        .logo {
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-    </style>
-    <!-- Preload Fondo Guardado y Tema -->
-    <script>
-        (function () {
-            try {
-                var bgType = localStorage.getItem('jueguitos_settings_bg_type');
-                if (bgType === 'url') {
-                    var bgValue = localStorage.getItem('jueguitos_settings_bg_value');
-                    if (bgValue) {
-                        var link = document.createElement('link');
-                        link.rel = 'preload';
-                        link.as = 'image';
-                        link.href = bgValue;
-                        document.head.appendChild(link);
-                    }
-                }
-                var color = localStorage.getItem('jueguitos_settings_color');
-                if (color) {
-                    document.documentElement.style.setProperty('--primary-color', color);
-                }
-            } catch (e) { }
-        })();
-    </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <style>
-        @keyframes fadeInBody {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        body {
-            animation: fadeInBody 0.5s ease forwards;
-        }
-    </style>
-
-    <meta name="google-site-verification" content="maC1HVBdDUCNxIVN2AqNLcIKpnSdPtR5C1UYT458QvQ" />
+    <!-- CSS Modules -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    
+    <!-- PWA & Mobile Optimization -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
 </head>
 
 <body>
-
     <header>
-        <h1 class="logo" onclick="window.location.reload()">JUEGUITOS PIOLA</h1>
-        
-        <!-- Botón Menú Hamburguesa (Mobile) -->
-        <button class="menu-toggle-mobile" id="menuToggleMobile" aria-label="Abrir menú">
-            <i data-lucide="menu"></i>
-        </button>
-
-        <nav id="mainNav">
-            <div class="search-bar" role="search">
-                <input type="text" id="searchInput" placeholder="Buscar juegos..." aria-label="Buscar juegos">
-            </div>
-            <div class="nav-buttons">
-                <!-- Botón Minijuegos -->
-                <button class="theme-toggle" id="btnMiniGames" title="Minijuegos">
-                    <i data-lucide="gamepad-2"></i>
-                    <span>Juegos</span>
-                </button>
-                <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
-                    <i data-lucide="shuffle"></i>
-                    <span>Azar</span>
-                </button>
-                <button class="theme-toggle" id="settingsToggle" title="Configuración">
-                    <i data-lucide="sliders-horizontal"></i>
-                    <span>Ajustes</span>
-                </button>
-            </div>
-        </nav>
+        <a href="index.html" class="logo" id="mainLogo">Jueguitos Piola</a>
+        <div class="nav-buttons">
+            <!-- Search bar component managed by JS -->
+            <div id="search-container"></div>
+            
+            <button class="btn-icon" id="btnOpenThemeGallery" title="Galería de Temas">
+                <i data-lucide="layout-template"></i>
+            </button>
+            <button class="btn-icon" id="btnOpenSettings" title="Configuración">
+                <i data-lucide="settings"></i>
+            </button>
+            <button class="btn-icon mobile-menu-toggle" id="menuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
     </header>
 
-    <!-- Modal de Configuración -->
+    <!-- Modal de Configuración (v3.8.0 Modular) -->
     <div class="settings-modal-overlay" id="settingsModal" style="display: none;" role="dialog" aria-modal="true"
         aria-labelledby="settingsTitle">
-        <div class="settings-modal">
+        <div class="settings-container">
             <div class="settings-header">
-                <h2 id="settingsTitle">Configuración</h2>
-                <button class="btn-close" id="btnCancelSettings">×</button>
+                <h2 id="settingsTitle">CONFIGURACIÓN</h2>
+                <button class="close-settings" id="btnCloseSettings">&times;</button>
             </div>
 
             <div class="settings-layout">
-                <!-- Sidebar Simplificado -->
-                <nav class="settings-nav" role="tablist" aria-label="Categorías">
-                    <button class="nav-tab active" data-tab="appearance" role="tab">
-                        <i data-lucide="image"></i><span>Fondo</span>
+                <!-- Sidebar Navigation (Desktop) / Chips (Mobile) -->
+                <nav class="settings-nav" role="tablist">
+                    <button class="nav-item active" data-tab="tab-background" role="tab" aria-selected="true">
+                        <i data-lucide="image"></i> <span>Fondo</span>
                     </button>
-                    <button class="nav-tab" data-tab="style" role="tab">
-                        <i data-lucide="palette"></i><span>Diseño</span>
+                    <button class="nav-item" data-tab="tab-style" role="tab" aria-selected="false">
+                        <i data-lucide="palette"></i> <span>Diseño</span>
                     </button>
-                    <button class="nav-tab" data-tab="themes" role="tab">
-                        <i data-lucide="bookmark"></i><span>Temas</span>
+                    <button class="nav-item" data-tab="tab-themes" role="tab" aria-selected="false">
+                        <i data-lucide="save"></i> <span>Temas</span>
                     </button>
                 </nav>
 
-                <div class="settings-panel">
-                    <!-- TAB: Fondo -->
-                    <div id="tab-appearance" class="tab-pane active" role="tabpanel">
+                <!-- Content Area -->
+                <div class="settings-content">
+                    <!-- TAB: Fondo (Wallpaper, Upload) -->
+                    <div id="tab-background" class="tab-pane active" role="tabpanel">
                         <div class="settings-section">
                             <h3><i data-lucide="image" style="width:16px;height:16px;vertical-align:middle;"></i> Imagen de Fondo</h3>
                             <div class="form-group">
@@ -298,15 +258,12 @@
                         </div>
                     </div>
 
-                    <!-- TAB: Temas -->
+                    <!-- TAB: Temas (Guardado Local) -->
                     <div id="tab-themes" class="tab-pane" role="tabpanel">
                         <div class="settings-section">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                <h3><i data-lucide="bookmark" style="width:16px;height:16px;vertical-align:middle;"></i> Guardados</h3>
-                                <button onclick="if(window.ThemeGallery) ThemeGallery.openGallery()" class="gallery-toggle-btn">Galería</button>
-                            </div>
-                            <div class="form-group" style="display: flex; gap: 8px;">
-                                <input type="text" id="presetName" class="settings-input" placeholder="Nombre..." style="flex: 1;">
+                            <h3><i data-lucide="save" style="width:16px;height:16px;vertical-align:middle;"></i> Mis Temas Locally</h3>
+                            <div class="form-group-row" style="display: flex; gap: 8px; margin-bottom: 12px;">
+                                <input type="text" id="settingThemeName" class="settings-input" placeholder="Nombre del tema...">
                                 <button class="btn-save" id="btnSavePreset" style="padding: 10px;">+</button>
                             </div>
                             <div class="presets-grid" id="presetsGrid"></div>
@@ -393,7 +350,7 @@
                     <div class="vs-badge">VS</div>
                     <div class="fighter-card" id="fighter2"></div>
                 </div>
-                <div class="round-indicator" id="roundIndicator">Cuartos de Final (1/4)</div>
+                <div class="round-indicator" id="roundIndicator">Cuantos de Final (1/4)</div>
             </div>
             <!-- Stage 3: Winner -->
             <div id="vsStageWinner" class="vs-stage hidden">
@@ -513,39 +470,8 @@
     <noscript>
         <div style="padding: 20px; text-align: center; color: white;">
             <h1>Jueguitos Piola</h1>
-            <p>Para la mejor experiencia, por favor activa JavaScript. Aquí tienes los enlaces directos a los juegos:
-            </p>
-            <ul>
-                <li><a href="?id=simular-lan">Simular Lan</a></li>
-                <li><a href="?id=tutorial-mods">Tutorial Mods</a></li>
-                <li><a href="?id=content-warning">Content Warning</a></li>
-                <li><a href="?id=lethal-company">Lethal Company V73</a></li>
-                <li><a href="?id=halo-combat-evolved">Halo 1 Online</a></li>
-                <li><a href="?id=satisfactory">Satisfactory</a></li>
-                <li><a href="?id=age-of-empires-2">Age Of Empires 2</a></li>
-                <li><a href="?id=the-binding-of-isaac">Isaac</a></li>
-                <li><a href="?id=the-forest">The Forest</a></li>
-                <li><a href="?id=gang-beasts">Gang Beast</a></li>
-                <li><a href="?id=initial-unity">Initial Unity</a></li>
-                <li><a href="?id=repo">R.E.P.O</a></li>
-                <li><a href="?id=dead-island">Dead Island</a></li>
-                <li><a href="?id=liars-bar">Liars Bar</a></li>
-                <li><a href="?id=undertale-plus">Undertale Plus</a></li>
-                <li><a href="?id=schedule">Schedule (UPDATE v0.4.1f12)</a></li>
-                <li><a href="?id=fast-food-simulator">Fast food Simulator</a></li>
-                <li><a href="?id=left-4-dead">Left 4 Dead</a></li>
-                <li><a href="?id=agus-simulator">Jueguito</a></li>
-                <li><a href="?id=left-4-dead-2">Left 4 Dead 2</a></li>
-                <li><a href="?id=minecraft">Minecraft</a></li>
-                <li><a href="?id=chained-together">Chained Together</a></li>
-                <li><a href="?id=castle-crashers-remastered">Castle Crashers REMASTERED</a></li>
-                <li><a href="?id=peak">Peak</a></li>
-                <li><a href="?id=borderlands-2">Borderlands 2</a></li>
-                <li><a href="?id=raft">Raft</a></li>
-                <li><a href="?id=risk-of-rain-2">Risk of Rain 2 UPDATE</a></li>
-                <li><a href="?id=risk-of-rain-returns">Risk of Rain Returns</a></li>
-                <li><a href="?id=forever-skies">Forever Skies</a></li>
-                <li><a href="?id=mudrunner">MudRunner</a></li>
+            <p>Para la mejor experiencia, por favor activa JavaScript. Aquí tienes los enlaces directos a los juegos:</p>
+            <ul style="list-style: none; margin-top: 1rem;">
                 <li><a href="?id=sworn">Sworn</a></li>
                 <li><a href="?id=hytale">Hytale online (EXPERIMETAL)</a></li>
                 <li><a href="?id=deep-rock-galactic">Deep Rock Galactic</a></li>
@@ -583,5 +509,4 @@
         }
     </script>
 </body>
-
 </html>
