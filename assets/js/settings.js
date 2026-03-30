@@ -124,7 +124,8 @@ if (typeof window.SettingsManager === 'undefined') {
             document.getElementById('settingBlur').value = config.blur;
             document.getElementById('settingColor').value = config.themeColor;
             document.getElementById('settingLiteMode').checked = config.liteMode === 'true';
-            document.getElementById('settingParticles').checked = config.particles === 'true';
+            const particlesInput = document.getElementById('settingParticles');
+            if (particlesInput) particlesInput.checked = config.particles === 'true';
             document.getElementById('settingCursorTrail').checked = config.trail === 'true';
             document.getElementById('settingUiSounds').checked = config.uiSounds === 'true';
 
@@ -221,7 +222,8 @@ if (typeof window.SettingsManager === 'undefined') {
                 const color = document.getElementById('settingColor').value;
                 const isLite = document.getElementById('settingLiteMode').checked;
                 const cursor = document.getElementById('settingCursor').value;
-                const particles = document.getElementById('settingParticles').checked;
+                const particlesInput = document.getElementById('settingParticles');
+                const particles = particlesInput ? particlesInput.checked : false;
                 const trail = document.getElementById('settingCursorTrail').checked;
                 const uiSounds = document.getElementById('settingUiSounds').checked;
                 const cardStyle = document.getElementById('settingCardStyle').value || 'default';
@@ -255,7 +257,7 @@ if (typeof window.SettingsManager === 'undefined') {
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.THEME_COLOR, color);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.LITE_MODE, isLite);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.CURSOR, cursor);
-                localStorage.setItem(SettingsCore.STORAGE_KEYS.PARTICLES, particles);
+                localStorage.setItem(SettingsCore.STORAGE_KEYS.PARTICLES, 'false'); // Forzado a false
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.TRAIL, trail);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.UI_SOUNDS, uiSounds);
                 localStorage.setItem(SettingsCore.STORAGE_KEYS.CARD_STYLE, cardStyle);
@@ -267,7 +269,7 @@ if (typeof window.SettingsManager === 'undefined') {
 
                 SettingsCore.setAll({
                     bgType: type, bgValue: value, blur, themeColor: color,
-                    liteMode: String(isLite), cursor, particles: String(particles),
+                    liteMode: String(isLite), cursor, particles: 'false',
                     trail: String(trail), uiSounds: String(uiSounds), cardStyle
                 });
 

@@ -21,6 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Eventos globales adicionales ===
     
+    // Menú Hamburguesa Mobile
+    const menuToggle = document.getElementById('menuToggleMobile');
+    const mainNav = document.getElementById('mainNav');
+
+    if (menuToggle && mainNav) {
+        menuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            if (mainNav.classList.contains('active')) {
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                icon.setAttribute('data-lucide', 'menu');
+            }
+            lucide.createIcons();
+        });
+
+        // Cerrar menú al hacer click en cualquier botón del nav
+        mainNav.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => mainNav.classList.remove('active'));
+        });
+    }
+
     // Botón Minijuegos (abre modal selector)
     const btnMiniGames = document.getElementById('btnMiniGames');
     if (btnMiniGames) {
