@@ -149,6 +149,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+
     <!-- CSS Modules -->
     <link rel="stylesheet" href="assets/css/main.css">
     
@@ -165,13 +168,18 @@
             <!-- Search bar component managed by JS -->
             <div id="search-container"></div>
             
-            <button class="btn-icon" id="btnOpenThemeGallery" title="Galería de Temas">
-                <i data-lucide="layout-template"></i>
-            </button>
-            <button class="btn-icon" id="btnOpenSettings" title="Configuración">
-                <i data-lucide="settings"></i>
-            </button>
-            <button class="btn-icon mobile-menu-toggle" id="menuToggle">
+            <!-- Navigation Group -->
+            <nav id="mainNav">
+                <!-- Se inyectará btnFreeGames aquí vía JS -->
+                <button class="btn-icon" id="settingsToggle" title="Configuración">
+                    <i data-lucide="settings"></i> <span>Ajustes</span>
+                </button>
+                <button class="btn-icon" id="btnMiniGames" title="Minijuegos">
+                    <i data-lucide="gamepad-2"></i> <span>Extra</span>
+                </button>
+            </nav>
+
+            <button class="btn-icon mobile-menu-toggle" id="menuToggleMobile">
                 <i data-lucide="menu"></i>
             </button>
         </div>
@@ -189,13 +197,13 @@
             <div class="settings-layout">
                 <!-- Sidebar Navigation (Desktop) / Chips (Mobile) -->
                 <nav class="settings-nav" role="tablist">
-                    <button class="nav-item active" data-tab="tab-background" role="tab" aria-selected="true">
+                    <button class="nav-tab active" data-tab="appearance" role="tab" aria-selected="true">
                         <i data-lucide="image"></i> <span>Fondo</span>
                     </button>
-                    <button class="nav-item" data-tab="tab-style" role="tab" aria-selected="false">
+                    <button class="nav-tab" data-tab="style" role="tab" aria-selected="false">
                         <i data-lucide="palette"></i> <span>Diseño</span>
                     </button>
-                    <button class="nav-item" data-tab="tab-themes" role="tab" aria-selected="false">
+                    <button class="nav-tab" data-tab="themes" role="tab" aria-selected="false">
                         <i data-lucide="save"></i> <span>Temas</span>
                     </button>
                 </nav>
@@ -203,7 +211,7 @@
                 <!-- Content Area -->
                 <div class="settings-content">
                     <!-- TAB: Fondo (Wallpaper, Upload) -->
-                    <div id="tab-background" class="tab-pane active" role="tabpanel">
+                    <div id="tab-appearance" class="tab-pane active" role="tabpanel">
                         <div class="settings-section">
                             <h3><i data-lucide="image" style="width:16px;height:16px;vertical-align:middle;"></i> Imagen de Fondo</h3>
                             <div class="form-group">
@@ -263,7 +271,7 @@
                         <div class="settings-section">
                             <h3><i data-lucide="save" style="width:16px;height:16px;vertical-align:middle;"></i> Mis Temas Locally</h3>
                             <div class="form-group-row" style="display: flex; gap: 8px; margin-bottom: 12px;">
-                                <input type="text" id="settingThemeName" class="settings-input" placeholder="Nombre del tema...">
+                                <input type="text" id="presetName" class="settings-input" placeholder="Nombre del tema...">
                                 <button class="btn-save" id="btnSavePreset" style="padding: 10px;">+</button>
                             </div>
                             <div class="presets-grid" id="presetsGrid"></div>
@@ -282,6 +290,8 @@
             </div>
 
             <div class="settings-footer">
+                <button class="btn-ghost" id="btnCancelSettings">Cancelar</button>
+                <div style="flex-grow: 1;"></div>
                 <button class="btn-ghost danger" id="btnResetSettings">Reset</button>
                 <button class="btn-save" id="btnSaveSettings">Aplicar</button>
             </div>

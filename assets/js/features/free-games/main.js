@@ -6,10 +6,10 @@
 // Exponer setup globalmente para que lazy-loader lo invoque
 window.setupFreeGamesUI = () => {
     // Inyectar el botón en el Nav
-    const nav = document.querySelector('.nav-buttons');
+    const nav = document.getElementById('mainNav');
     if (nav && !document.getElementById('btnFreeGames')) {
         const btnFreeGames = document.createElement('button');
-        btnFreeGames.className = 'theme-toggle';
+        btnFreeGames.className = 'btn-icon'; // Dejar btn-icon para que sea igual al resto
         btnFreeGames.id = 'btnFreeGames';
         btnFreeGames.title = 'Juegos y Giveaways 100% Gratis';
         btnFreeGames.innerHTML = '<i data-lucide="gift"></i><span>Regalos</span>';

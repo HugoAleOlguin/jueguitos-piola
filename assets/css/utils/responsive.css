@@ -18,8 +18,27 @@
         transition-duration: 0.01ms !important;
     }
 
-    .game-card {
-        opacity: 1;
+    .card-image {
+        height: 110px;
+    }
+
+    .card-title {
+        font-size: 0.8rem;
+    }
+
+    .card-desc {
+        display: none !important;
+    }
+}
+
+/* Ocultar textos del nav en desktop */
+@media (min-width: 769px) {
+    #mainNav .btn-icon span {
+        display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: none !important;
     }
 }
 
@@ -52,16 +71,26 @@
 
     /* ---- HEADER MODERNO ---- */
     header {
-        padding: 0.8rem 1.2rem;
+        padding: 0.8rem 0.5rem 0.8rem 1.2rem; /* Menos espacio a la derecha */
         position: sticky;
         top: 0;
         z-index: 1000;
         background: rgba(0, 0, 0, 0.9);
         border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .menu-toggle-mobile {
-        display: block !important;
+        display: flex !important;
+        margin-left: auto; /* Fuerza el botón a la derecha del nav-buttons */
+    }
+
+    .nav-buttons {
+        gap: 0.5rem;
+        flex-grow: 1;
+        justify-content: flex-end;
     }
 
     #mainNav {
@@ -78,7 +107,33 @@
         z-index: 999;
         backdrop-filter: blur(20px);
         padding: 0;
-        gap: 2rem;
+        gap: 0.5rem;
+    }
+
+    #mainNav .btn-icon {
+        width: 100% !important;
+        height: auto !important;
+        padding: 1rem 1.5rem !important;
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 0 !important;
+        justify-content: flex-start !important;
+        gap: 1rem !important;
+        font-size: 1.1rem !important;
+    }
+
+    #mainNav .btn-icon span {
+        display: inline !important;
+        font-family: var(--font-display);
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    #mainNav .btn-icon:hover {
+        background: rgba(255, 255, 255, 0.03) !important;
+        color: var(--primary-color) !important;
     }
 
     #mainNav.active {
