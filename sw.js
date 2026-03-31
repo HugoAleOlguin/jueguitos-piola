@@ -66,7 +66,6 @@ self.addEventListener('fetch', (event) => {
         url.hostname.includes('firebase') ||
         url.hostname.includes('firestore') ||
         url.hostname.includes('googleapis') ||
-        url.hostname.includes('gstatic') ||
         url.protocol.startsWith('chrome-extension') ||
         url.pathname.includes('/api/') || // Por si llega a haber llamadas
         url.port !== '' // Omitir puertos de live server si es posible
@@ -80,22 +79,16 @@ self.addEventListener('fetch', (event) => {
             caches.match(event.request).then((cachedResponse) => {
                 if (cachedResponse) return cachedResponse;
 
-                // Si no hay caché, intentamos red
                 return fetch(event.request).then((networkResponse) => {
-                    // Solo cachear si la respuesta es válida (status 200)
-                    if (networkResponse && networkResponse.status === 200) {
+                    if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic' || networkResponse.type === 'cors') {
                         const responseToCache = networkResponse.clone();
                         caches.open(CACHE_NAME).then((cache) => {
                             cache.put(event.request, responseToCache);
                         });
                     }
                     return networkResponse;
-                }).catch((err) => {
-                    // Si falla la red y no hay caché, no podemos hacer mucho más que dejar que falle
-                    // Pero NO devolvemos undefined
-                    console.error('Fetch failed for external resource:', event.request.url, err);
-                    // No devolvemos nada para que respondWith maneje el error o lanzamos error
-                    throw err; 
+                }).catch(() => {
+                    // Fallback silencioso
                 });
             })
         );
