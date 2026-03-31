@@ -21,33 +21,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Eventos globales adicionales ===
     
-    // Menú Hamburguesa Mobile
-    const menuToggle = document.getElementById('menuToggleMobile');
-    const mainNav = document.getElementById('mainNav');
-
-    if (menuToggle && mainNav) {
-        menuToggle.addEventListener('click', () => {
-            mainNav.classList.toggle('active');
-            const icon = menuToggle.querySelector('[data-lucide]');
-            if (mainNav.classList.contains('active')) {
-                icon?.setAttribute('data-lucide', 'x');
-            } else {
-                icon?.setAttribute('data-lucide', 'menu');
-            }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        });
-
-        // Cerrar menú al hacer click en cualquier botón del nav
-        mainNav.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('click', () => mainNav.classList.remove('active'));
-        });
-    }
-
     // Botón Minijuegos (abre modal selector)
     const btnMiniGames = document.getElementById('btnMiniGames');
     if (btnMiniGames) {
         btnMiniGames.addEventListener('click', () => {
             if (typeof miniGamesModal !== 'undefined') miniGamesModal?.open?.();
+        });
+    }
+
+    // === Menú Hamburguesa Mobile ===
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navMenu = document.getElementById('navMenu');
+    
+    if (mobileMenuBtn && navMenu) {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mobileMenuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Cerrar al clickear cualquier botón dentro (usamos delegación para los dinámicos)
+        navMenu.addEventListener('click', (e) => {
+            const isClickable = e.target.closest('button') || e.target.closest('.theme-toggle');
+            
+            if (isClickable) {
+                mobileMenuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Cerrar al clickear fuera si está abierto
+        document.addEventListener('click', (e) => {
+            if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileMenuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         });
     }
 
