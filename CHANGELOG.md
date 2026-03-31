@@ -20,6 +20,7 @@ Historial de cambios estructurales y visuales del proyecto.
 - **Minijuegos en Mobile**: Eliminado el acceso y cards de minijuegos en la versión móvil para simplificar la experiencia de usuario.
 
 ### Fixed
+- **Google Fonts (SW)**: Corregido error de carga de fuentes (Orbitron/Roboto) causado por el Service Worker al interceptar peticiones cross-origin incorrectamente.
 - **Free Games**: Corregido error de inserción del botón en la nueva estructura del header y mejorada la integración con el menú móvil.
 
 ---
