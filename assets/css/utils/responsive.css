@@ -18,47 +18,29 @@
         transition-duration: 0.01ms !important;
     }
 
-    .card-image {
-        height: 110px;
-    }
-
-    .card-title {
-        font-size: 0.8rem;
-    }
-
-    .card-desc {
-        display: none !important;
-    }
-}
-
-/* Ocultar textos del nav en desktop */
-@media (min-width: 769px) {
-    #mainNav .btn-icon span {
-        display: none;
-    }
-    
-    .mobile-menu-toggle {
-        display: none !important;
+    .game-card {
+        opacity: 1;
     }
 }
 
 /* =====================================================
    RESPONSIVE - TABLETS
    ===================================================== */
-@media (min-width: 769px) and (max-width: 1100px) {
+@media (min-width: 769px) and (max-width: 1024px) {
     main {
-        padding: 1.5rem;
+        padding: 2rem;
     }
 
     .games-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.5rem;
-        max-width: 100%;
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .settings-modal {
-        width: 85% !important;
-        height: 80vh !important;
+    .game-poster {
+        width: 250px;
+    }
+
+    .game-info-header h1 {
+        font-size: 2rem;
     }
 }
 
@@ -69,105 +51,124 @@
    ===================================================== */
 @media (max-width: 768px) {
 
-    /* ---- HEADER MODERNO ---- */
+    /* ---- HEADER ---- */
     header {
-        padding: 0.8rem 0.5rem 0.8rem 1.2rem; /* Menos espacio a la derecha */
+        padding: 0.75rem 1rem;
         position: sticky;
         top: 0;
-        z-index: 1000;
-        background: rgba(0, 0, 0, 0.9);
-        border-bottom: 1px solid var(--glass-border);
+        z-index: 200;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
     }
 
-    .menu-toggle-mobile {
+    .logo {
+        font-size: 1rem;
+        letter-spacing: 1.5px;
+        z-index: 210;
+    }
+
+    /* Botón Hamburguesa */
+    .mobile-menu-toggle {
         display: flex !important;
-        margin-left: auto; /* Fuerza el botón a la derecha del nav-buttons */
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 210;
+        transition: transform 0.3s var(--ease-out-expo);
     }
 
-    .nav-buttons {
-        gap: 0.5rem;
-        flex-grow: 1;
-        justify-content: flex-end;
+    .mobile-menu-toggle.active {
+        transform: rotate(90deg);
+        color: var(--secondary-color);
     }
 
-    #mainNav {
+    .mobile-menu-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Menú de Navegación Mobile */
+    .nav-menu {
         position: fixed;
-        top: 60px; /* altura del header */
-        left: 0;
+        top: 0;
+        right: -100%;
         width: 100%;
-        height: 0;
+        height: 100vh;
         background: rgba(2, 2, 2, 0.98);
-        flex-direction: column;
-        justify-content: center;
-        overflow: hidden;
-        transition: height 0.3s var(--ease-smooth);
-        z-index: 999;
-        backdrop-filter: blur(20px);
-        padding: 0;
-        gap: 0.5rem;
-    }
-
-    #mainNav .btn-icon {
-        width: 100% !important;
-        height: auto !important;
-        padding: 1rem 1.5rem !important;
-        background: transparent !important;
-        border: none !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-        border-radius: 0 !important;
-        justify-content: flex-start !important;
-        gap: 1rem !important;
-        font-size: 1.1rem !important;
-    }
-
-    #mainNav .btn-icon span {
-        display: inline !important;
-        font-family: var(--font-display);
-        font-size: 0.9rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
-
-    #mainNav .btn-icon:hover {
-        background: rgba(255, 255, 255, 0.03) !important;
-        color: var(--primary-color) !important;
-    }
-
-    #mainNav.active {
-        height: calc(100vh - 60px);
-        padding: 3rem 2rem;
-    }
-
-    .nav-buttons {
-        flex-direction: row;
-        flex-wrap: wrap;
-        width: 100%;
-        gap: 0.8rem;
-        justify-content: center;
-    }
-
-    .theme-toggle {
-        width: auto;
-        min-width: 45%;
-        padding: 0.6rem 0.8rem;
-        font-size: 0.9rem;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .search-bar {
         display: flex !important;
-        width: 100%;
-        margin-bottom: 1rem;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        padding: 2rem;
+        transition: right 0.4s var(--ease-out-expo);
+        z-index: 205;
+        backdrop-filter: blur(20px);
     }
 
-    .search-bar input {
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .nav-menu .search-bar {
+        display: block !important;
         width: 100%;
+        max-width: 300px;
+    }
+
+    .nav-menu .search-bar input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
         padding: 1rem;
         border-radius: 12px;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .nav-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+        align-items: center;
+    }
+
+    .nav-buttons .theme-toggle {
+        width: 100%;
+        max-width: 300px;
+        padding: 1rem;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+    }
+
+    .nav-buttons .theme-toggle::after {
+        content: attr(title);
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Ocultar Minijuegos en Mobile (Simplificación) */
+    #btnMiniGames,
+    #miniGamesModal,
+    .minigame-card {
+        display: none !important;
+    }
+
+    .theme-toggle svg,
+    .theme-toggle i svg {
+        width: 22px;
+        height: 22px;
     }
 
     /* ---- MAIN CONTENT ---- */
@@ -177,98 +178,210 @@
 
     /* ---- GRID DE JUEGOS ---- */
     .games-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
     }
 
     /* ---- CARDS más compactas ---- */
     .game-card {
-        border-radius: 12px;
+        border-radius: 14px;
+        /* Desactivar animaciones pesadas en mobile */
         animation: none;
         opacity: 1;
+        will-change: auto;
         transition: transform 0.2s ease;
     }
 
+    /* Sin hover fantasía en mobile */
+    .game-card:hover {
+        transform: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .game-card::before {
+        display: none;
+    }
+
     .card-image {
-        height: 110px;
+        height: 100px;
+    }
+
+    /* Ocultar efecto shimmer de la card-image */
+    .card-image::before {
+        display: none;
+    }
+
+    .card-content {
+        padding: 0.75rem;
+        gap: 0.25rem;
     }
 
     .card-title {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+        margin-bottom: 0;
     }
 
+    /* Ocultar descripción en mobile para ahorrar espacio */
     .card-desc {
-        display: none !important;
+        display: none;
     }
 
-    /* ---- SETTINGS MODAL SIMPLIFICADO ---- */
-    .settings-modal {
-        width: 92% !important;
-        height: 85vh !important;
-        display: flex;
+    /* Tags más chicos */
+    .tag {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
+
+    /* ---- DETALLE DEL JUEGO ---- */
+    .game-detail-container {
+        padding: 1.25rem;
+        margin: 0.5rem;
+        border-radius: 16px;
+    }
+
+    .game-detail-container::before {
+        display: none;
+    }
+
+    .game-header {
         flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .game-poster {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .game-poster:hover {
+        transform: none;
+    }
+
+    .game-info-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .game-meta {
+        justify-content: center;
+    }
+
+    .game-meta span {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .game-description {
+        font-size: 0.9rem;
+    }
+
+    /* ---- BOTONES DE ACCIÓN (Descargar, etc) ---- */
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.6rem;
+    }
+
+    .btn,
+    .button,
+    .btn-secondary,
+    .button-secondary {
+        width: 100%;
+        justify-content: center;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.78rem;
+        box-sizing: border-box;
+    }
+
+    /* Evitar overflow de botones largos */
+    .btn,
+    .button {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .game-specs {
+        grid-template-columns: 1fr;
+    }
+
+    .tabla-datos {
+        font-size: 0.75rem;
+    }
+
+    .tabla-datos th,
+    .tabla-datos td {
+        padding: 0.6rem;
+    }
+
+    /* ---- SETTINGS MODAL (Simplificación Total) ---- */
+    .settings-modal {
+        width: 94% !important;
+        height: 85vh !important;
+        max-height: 85vh !important;
+        border-radius: 20px;
+        margin: 0;
+        animation: none !important;
     }
 
     .settings-layout {
-        flex-direction: column !important;
+        display: block !important; /* Quitar grid */
         overflow-y: auto;
-        padding-bottom: 2rem;
+        height: 100%;
     }
 
     .settings-nav {
-        width: 100% !important;
-        height: auto !important;
-        flex-direction: row !important;
-        overflow-x: auto;
-        padding: 10px !important;
-        border-right: none !important;
-        border-bottom: 1px solid var(--glass-border);
-        position: sticky;
-        top: 0;
-        background: var(--bg-color);
-        z-index: 10;
-        gap: 10px !important;
-    }
-
-    .nav-tab {
-        padding: 5px 12px !important;
-        border-radius: 6px !important;
-        background: rgba(255, 255, 255, 0.03);
-        flex-shrink: 0;
-        font-size: 0.72rem !important;
-        height: 32px !important;
-        display: flex;
-        align-items: center;
-    }
-
-    .nav-tab i {
-        display: none !important; /* Ocultar iconos en mobile para ahorrar espacio horizontal */
-    }
-
-    .nav-tab.active {
-        background: var(--primary-color) !important;
-        color: #000 !important;
+        display: none !important; /* Ocultar tabs por completo */
     }
 
     .settings-panel {
-        padding: 1rem !important;
-        width: 100% !important;
+        padding: 1.25rem 1rem !important;
+        display: block !important;
+    }
+
+    /* Mostrar todas las secciones una tras otra */
+    .tab-pane {
+        display: block !important;
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+        margin-bottom: 2rem;
+        animation: none !important;
     }
 
     .settings-section {
         padding: 1rem !important;
-        margin-bottom: 1.5rem !important;
-        border-radius: 12px !important;
+        margin-bottom: 0.75rem !important;
+        border-left-width: 3px !important;
+    }
+
+    .settings-section h3 {
+        font-size: 0.9rem;
+        margin-bottom: 1rem !important;
+        color: var(--primary-color);
+    }
+
+    /* Ocultar secciones no críticas en mobile */
+    .settings-hide-mobile,
+    .tab-mobile-notice {
+        display: none !important;
+    }
+
+    /* Links del footer ocultos para ganar espacio */
+    .settings-author-links {
+        display: none !important;
     }
 
     .settings-footer {
-        padding: 1rem;
-        background: var(--bg-color);
-        border-top: 1px solid var(--glass-border);
+        padding: 1rem !important;
+        background: rgba(0, 0, 0, 0.5);
     }
 
-    .settings-author-links {
-        display: none !important;
+    .btn-save {
+        padding: 10px 20px !important;
+        font-size: 0.85rem !important;
     }
 
     /* ---- MODALES: tamaño y posición correctos ---- */
@@ -452,59 +565,6 @@
 
     #cursor-follow-dot {
         display: none !important;
-    }
-
-    /* ---- PÁGINA DE DETALLE DEL JUEGO ---- */
-    .game-detail-container {
-        padding: 1.5rem 1rem !important;
-        margin: 0.5rem !important;
-        border-radius: 16px !important;
-    }
-
-    .game-header {
-        flex-direction: column !important;
-        gap: 1.5rem !important;
-        align-items: center;
-        text-align: center;
-    }
-
-    .game-poster {
-        width: 100% !important;
-        max-width: 320px;
-        margin: 0 auto;
-        border-radius: 12px !important;
-    }
-
-    .game-info-header {
-        width: 100%;
-    }
-
-    .game-info-header h1 {
-        font-size: 1.5rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-
-    .game-meta {
-        justify-content: center;
-        gap: 0.5rem !important;
-    }
-
-    .game-description {
-        font-size: 0.9rem !important;
-        line-height: 1.6 !important;
-        margin-bottom: 1.5rem !important;
-        text-align: center;
-    }
-
-    .game-actions-row {
-        flex-direction: column !important;
-        width: 100%;
-        gap: 0.75rem !important;
-    }
-
-    .game-actions-row .btn-neon {
-        width: 100% !important;
-        justify-content: center;
     }
 }
 
