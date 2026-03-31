@@ -53,45 +53,122 @@
 
     /* ---- HEADER ---- */
     header {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 0.6rem;
         padding: 0.75rem 1rem;
         position: sticky;
         top: 0;
         z-index: 200;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
     }
 
     .logo {
         font-size: 1rem;
         letter-spacing: 1.5px;
-        flex-shrink: 0;
+        z-index: 210;
     }
 
-    /* Nav: solo íconos, sin barra de búsqueda */
-    header nav {
+    /* Botón Hamburguesa */
+    .mobile-menu-toggle {
         display: flex !important;
-        gap: 0.5rem;
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 210;
+        transition: transform 0.3s var(--ease-out-expo);
+    }
+
+    .mobile-menu-toggle.active {
+        transform: rotate(90deg);
+        color: var(--secondary-color);
+    }
+
+    .mobile-menu-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Menú de Navegación Mobile */
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        background: rgba(2, 2, 2, 0.98);
+        display: flex !important;
+        flex-direction: column;
         align-items: center;
-        margin-left: auto;
+        justify-content: center;
+        gap: 2rem;
+        padding: 2rem;
+        transition: right 0.4s var(--ease-out-expo);
+        z-index: 205;
+        backdrop-filter: blur(20px);
     }
 
-    /* Ocultar barra de búsqueda en mobile */
-    .search-bar {
-        display: none !important;
+    .nav-menu.active {
+        right: 0;
     }
 
-    /* Botones del header más compactos */
-    .theme-toggle {
-        padding: 0.4rem 0.6rem;
+    .nav-menu .search-bar {
+        display: block !important;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .nav-menu .search-bar input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        padding: 1rem;
+        border-radius: 12px;
         font-size: 1rem;
-        border-radius: 10px;
+        text-align: center;
+    }
+
+    .nav-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+        align-items: center;
+    }
+
+    .nav-buttons .theme-toggle {
+        width: 100%;
+        max-width: 300px;
+        padding: 1rem;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+    }
+
+    .nav-buttons .theme-toggle::after {
+        content: attr(title);
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Ocultar Minijuegos en Mobile (Simplificación) */
+    #btnMiniGames,
+    #miniGamesModal,
+    .minigame-card {
+        display: none !important;
     }
 
     .theme-toggle svg,
     .theme-toggle i svg {
-        width: 18px;
-        height: 18px;
+        width: 22px;
+        height: 22px;
     }
 
     /* ---- MAIN CONTENT ---- */
@@ -239,53 +316,72 @@
         padding: 0.6rem;
     }
 
-    /* ---- SETTINGS MODAL ---- */
+    /* ---- SETTINGS MODAL (Simplificación Total) ---- */
     .settings-modal {
-        width: 96% !important;
-        max-width: none !important;
-        max-height: 90vh !important;
-        border-radius: 16px;
-        margin: 0 2%;
-        /* Desactivar animación glow pulsante — muy costosa en mobile */
+        width: 94% !important;
+        height: 85vh !important;
+        max-height: 85vh !important;
+        border-radius: 20px;
+        margin: 0;
         animation: none !important;
     }
 
-    .settings-header {
-        padding: 1rem 1.25rem;
+    .settings-layout {
+        display: block !important; /* Quitar grid */
+        overflow-y: auto;
+        height: 100%;
     }
 
-    .settings-header h2 {
-        font-size: 1.1rem;
+    .settings-nav {
+        display: none !important; /* Ocultar tabs por completo */
     }
 
-    .settings-body {
-        padding: 1rem 1.25rem;
+    .settings-panel {
+        padding: 1.25rem 1rem !important;
+        display: block !important;
+    }
+
+    /* Mostrar todas las secciones una tras otra */
+    .tab-pane {
+        display: block !important;
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+        margin-bottom: 2rem;
+        animation: none !important;
     }
 
     .settings-section {
         padding: 1rem !important;
         margin-bottom: 0.75rem !important;
+        border-left-width: 3px !important;
     }
 
     .settings-section h3 {
-        font-size: 0.88rem;
-        margin-bottom: 0.75rem !important;
+        font-size: 0.9rem;
+        margin-bottom: 1rem !important;
+        color: var(--primary-color);
     }
 
-    /* Clases de visibilidad móvil */
-    .settings-hide-mobile {
+    /* Ocultar secciones no críticas en mobile */
+    .settings-hide-mobile,
+    .tab-mobile-notice {
         display: none !important;
     }
 
-    /* Botón "Explorar Temas" más chico */
-    .gallery-toggle-btn {
-        font-size: 0.65rem;
-        padding: 4px 8px;
+    /* Links del footer ocultos para ganar espacio */
+    .settings-author-links {
+        display: none !important;
     }
 
     .settings-footer {
-        padding: 0.75rem 1.25rem;
-        gap: 0.5rem;
+        padding: 1rem !important;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-save {
+        padding: 10px 20px !important;
+        font-size: 0.85rem !important;
     }
 
     /* ---- MODALES: tamaño y posición correctos ---- */

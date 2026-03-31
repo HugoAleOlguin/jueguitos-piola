@@ -74,22 +74,23 @@ self.addEventListener('fetch', (event) => {
     }
 
     // Para fuentes de google y unpkg, usamos Cache First (Cacheable Response)
-    if (url.hostname.includes('fonts.') || url.hostname.includes('unpkg.')) {
+    if (url.hostname.includes('fonts.gstatic.com') || url.hostname.includes('fonts.googleapis.com') || url.hostname.includes('unpkg.')) {
         event.respondWith(
             caches.match(event.request).then((cachedResponse) => {
                 if (cachedResponse) return cachedResponse;
 
                 return fetch(event.request).then((networkResponse) => {
-                    if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic' || networkResponse.type === 'cors') {
+                    // Cachear solo si la respuesta es válida
+                    if (networkResponse && networkResponse.ok) {
                         const responseToCache = networkResponse.clone();
                         caches.open(CACHE_NAME).then((cache) => {
                             cache.put(event.request, responseToCache);
                         });
                     }
                     return networkResponse;
-                }).catch(() => {
-                    // Fallback silencioso
                 });
+                // NO usar .catch() aquí que devuelva undefined, 
+                // mejor dejar que la promesa se rechace si falla internet.
             })
         );
         return;
@@ -99,18 +100,17 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             const fetchPromise = fetch(event.request).then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                if (networkResponse && networkResponse.ok && networkResponse.type === 'basic') {
                     const responseToCache = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put(event.request, responseToCache);
                     });
                 }
                 return networkResponse;
-            }).catch(() => {
-                // Falla silenciosa de la red (está offline)
             });
 
-            // Si hay caché devuelve rápido, y la red actualiza en 2do plano
+            // Si hay caché devuelve rápido, la red actualiza en 2do plano.
+            // Si NO hay caché, devolvemos la promesa de red directamente.
             return cachedResponse || fetchPromise;
         })
     );

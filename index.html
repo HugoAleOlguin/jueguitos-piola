@@ -200,21 +200,30 @@
 
     <header>
         <h1 class="logo">JUEGUITOS PIOLA</h1>
-        <nav style="display: flex; gap: 1rem; align-items: center;">
+        
+        <!-- Botón Hamburguesa (solo mobile) -->
+        <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Abrir menú">
+            <i data-lucide="menu"></i>
+        </button>
+
+        <nav class="nav-menu" id="navMenu">
             <div class="search-bar" role="search">
                 <input type="text" id="searchInput" placeholder="Buscar juegos..." aria-label="Buscar juegos">
             </div>
-            <!-- Botón Minijuegos -->
-            <button class="theme-toggle" id="btnMiniGames" title="Minijuegos">
-                <i data-lucide="gamepad-2"></i>
-            </button>
-            <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
-                <i data-lucide="shuffle"></i>
-            </button>
+            
+            <div class="nav-buttons">
+                <!-- Botón Minijuegos -->
+                <button class="theme-toggle" id="btnMiniGames" title="Minijuegos">
+                    <i data-lucide="gamepad-2"></i>
+                </button>
+                <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
+                    <i data-lucide="shuffle"></i>
+                </button>
 
-            <button class="theme-toggle" id="settingsToggle" title="Configuración">
-                <i data-lucide="sliders-horizontal"></i>
-            </button>
+                <button class="theme-toggle" id="settingsToggle" title="Configuración">
+                    <i data-lucide="sliders-horizontal"></i>
+                </button>
+            </div>
         </nav>
     </header>
 
