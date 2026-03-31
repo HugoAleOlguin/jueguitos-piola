@@ -4,6 +4,26 @@ Historial de cambios estructurales y visuales del proyecto.
 
 ---
 
+## [4.1.0] - 2026-03-31
+
+### Added
+- **Menú Hamburguesa (Mobile)**: Implementado sistema de navegación colapsable para mejorar el espacio en pantalla en dispositivos móviles.
+- **Auto-cierre del Menú**: El menú se cierra automáticamente al seleccionar cualquier opción o sección (Juegos Gratis, Configuración, etc.).
+
+### Changed
+- **Simplificación Mobile**:
+  - Modal de configuración rediseñado: ahora es una lista scrolleable continua sin pestañas para facilitar la navegación táctil.
+  - Ocultas opciones no esenciales en móviles para mejorar el rendimiento y la limpieza visual.
+- **Header**: Rediseño completo para soportar el toggle del menú móvil y centrar elementos.
+
+### Removed
+- **Minijuegos en Mobile**: Eliminado el acceso y cards de minijuegos en la versión móvil para simplificar la experiencia de usuario.
+
+### Fixed
+- **Free Games**: Corregido error de inserción del botón en la nueva estructura del header y mejorada la integración con el menú móvil.
+
+---
+
 ## [3.8.0] - 2026-03-30
 
 ### Added
