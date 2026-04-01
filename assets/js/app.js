@@ -29,6 +29,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // === Menú Hamburguesa Mobile ===
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navMenu = document.getElementById('navMenu');
+    
+    if (mobileMenuBtn && navMenu) {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mobileMenuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Cerrar al clickear cualquier botón dentro (usamos delegación para los dinámicos)
+        navMenu.addEventListener('click', (e) => {
+            const isClickable = e.target.closest('button') || e.target.closest('.theme-toggle');
+            
+            if (isClickable) {
+                mobileMenuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Cerrar al clickear fuera si está abierto
+        document.addEventListener('click', (e) => {
+            if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileMenuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
     // Logo Click (Achievement / Easter Egg)
     const logo = document.querySelector('.logo');
     if (logo) {

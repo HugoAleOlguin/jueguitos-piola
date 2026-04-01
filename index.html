@@ -200,21 +200,30 @@
 
     <header>
         <h1 class="logo">JUEGUITOS PIOLA</h1>
-        <nav style="display: flex; gap: 1rem; align-items: center;">
+        
+        <!-- Botón Hamburguesa (solo mobile) -->
+        <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Abrir menú">
+            <i data-lucide="menu"></i>
+        </button>
+
+        <nav class="nav-menu" id="navMenu">
             <div class="search-bar" role="search">
                 <input type="text" id="searchInput" placeholder="Buscar juegos..." aria-label="Buscar juegos">
             </div>
-            <!-- Botón Minijuegos -->
-            <button class="theme-toggle" id="btnMiniGames" title="Minijuegos">
-                <i data-lucide="gamepad-2"></i>
-            </button>
-            <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
-                <i data-lucide="shuffle"></i>
-            </button>
+            
+            <div class="nav-buttons">
+                <!-- Botón Minijuegos -->
+                <button class="theme-toggle" id="btnMiniGames" title="Minijuegos">
+                    <i data-lucide="gamepad-2"></i>
+                </button>
+                <button class="theme-toggle" id="btnRandom" title="Juego Aleatorio">
+                    <i data-lucide="shuffle"></i>
+                </button>
 
-            <button class="theme-toggle" id="settingsToggle" title="Configuración">
-                <i data-lucide="sliders-horizontal"></i>
-            </button>
+                <button class="theme-toggle" id="settingsToggle" title="Configuración">
+                    <i data-lucide="sliders-horizontal"></i>
+                </button>
+            </div>
         </nav>
     </header>
 
@@ -227,176 +236,203 @@
                 <button class="btn-close" id="btnCancelSettings">×</button>
             </div>
 
-            <div class="settings-body">
-                <!-- 1. APARIENCIA (Fondo) -->
-                <div class="settings-section">
-                    <h3><i data-lucide="image" style="width:16px;height:16px;vertical-align:middle;"></i> Fondo &
-                        Apariencia</h3>
-                    <div class="form-group">
-                        <label for="settingBgUrl">Imagen de Fondo (URL)</label>
-                        <input type="text" id="settingBgUrl" class="settings-input" placeholder="https://...">
-                    </div>
-                    <div class="form-group settings-hide-mobile">
-                        <label for="settingBgFile" class="custom-file-upload">
-                            <i data-lucide="folder-open" style="width:14px;height:14px;vertical-align:middle;"></i>
-                            Subir Archivo Local
-                        </label>
-                        <input type="file" id="settingBgFile" accept="image/*" style="display:none;"
-                            aria-label="Subir archivo de fondo">
-                    </div>
-                    <div class="preview-box settings-hide-mobile" id="settingBgPreview">
-                        <span>Vista Previa</span>
-                    </div>
-                    <label class="toggle-switch" style="margin-top: 0.8rem;">
-                        <span class="toggle-label">
-                            Partículas de Fondo
-                            <small>puntitos flotantes ambientales</small>
-                        </span>
-                        <input type="checkbox" id="settingParticles" class="toggle-input" checked>
-                    </label>
-                </div>
+            <!-- Nueva estructura: sidebar de tabs + panel de contenido -->
+            <div class="settings-layout">
 
-                <!-- 2. ESTILO (Blur & Color) -->
-                <div class="settings-section">
-                    <h3><i data-lucide="sparkles" style="width:16px;height:16px;vertical-align:middle;"></i> Color &
-                        Blur</h3>
-                    <div class="form-group settings-hide-mobile">
-                        <label for="settingBlur">Nivel de Desenfoque (Glass)</label>
-                        <input type="range" id="settingBlur" min="0" max="20" step="1" value="0"
-                            style="width: 100%; accent-color: var(--primary-color);">
-                    </div>
+                <!-- Sidebar de navegación -->
+                <nav class="settings-nav" role="tablist" aria-label="Categorías de configuración">
+                    <button class="nav-tab active" data-tab="appearance" role="tab" aria-controls="tab-appearance">
+                        <i data-lucide="image"></i><span>Fondo</span>
+                    </button>
+                    <button class="nav-tab" data-tab="style" role="tab" aria-controls="tab-style">
+                        <i data-lucide="sparkles"></i><span>Estilo</span>
+                    </button>
+                    <button class="nav-tab" data-tab="fx" role="tab" aria-controls="tab-fx">
+                        <i data-lucide="mouse-pointer-2"></i><span>FX</span>
+                    </button>
+                    <button class="nav-tab" data-tab="themes" role="tab" aria-controls="tab-themes">
+                        <i data-lucide="bookmark"></i><span>Temas</span>
+                    </button>
+                    <button class="nav-tab" data-tab="advanced" role="tab" aria-controls="tab-advanced">
+                        <i data-lucide="zap"></i><span>Config</span>
+                    </button>
+                </nav>
 
-                    <div class="form-group">
-                        <span class="group-label">Color del Sistema</span>
-                        <div class="color-presets">
-                            <button class="color-btn" style="--bg: #00f3ff" data-color="#00f3ff"
-                                title="Cyber Cyan"></button>
-                            <button class="color-btn" style="--bg: #bc13fe" data-color="#bc13fe"
-                                title="Neon Purple"></button>
-                            <button class="color-btn" style="--bg: #00ff88" data-color="#00ff88"
-                                title="Matrix Green"></button>
-                            <button class="color-btn" style="--bg: #ff9500" data-color="#ff9500"
-                                title="Sunset Orange"></button>
-                            <button class="color-btn" style="--bg: #ff4757" data-color="#ff4757"
-                                title="Error Red"></button>
-                            <button class="color-btn" style="--bg: #ffffff" data-color="#ffffff"
-                                title="Pure White"></button>
-                            <div class="custom-color-wrapper" title="Personalizado">
-                                <input type="color" id="settingColor" value="#00f3ff" aria-label="Color personalizado">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Panel derecho con el contenido de cada tab -->
+                <div class="settings-panel">
 
-                <!-- 3. EFECTOS (Cursores & FX) — oculto en mobile (táctil) -->
-                <div class="settings-section settings-hide-mobile">
-                    <h3><i data-lucide="mouse-pointer-2" style="width:16px;height:16px;vertical-align:middle;"></i>
-                        Cursores & FX</h3>
-
-                    <div class="form-group">
-                        <span class="group-label">Cursor (BETA)</span>
-                        <div class="options-grid" id="cursorGrid"
-                            style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
-                            <div class="option-card active" data-cursor="default" title="Default">
-                                <span class="option-icon"><i data-lucide="mouse-pointer"
-                                        style="width:20px;height:20px;"></i></span>
+                    <!-- TAB: Apariencia (Fondo) -->
+                    <div id="tab-appearance" class="tab-pane active" role="tabpanel">
+                        <div class="settings-section">
+                            <h3><i data-lucide="image" style="width:16px;height:16px;vertical-align:middle;"></i> Fondo &amp; Apariencia</h3>
+                            <div class="form-group">
+                                <label for="settingBgUrl">Imagen de Fondo (URL)</label>
+                                <input type="text" id="settingBgUrl" class="settings-input" placeholder="https://...">
                             </div>
-                            <div class="option-card" data-cursor="crosshair" title="FPS">
-                                <span class="option-icon" style="font-size: 1.2rem;">✛</span>
+                            <div class="form-group settings-hide-mobile">
+                                <label for="settingBgFile" class="custom-file-upload">
+                                    <i data-lucide="folder-open" style="width:14px;height:14px;vertical-align:middle;"></i>
+                                    Subir Archivo Local
+                                </label>
+                                <input type="file" id="settingBgFile" accept="image/*" style="display:none;" aria-label="Subir archivo de fondo">
                             </div>
-                            <div class="option-card" data-cursor="troll" title="Troll">
-                                <img src="assets/css/features/null_.png" alt="Troll" style="width: 20px; height: auto;">
+                            <div class="preview-box settings-hide-mobile" id="settingBgPreview">
+                                <span>Vista Previa</span>
                             </div>
-                            <div class="option-card" id="btnCustomCursor" title="Subir PNG">
-                                <span class="option-icon"><i data-lucide="upload"
-                                        style="width:20px;height:20px;"></i></span>
-                            </div>
+                            <label class="toggle-switch" style="margin-top: 0.8rem;">
+                                <span class="toggle-label">
+                                    Partículas de Fondo
+                                    <small>puntitos flotantes ambientales</small>
+                                </span>
+                                <input type="checkbox" id="settingParticles" class="toggle-input" checked>
+                            </label>
                         </div>
                     </div>
 
-                    <!-- Inputs Hidden (necesarios para el JS aunque estén ocultos) -->
-                    <input type="hidden" id="settingCursor" value="default">
-                    <input type="file" id="settingCursorFile" accept="image/png" style="display: none;"
-                        aria-label="Subir cursor personalizado">
+                    <!-- TAB: Estilo (Blur, Color, Cards) -->
+                    <div id="tab-style" class="tab-pane" role="tabpanel">
+                        <div class="settings-section">
+                            <h3><i data-lucide="sparkles" style="width:16px;height:16px;vertical-align:middle;"></i> Color &amp; Blur</h3>
+                            <div class="form-group settings-hide-mobile">
+                                <label for="settingBlur">Nivel de Desenfoque (Glass)</label>
+                                <input type="range" id="settingBlur" min="0" max="20" step="1" value="0"
+                                    style="width: 100%; accent-color: var(--primary-color);">
+                            </div>
+                            <div class="form-group">
+                                <span class="group-label">Color del Sistema</span>
+                                <div class="color-presets">
+                                    <button class="color-btn" style="--bg: #00f3ff" data-color="#00f3ff" title="Cyber Cyan"></button>
+                                    <button class="color-btn" style="--bg: #bc13fe" data-color="#bc13fe" title="Neon Purple"></button>
+                                    <button class="color-btn" style="--bg: #00ff88" data-color="#00ff88" title="Matrix Green"></button>
+                                    <button class="color-btn" style="--bg: #ff9500" data-color="#ff9500" title="Sunset Orange"></button>
+                                    <button class="color-btn" style="--bg: #ff4757" data-color="#ff4757" title="Error Red"></button>
+                                    <button class="color-btn" style="--bg: #ffffff" data-color="#ffffff" title="Pure White"></button>
+                                    <div class="custom-color-wrapper" title="Personalizado">
+                                        <input type="color" id="settingColor" value="#00f3ff" aria-label="Color personalizado">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <!-- Toggles de FX -->
-                    <div class="toggle-group">
-                        <label class="toggle-switch">
-                            <span class="toggle-label">
-                                Cursor Dot
-                                <small>un punto que sigue al mouse</small>
-                            </span>
-                            <input type="checkbox" id="settingCursorTrail" class="toggle-input">
-                        </label>
-                        <label class="toggle-switch">
-                            <span class="toggle-label">
-                                Sonidos de Interfaz
-                                <small>pop suave al interactuar</small>
-                            </span>
-                            <input type="checkbox" id="settingUiSounds" class="toggle-input">
-                        </label>
+                        <div class="settings-section" style="margin-top: 1rem;">
+                            <h3><i data-lucide="layout-grid" style="width:16px;height:16px;vertical-align:middle;"></i> Estilo de Tarjetas</h3>
+                            <div class="card-style-chips">
+                                <button class="card-chip active" data-style="default" title="Diseño clásico con info debajo">
+                                    <span class="card-chip-icon">▤</span>
+                                    <span class="card-chip-label">Estándar</span>
+                                </button>
+                                <button class="card-chip" data-style="compact" title="Solo foto — info al hacer hover">
+                                    <span class="card-chip-icon">⊡</span>
+                                    <span class="card-chip-label">Compacto</span>
+                                </button>
+                                <button class="card-chip" data-style="rainbow" title="Borde multicolor animado">
+                                    <span class="card-chip-icon">◈</span>
+                                    <span class="card-chip-label">Rainbow</span>
+                                </button>
+                                <button class="card-chip" data-style="cyber" title="Estilo cyberpunk con scan lines">
+                                    <span class="card-chip-icon">⬡</span>
+                                    <span class="card-chip-label">Cyber</span>
+                                </button>
+                            </div>
+                            <input type="hidden" id="settingCardStyle" value="default">
+                        </div>
                     </div>
-                </div>
 
-                <!-- En mobile, inputs hidden necesarios para el JS -->
-                <div class="settings-mobile-only" style="display:none;">
-                    <input type="hidden" id="settingCursor" value="default">
-                    <input type="file" id="settingCursorFile" accept="image/png" style="display: none;"
-                        aria-label="Subir cursor personalizado">
-                </div>
+                    <!-- TAB: FX (Cursores, Trail, Sonidos) -->
+                    <div id="tab-fx" class="tab-pane" role="tabpanel">
+                        <div class="settings-section settings-hide-mobile">
+                            <h3><i data-lucide="mouse-pointer-2" style="width:16px;height:16px;vertical-align:middle;"></i> Cursores &amp; FX</h3>
+                            <div class="form-group">
+                                <span class="group-label">Cursor (BETA)</span>
+                                <div class="options-grid" id="cursorGrid" style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
+                                    <div class="option-card active" data-cursor="default" title="Default">
+                                        <span class="option-icon"><i data-lucide="mouse-pointer" style="width:20px;height:20px;"></i></span>
+                                    </div>
+                                    <div class="option-card" data-cursor="crosshair" title="FPS">
+                                        <span class="option-icon" style="font-size: 1.2rem;">&#10011;</span>
+                                    </div>
+                                    <div class="option-card" data-cursor="troll" title="Troll">
+                                        <img src="assets/css/features/null_.png" alt="Troll" style="width: 20px; height: auto;">
+                                    </div>
+                                    <div class="option-card" id="btnCustomCursor" title="Subir PNG">
+                                        <span class="option-icon"><i data-lucide="upload" style="width:20px;height:20px;"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="settingCursor" value="default">
+                            <input type="file" id="settingCursorFile" accept="image/png" style="display: none;" aria-label="Subir cursor personalizado">
+                            <div class="toggle-group">
+                                <label class="toggle-switch">
+                                    <span class="toggle-label">
+                                        Cursor Dot
+                                        <small>un punto que sigue al mouse</small>
+                                    </span>
+                                    <input type="checkbox" id="settingCursorTrail" class="toggle-input">
+                                </label>
+                                <label class="toggle-switch">
+                                    <span class="toggle-label">
+                                        Sonidos de Interfaz
+                                        <small>pop suave al interactuar</small>
+                                    </span>
+                                    <input type="checkbox" id="settingUiSounds" class="toggle-input">
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Fallback mobile: inputs ocultos requeridos por el JS -->
+                        <div class="settings-mobile-only" style="display:none;">
+                            <input type="hidden" id="settingCursor" value="default">
+                            <input type="file" id="settingCursorFile" accept="image/png" style="display: none;" aria-label="Subir cursor personalizado">
+                            <input type="checkbox" id="settingCursorTrail" class="toggle-input" style="display:none;">
+                            <input type="checkbox" id="settingUiSounds" class="toggle-input" style="display:none;">
+                        </div>
+                        <p class="tab-mobile-notice settings-mobile-only" style="display:none; color:#666; font-size:0.85rem; padding:1rem; text-align:center;">
+                            Los efectos de cursor no est&#225;n disponibles en dispositivos t&#225;ctiles.
+                        </p>
+                    </div>
 
-                <!-- 4. PRESETS -->
-                <div class="settings-section">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
-                        <h3 style="margin-bottom: 0;"><i data-lucide="bookmark"
-                                style="width:16px;height:16px;vertical-align:middle;"></i> Temas Guardados</h3>
-                        <button onclick="if(window.ThemeGallery) ThemeGallery.openGallery()" class="gallery-toggle-btn"
-                            title="Ver Galeria Compartida"><i data-lucide="globe" style="width:14px;height:14px;"></i>
-                            Explorar <span class="badge-beta">BETA</span></button>
+                    <!-- TAB: Temas (Presets guardados + galería) -->
+                    <div id="tab-themes" class="tab-pane" role="tabpanel">
+                        <div class="settings-section">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                                <h3 style="margin-bottom: 0;"><i data-lucide="bookmark" style="width:16px;height:16px;vertical-align:middle;"></i> Temas Guardados</h3>
+                                <button onclick="if(window.ThemeGallery) ThemeGallery.openGallery()" class="gallery-toggle-btn" title="Ver Galeria Compartida">
+                                    <i data-lucide="globe" style="width:14px;height:14px;"></i>
+                                    Explorar <span class="badge-beta">BETA</span>
+                                </button>
+                            </div>
+                            <div class="form-group" style="display: flex; gap: 10px;">
+                                <input type="text" id="presetName" class="settings-input" placeholder="Nuevo tema..." style="flex: 1;" aria-label="Nombre del nuevo tema">
+                                <button class="btn-save" id="btnSavePreset" style="padding: 10px 15px; font-size: 0.8rem;">+</button>
+                            </div>
+                            <div class="presets-grid" id="presetsGrid">
+                                <!-- Presets injected by JS -->
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group" style="display: flex; gap: 10px;">
-                        <input type="text" id="presetName" class="settings-input" placeholder="Nuevo tema..."
-                            style="flex: 1;" aria-label="Nombre del nuevo tema">
-                        <button class="btn-save" id="btnSavePreset"
-                            style="padding: 10px 15px; font-size: 0.8rem;">+</button>
-                    </div>
-                    <div class="presets-grid" id="presetsGrid">
-                        <!-- Presets injected here -->
-                    </div>
-                </div>
 
-                <!-- 5. RENDIMIENTO -->
-                <div class="settings-section lite-section-container" style="border-color: rgba(255, 149, 0, 0.3);">
-                    <h3><i data-lucide="zap" style="width:16px;height:16px;vertical-align:middle;"></i> Rendimiento</h3>
-                    <div class="form-group">
-                        <label class="toggle-switch">
-                            <span style="display: flex; flex-direction: column;">
-                                <span style="color: #ff9500; font-weight: bold;">Modo Lite (Bajo Recursos)</span>
-                                <span style="font-size: 0.8em; color: #888; font-weight: normal;">Desactiva Blur,
-                                    Partículas y Animaciones, En parte hasta es mas fachero.</span>
-                            </span>
-                            <input type="checkbox" id="settingLiteMode" class="toggle-input">
-                        </label>
+                    <!-- TAB: Config / Avanzado (Modo Lite) -->
+                    <div id="tab-advanced" class="tab-pane" role="tabpanel">
+                        <div class="settings-section lite-section-container" style="border-color: rgba(255, 149, 0, 0.3);">
+                            <h3><i data-lucide="zap" style="width:16px;height:16px;vertical-align:middle;"></i> Rendimiento</h3>
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <span style="display: flex; flex-direction: column;">
+                                        <span style="color: #ff9500; font-weight: bold;">Modo Lite (Bajo Recursos)</span>
+                                        <span style="font-size: 0.8em; color: #888; font-weight: normal;">Desactiva Blur, Part&#237;culas y Animaciones. En parte hasta es mas fachero.</span>
+                                    </span>
+                                    <input type="checkbox" id="settingLiteMode" class="toggle-input">
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
+                </div><!-- /settings-panel -->
+            </div><!-- /settings-layout -->
             <div class="settings-footer">
                 <button class="btn-ghost danger" id="btnResetSettings">Restaurar</button>
                 <div style="flex: 1;"></div>
                 <!-- Links del autor — ocultos en mobile para ahorrar espacio -->
                 <div class="settings-author-links settings-hide-mobile">
-                    <a href="pages/admin.html" class="author-link" title="Panel de Administración"
-                        style="opacity: 0.7;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                        <span>Admin</span>
-                    </a>
                     <a href="https://github.com/HugoAleOlguin/jueguitos-piola" target="_blank" rel="noopener noreferrer"
                         class="author-link" title="Ver repositorio en GitHub">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -453,8 +489,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 Jueguitos Piola. <a href="pages/admin.html"
-                style="color: inherit; text-decoration: none; opacity: 0.4; margin-left: 10px;" title="Admin">⚙️</a></p>
+        <p>&copy; 2026 Jueguitos Piola.</p>
     </footer>
 
     <!-- Modal Versus -->

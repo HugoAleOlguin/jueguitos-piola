@@ -22,6 +22,10 @@
 /* === Componentes === */
 @import url('components/search-bar.css');
 @import url('components/game-card.css');
+@import url('components/game-card-style-default.css');
+@import url('components/game-card-style-compact.css');
+@import url('components/game-card-style-rainbow.css');
+@import url('components/game-card-style-cyber.css');
 @import url('components/tags.css');
 @import url('components/buttons.css');
 

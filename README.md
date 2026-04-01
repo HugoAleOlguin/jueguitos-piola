@@ -6,7 +6,7 @@
   <br> Hosteado 100% en GitHub Pages. Sin backend, sin frameworks.
 
   ![Status](https://img.shields.io/badge/Estado-Activo-success?style=for-the-badge&logo=github)
-  ![Version](https://img.shields.io/badge/Versión-3.4.0-blue?style=for-the-badge)
+  ![Version](https://img.shields.io/badge/Versión-3.7.0-blue?style=for-the-badge)
 
 </div>
 
@@ -15,7 +15,7 @@
 ## 🚀 Demo en vivo
 
 <p align="center">
-  <b>Versión 3.5 — SPA con Chat en Tiempo Real, Regalos y Galería de Temas</b>
+  <b>Versión 3.8 — Página de detalle del juego y responsive</b>
 </p>
 
 | 🟢 Sitio Oficial |
@@ -53,6 +53,8 @@ Sin frameworks pesados — HTML, CSS y JavaScript vanilla para aprender cómo fu
 Esto es un side-project, así que avanzo a mi ritmo:
 
 ### ✅ Completado
+- [x] **Rediseño del Modal de Configuración (Tabs)** (v3.7)
+- [x] **Sistema de Estilos de Tarjetas (Compact/Default)** (v3.6)
 - [x] Lanzamiento v3.0 SPA
 - [x] Sistema de Configuración Avanzada (temas, blur, colores)
 - [x] Cursores personalizados
