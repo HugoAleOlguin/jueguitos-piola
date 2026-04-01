@@ -45,6 +45,50 @@ header::after {
     transform: scale(1.02);
 }
 
+/* Ocultar botón de menú móvil en PC */
+.mobile-menu-toggle {
+    display: none;
+}
+
+/* Contenedor principal de navegación en PC */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* BARRA DE BÚSQUEDA (estilos básicos restaurados) */
+.search-bar {
+    position: relative;
+    max-width: 300px;
+    width: 100%;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    color: var(--text-color);
+    outline: none;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.search-bar input:focus {
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
 /* =====================================================
    BOTÓN TOGGLE DE TEMA
    ===================================================== */
