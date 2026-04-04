@@ -30,7 +30,7 @@ const AchievementManager = (() => {
         { id: 'window_shopper', title: 'Mirar y No Tocar', desc: 'Abriste 10 juegos sin descargar ninguno.', icon: '👀' },
 
         // Súper Secreto — solo visible si se desbloquea
-        { id: 'speedrunner', title: 'SPEEDRUNNER', desc: 'Completaste todos los logros en menos de 30 segundos. Tocá pasto.', icon: '⚡', secret: true }
+        { id: 'speedrunner', title: 'SPEEDRUNNER', desc: 'Completaste todos los logros en menos de 1 minuto. Tocá pasto.', icon: '⚡', secret: true }
     ];
 
     // === ESTADO ===
@@ -137,9 +137,7 @@ const AchievementManager = (() => {
             } else {
                 unlocked = new Set(saved.unlocked || []);
                 stats = { ...stats, ...(saved.stats || {}) };
-                // Los giros de ruleta y cambios de color se resetean por sesión
-                stats.rouletteSpins = 0;
-                stats.colorChanges = 0;
+                // Los contadores persisten entre sesiones para acumularse correctamente
                 speedrun = { ...speedrun, ...(saved.speedrun || {}) };
             }
         } catch (e) {
@@ -179,10 +177,9 @@ const AchievementManager = (() => {
         if (unlockedNonSecret === nonSecretCount && !speedrun.completionTime) {
             speedrun.completionTime = Date.now();
 
-            // Si se completó en menos de ~31s, desbloquear "Speedrunner"
-            // (31s porque la UI muestra segundos redondeados hacia abajo)
+            // Si se completó en menos de 1 minuto, desbloquear "Speedrunner"
             const duration = speedrun.completionTime - speedrun.startTime;
-            if (duration < 31000) {
+            if (duration < 60000) {
                 setTimeout(() => unlock('speedrunner'), 1000); // Delay dramático
             }
         }
@@ -283,8 +280,9 @@ const AchievementManager = (() => {
                 stats.lastGameOpen = now;
 
                 stats.gamesOpened++;
-                // Logro: Mirar y No Tocar (10 juegos, 0 descargas)
-                if (stats.gamesOpened === 10 && stats.downloadsClicked === 0) unlock('window_shopper');
+                // Logro: Mirar y No Tocar (10+ juegos, 0 descargas)
+                // >= en vez de === para que funcione aunque el usuario abra más de 10
+                if (stats.gamesOpened >= 10 && stats.downloadsClicked === 0) unlock('window_shopper');
                 break;
 
             case 'DOWNLOAD_CLICK':
@@ -413,7 +411,8 @@ const AchievementManager = (() => {
         unlock,
         trackEvent,
         getStats,
-        reset
+        reset,
+        _initialized: false
     };
 
 })();

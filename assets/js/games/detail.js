@@ -65,7 +65,8 @@ const GameDetail = (() => {
                 if (style === 'primary') css = 'btn btn-primary';
                 if (style === 'secondary') css = 'btn btn-secondary';
 
-                html += `<a href="${url}" target="_blank" class="${css}">${label}</a>`;
+                // Agregar btn-download-track a todos para que DOWNLOAD_CLICK se trackee siempre
+                html += `<a href="${url}" target="_blank" class="${css} btn-download-track">${label}</a>`;
             });
         } else {
             if (game.downloadUrl) html += `<a href="${game.downloadUrl}" target="_blank" class="btn btn-primary btn-download-track">Descargar</a>`;
