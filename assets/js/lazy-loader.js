@@ -75,22 +75,26 @@ document.addEventListener('DOMContentLoaded', () => {
         btnMiniGames.addEventListener('click', openMiniGames);
     }
 
-    // 2. Logros (Modal explícito)
-    const btnAchievements = document.getElementById('btnAchievementsFab');
-    if (btnAchievements) {
-        const loadAchievements = async () => {
-            try {
-                await loadScript('assets/js/features/achievements/main.js');
-                if (typeof AchievementManager !== 'undefined') {
-                    AchievementManager.init();
-                }
-            } catch (e) {
-                console.error("Error loading achievements:", e);
+    // 2. Logros — se cargan de forma eager al inicio (no lazy)
+    // El archivo es liviano (~15kb) y otros módulos (theme, settings, router)
+    // necesitan AchievementManager disponible desde el primer evento del usuario.
+    const loadAchievements = async () => {
+        try {
+            await loadScript('assets/js/features/achievements/main.js');
+            if (typeof AchievementManager !== 'undefined' && !AchievementManager._initialized) {
+                AchievementManager.init();
+                AchievementManager._initialized = true;
             }
-        };
+        } catch (e) {
+            console.error("Error loading achievements:", e);
+        }
+    };
 
-        btnAchievements.addEventListener('mouseenter', loadAchievements, { once: true });
-        btnAchievements.addEventListener('touchstart', loadAchievements, { once: true });
+    // Cargar en idle callback para no bloquear el FCP pero estar disponible rápido
+    if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(loadAchievements, { timeout: 500 });
+    } else {
+        setTimeout(loadAchievements, 100);
     }
 
     // 3. Deferred Scripts (Free Games)

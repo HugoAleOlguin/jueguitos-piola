@@ -4,6 +4,20 @@ Historial de cambios estructurales y visuales del proyecto.
 
 ---
 
+## [4.2.0] - 2026-04-04
+
+### Fixed — Sistema de Logros
+- **Carga lazy rota**: `AchievementManager` se cargaba solo al hacer hover sobre el botón FAB. Cualquier logro disparado antes de ese hover (logo click, búsquedas, giros de ruleta, abrir juegos) se perdía para siempre. Ahora se carga con `requestIdleCallback` al inicio de sesión, disponible en ~500ms.
+- **Contadores reseteados**: `rouletteSpins` y `colorChanges` se reiniciaban a 0 en cada carga de página, ignorando el progreso persistido en localStorage. Los logros `Ludópata` e `Indeciso` requerían completar toda la cuenta en una sola sesión.
+- **`window_shopper` bloqueado**: La condición usaba `=== 10` en vez de `>= 10`. Con 11+ juegos abiertos sin ninguna descarga el logro nunca se desbloqueaba.
+- **`DOWNLOAD_CLICK` sin trackear**: Los botones generados desde el array `game.buttons[]` no tenían la clase `btn-download-track`, por lo que el contador de descargas nunca incrementaba (rompía también `window_shopper`).
+- **Doble `init()`**: Se agrega flag `_initialized` para evitar que el módulo de logros se inicialice más de una vez si el script ya estaba en caché.
+
+### Changed
+- **Speedrunner**: Umbral de tiempo ampliado a **60 segundos** (antes: 30 s) para que el wlogro sea alcanzable de forma legítima.
+
+---
+
 ## [4.1.0] - 2026-03-31
 
 ### Added
