@@ -702,7 +702,18 @@
     <script src="assets/js/piola-chat.js" defer></script>
     <!-- Inicializa los iconos Lucide una vez que el DOM está completo -->
     <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
-
+    <!-- Limpieza de Service Workers antiguos (Auto-destrucción) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister().then(function(boolean) {
+                        console.log('Antiguo Service Worker desregistrado:', boolean);
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
