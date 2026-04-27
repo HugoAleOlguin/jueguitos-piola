@@ -215,6 +215,7 @@
 
         <nav class="nav-menu" id="navMenu">
             <div class="search-bar" role="search">
+                <label for="searchInput" style="display: none;">Buscar juegos</label>
                 <input type="text" id="searchInput" placeholder="Buscar juegos..." aria-label="Buscar juegos">
             </div>
             
@@ -315,6 +316,7 @@
                                     <button class="color-btn" style="--bg: #ff4757" data-color="#ff4757" title="Error Red"></button>
                                     <button class="color-btn" style="--bg: #ffffff" data-color="#ffffff" title="Pure White"></button>
                                     <div class="custom-color-wrapper" title="Personalizado">
+                                        <label for="settingColor" style="display: none;">Color personalizado</label>
                                         <input type="color" id="settingColor" value="#00f3ff" aria-label="Color personalizado">
                                     </div>
                                 </div>
@@ -367,6 +369,7 @@
                                 </div>
                             </div>
                             <input type="hidden" id="settingCursor" value="default">
+                            <label for="settingCursorFile" style="display: none;">Cursor personalizado</label>
                             <input type="file" id="settingCursorFile" accept="image/png" style="display: none;" aria-label="Subir cursor personalizado">
                             <div class="toggle-group">
                                 <label class="toggle-switch">
@@ -385,13 +388,7 @@
                                 </label>
                             </div>
                         </div>
-                        <!-- Fallback mobile: inputs ocultos requeridos por el JS -->
-                        <div class="settings-mobile-only" style="display:none;">
-                            <input type="hidden" id="settingCursor" value="default">
-                            <input type="file" id="settingCursorFile" accept="image/png" style="display: none;" aria-label="Subir cursor personalizado">
-                            <input type="checkbox" id="settingCursorTrail" class="toggle-input" style="display:none;">
-                            <input type="checkbox" id="settingUiSounds" class="toggle-input" style="display:none;">
-                        </div>
+                        <!-- Fallback mobile removido por IDs duplicados (los inputs de arriba siguen existiendo en el DOM, solo se ocultan con CSS) -->
                         <p class="tab-mobile-notice settings-mobile-only" style="display:none; color:#666; font-size:0.85rem; padding:1rem; text-align:center;">
                             Los efectos de cursor no est&#225;n disponibles en dispositivos t&#225;ctiles.
                         </p>
@@ -408,6 +405,7 @@
                                 </button>
                             </div>
                             <div class="form-group" style="display: flex; gap: 10px;">
+                                <label for="presetName" style="display: none;">Nuevo tema</label>
                                 <input type="text" id="presetName" class="settings-input" placeholder="Nuevo tema..." style="flex: 1;" aria-label="Nombre del nuevo tema">
                                 <button class="btn-save" id="btnSavePreset" style="padding: 10px 15px; font-size: 0.8rem;">+</button>
                             </div>
@@ -611,6 +609,7 @@
                 <span id="gamedleAttemptCounter" style="color: #0099cc; font-weight: bold;">1 / 10</span>
             </div>
             <div style="position: relative; width: 100%;">
+                <label for="gamedleInput" style="display: none;">Adivina el juego</label>
                 <input type="text" id="gamedleInput" placeholder="Escribe el nombre del juego..." autocomplete="off"
                     aria-label="Nombre del juego">
                 <div id="gamedleSuggestions"></div>

@@ -29,9 +29,8 @@ if (typeof window.ThemeGallery === 'undefined') {
                 const firebaseResult = await window.FirebaseManager.initialize();
                 db = firebaseResult.db;
                 isFirebaseReady = firebaseResult.isInitialized;
-                console.info('[ThemeGallery] Firebase conectado ✓');
             } catch (err) {
-                console.error('[ThemeGallery] Error al inicializar Firebase:', err);
+                console.error('[ThemeGallery] Error al conectar:', err);
                 isFirebaseReady = false;
             }
         };
@@ -172,7 +171,7 @@ if (typeof window.ThemeGallery === 'undefined') {
             if (!grid) return;
 
             if (!isFirebaseReady) {
-                grid.innerHTML = '<div class="gallery-status-msg">Firebase no está conectado.</div>';
+                grid.innerHTML = '<div class="gallery-status-msg">El servidor de temas comunitarios no está disponible.</div>';
                 return;
             }
 

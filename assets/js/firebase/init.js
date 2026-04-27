@@ -36,22 +36,19 @@ if (typeof window.FirebaseManager === 'undefined') {
             
             // Si Firebase no está disponible en absoluto, retornamos una promesa rechazada
             if (typeof firebase === 'undefined') {
-                console.error('[FirebaseManager] Firebase library not loaded');
-                return Promise.reject(new Error('Firebase library not loaded'));
+                console.error('[DBManager] Core library not loaded');
+                return Promise.reject(new Error('Core library not loaded'));
             }
             
             // Crear la promesa de inicialización
             initPromise = new Promise((resolve, reject) => {
                 try {
-                    // Log para debug
-                    console.log('[FirebaseManager] Initializing Firebase...');
-                    console.log('[FirebaseManager] firebase.apps.length:', firebase.apps.length);
+                    // Log para debug omitido (oculto al usuario)
                     
                     // Si ya hay apps inicializadas, usamos la primera
                     if (firebase.apps.length > 0) {
                         db = firebase.firestore();
                         isInitialized = true;
-                        console.info('[FirebaseManager] Using existing Firebase app');
                         resolve({ db, isInitialized: true });
                         return;
                     }
@@ -60,10 +57,9 @@ if (typeof window.FirebaseManager === 'undefined') {
                     firebase.initializeApp(FIREBASE_CONFIG);
                     db = firebase.firestore();
                     isInitialized = true;
-                    console.info('[FirebaseManager] Firebase initialized successfully');
                     resolve({ db, isInitialized: true });
                 } catch (error) {
-                    console.error('[FirebaseManager] Error initializing Firebase:', error);
+                    console.error('[DBManager] Error initializing database:', error);
                     isInitialized = false;
                     reject(error);
                 }
