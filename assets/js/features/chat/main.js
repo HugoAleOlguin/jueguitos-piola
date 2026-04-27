@@ -46,7 +46,6 @@ const ChatCore = (() => {
             if (state.profile && state.isReady) ChatFirestore.updatePresence(true);
         }, 60000);
 
-        console.info('[PiolaChat] Chat inicializado ✓');
     };
 
     return { state, init };
