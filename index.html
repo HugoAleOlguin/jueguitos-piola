@@ -702,20 +702,7 @@
     <script src="assets/js/piola-chat.js" defer></script>
     <!-- Inicializa los iconos Lucide una vez que el DOM está completo -->
     <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
-    <!-- Registro de Service Worker para caché offline estricta -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('SW Piola activado: ', registration.scope);
-                    })
-                    .catch(err => {
-                        console.warn('SW falló (ignorar si es entorno local sin https): ', err);
-                    });
-            });
-        }
-    </script>
+
 </body>
 
 </html>

@@ -68,7 +68,6 @@ Esto es un side-project, así que avanzo a mi ritmo:
 - [x] **Perfil unificado** (chat + galería)
 - [x] **GIFs/Imágenes inline** (auto-detección de URLs)
 - [x] **Perfiles en Firestore** (editables desde consola)
-- [x] **Service Worker** (caché offline)
 - [x] **Precarga de fondo** (optimización de rendimiento)
 
 ### 🚧 Pendiente
