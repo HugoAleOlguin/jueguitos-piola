@@ -96,6 +96,8 @@
     gap: 12px;
     animation: slideInHint 0.4s ease;
     backdrop-filter: blur(8px);
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
 }
 
 .prime-hint-close {

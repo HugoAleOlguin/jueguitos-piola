@@ -9,6 +9,8 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
     z-index: 2000;
     display: flex;
     align-items: center;
@@ -331,6 +333,8 @@
     height: 60px;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
     border: 1px solid var(--glass-border);
     border-radius: 50%;
     display: flex;

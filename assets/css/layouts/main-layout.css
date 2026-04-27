@@ -43,8 +43,14 @@ header {
     padding: 1.5rem 4rem;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(var(--glass-blur, 20px));
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
     -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
     backdrop-filter: blur(var(--glass-blur, 20px));
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
     border-bottom: 1px solid var(--glass-border);
     position: sticky;
     top: 0;
