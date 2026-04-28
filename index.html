@@ -137,9 +137,9 @@
     </style>
 
     <!-- Asynchronous CSS Loading -->
-     <link rel="preload" href="assets/css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+     <link rel="preload" href="assets/css/bundle.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
      <noscript>
-         <link rel="stylesheet" href="assets/css/main.css">
+         <link rel="stylesheet" href="assets/css/bundle.css">
      </noscript>
     <link rel="icon" href="favicon.png">
     <!-- Google Fonts: Optimizado con font-display swap y preconnect -->
@@ -696,12 +696,7 @@
     <!-- Firebase Central Initialization -->
     <script src="assets/js/firebase/init.js" defer></script>
     <script src="assets/js/theme-gallery.js" defer></script>
-    <script src="assets/js/features/chat/helpers.js" defer></script>
-    <script src="assets/js/features/chat/profile.js" defer></script>
-    <script src="assets/js/features/chat/firestore.js" defer></script>
-    <script src="assets/js/features/chat/ui.js" defer></script>
-    <script src="assets/js/features/chat/main.js" defer></script>
-    <script src="assets/js/piola-chat.js" defer></script>
+    <script src="assets/js/piola-chat-bundle.js" defer></script>
     <script src="assets/js/easter-eggs.js" defer></script>
     <!-- Inicializa los iconos Lucide una vez que el DOM está completo -->
     <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>

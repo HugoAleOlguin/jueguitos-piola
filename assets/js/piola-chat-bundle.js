@@ -1,3 +1,179 @@
+// === JUEGUITOS PIOLA CHAT BUNDLE ===
+
+// --- helpers.js ---
+const ChatHelpers = (() => {
+    const generateId = () => {
+        return 'user_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    };
+
+    const defaultAvatar = (name) => {
+        return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(name || 'anon')}`;
+    };
+
+    const getGameByTitle = (title) => {
+        if (!window.gamesData || !title) return null;
+        return window.gamesData.find(g => g.title === title) || null;
+    };
+
+    const formatTime = (date) => {
+        if (!date) return '';
+        const h = date.getHours().toString().padStart(2, '0');
+        const m = date.getMinutes().toString().padStart(2, '0');
+        return `${h}:${m}`;
+    };
+
+    const escapeHtml = (str) => {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    };
+
+    const isImageUrl = (text) => {
+        if (!text || typeof text !== 'string') return false;
+        const trimmed = text.trim();
+
+        if (!trimmed.startsWith('http')) return false;
+
+        const imageExtensions = /\.(gif|png|jpg|jpeg|webp)(\?.*)?$/i;
+        if (imageExtensions.test(trimmed)) return true;
+
+        const gifDomains = ['tenor.com', 'media.tenor.com', 'giphy.com', 'media.giphy.com', 'i.imgur.com'];
+        try {
+            const url = new URL(trimmed);
+            return gifDomains.some(domain => url.hostname.endsWith(domain));
+        } catch {
+            return false;
+        }
+    };
+
+    return { generateId, defaultAvatar, getGameByTitle, formatTime, escapeHtml, isImageUrl };
+})();
+
+
+// --- firestore.js ---
+const ChatFirestore = (() => {
+    const COLLECTION_MESSAGES = 'messages';
+    const COLLECTION_USERS = 'users';
+    const MAX_MSG_LENGTH = 300;
+    const MSG_LOAD_LIMIT = 80;
+
+    const startListeners = () => {
+        const state = ChatCore.state;
+        if (!state.isReady || !state.db) return;
+
+        if (state.unsubMessages) state.unsubMessages();
+        if (state.unsubUsers) state.unsubUsers();
+
+        state.unsubMessages = state.db.collection(COLLECTION_MESSAGES)
+            .orderBy('createdAt', 'asc')
+            .limitToLast(MSG_LOAD_LIMIT)
+            .onSnapshot((snapshot) => {
+                state.currentMessages = snapshot.docs;
+                ChatUI.renderAllMessages();
+
+                let lastRead = parseInt(localStorage.getItem('piola_chat_last_read') || '0', 10);
+
+                if (state.isOpen) {
+                    lastRead = Date.now();
+                    localStorage.setItem('piola_chat_last_read', lastRead.toString());
+                    state.unreadCount = 0;
+                } else {
+                    const newMessages = snapshot.docs.filter(doc => {
+                        const data = doc.data();
+                        if (data.authorId === state.profile?.id) return false;
+
+                        const msgTime = data.createdAt ? data.createdAt.toMillis() : Date.now();
+                        return msgTime > lastRead;
+                    });
+
+                    if (newMessages.length > 0) {
+                        state.unreadCount = newMessages.length;
+                    } else {
+                        state.unreadCount = 0;
+                    }
+                }
+
+                ChatUI.updateUnreadBadge();
+            }, (err) => {
+                console.error('[PiolaChat] Error en listener de mensajes:', err);
+            });
+
+        state.unsubUsers = state.db.collection(COLLECTION_USERS)
+            .onSnapshot((snapshot) => {
+                state.userMap.clear();
+                let onlineCount = 0;
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    state.userMap.set(doc.id, data);
+                    if (data.online) onlineCount++;
+                });
+                const countEl = document.getElementById('chatOnlineCount');
+                if (countEl) {
+                    countEl.textContent = onlineCount > 0 ? `${onlineCount} online` : '';
+                }
+                ChatUI.renderAllMessages();
+            }, (err) => {
+                console.error('[PiolaChat] Error en listener de usuarios:', err);
+            });
+    };
+
+    const sendMessage = async () => {
+        const state = ChatCore.state;
+        if (!state.isReady || !state.profile) return;
+
+        const input = document.getElementById('piolaChatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        input.value = '';
+
+        const shouldScroll = true;
+        const isImage = ChatHelpers.isImageUrl(text);
+
+        try {
+            const msgData = {
+                authorId: state.profile.id,
+                text: text.slice(0, MAX_MSG_LENGTH),
+                type: isImage ? 'media' : 'message',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (isImage) {
+                msgData.mediaUrl = text;
+            }
+
+            await state.db.collection(COLLECTION_MESSAGES).add(msgData);
+            
+            if (shouldScroll) {
+                ChatUI.scrollToBottom();
+            }
+        } catch (err) {
+            console.error('[PiolaChat] Error al enviar mensaje:', err);
+        }
+    };
+
+    const updatePresence = (online) => {
+        const state = ChatCore.state;
+        if (!state.isReady || !state.profile || !state.db) return;
+
+        state.db.collection(COLLECTION_USERS).doc(state.profile.id).set({
+            name: state.profile.name,
+            avatar: state.profile.avatar,
+            description: state.profile.description || '',
+            favoriteGame: state.profile.favoriteGame || '',
+            nameColor: state.profile.nameColor || ChatProfile.DEFAULT_NAME_COLOR,
+            online: online,
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true })
+            .catch(err => console.error('[PiolaChat] Error actualizando usuario:', err));
+    };
+
+    return { startListeners, sendMessage, updatePresence, MAX_MSG_LENGTH };
+})();
+
+
+// --- ui.js ---
 const ChatUI = (() => {
     const CHAT_LAYOUT_KEY = 'piola_chat_layout';
     const MIN_WIDTH = 320;
@@ -662,3 +838,131 @@ const ChatUI = (() => {
 
     return { injectHTML, bindEvents, toggleChat, showSetup, openProfileModal, renderAllMessages, scrollToBottom, updateUnreadBadge };
 })();
+
+
+// --- profile.js ---
+const ChatProfile = (() => {
+    const STORAGE_KEY = 'piola_chat_profile';
+    const DEFAULT_NAME_COLOR = '#00f3ff';
+    const DEFAULT_AVATAR = 'https://api.dicebear.com/7.x/thumbs/svg?seed=default';
+
+    const loadProfile = () => {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return null;
+            return JSON.parse(raw);
+        } catch {
+            return null;
+        }
+    };
+
+    const saveProfile = (data) => {
+        ChatCore.state.profile = data;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    };
+
+    return { loadProfile, saveProfile, DEFAULT_NAME_COLOR, DEFAULT_AVATAR };
+})();
+
+
+// --- main.js ---
+const ChatCore = (() => {
+    const state = {
+        db: null,
+        isReady: false,
+        isOpen: false,
+        profile: null,
+        unsubMessages: null,
+        unsubUsers: null,
+        userMap: new Map(),
+        currentMessages: [],
+        unreadCount: 0
+    };
+
+    const init = async () => {
+        try {
+            // Initialize Firebase using centralized manager
+            const firebaseResult = await window.FirebaseManager.initialize();
+            state.db = firebaseResult.db;
+            state.isReady = firebaseResult.isInitialized;
+            
+            if (!state.isReady) {
+                console.warn('[PiolaChat] Firebase no inicializado.');
+                return;
+            }
+        } catch (err) {
+            console.error('[PiolaChat] Error al inicializar Firebase:', err);
+            state.isReady = false;
+            return;
+        }
+
+        state.profile = ChatProfile.loadProfile();
+        ChatUI.injectHTML();
+        ChatUI.bindEvents();
+
+        if (state.profile) {
+            ChatFirestore.startListeners();
+            ChatFirestore.updatePresence(true);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (state.profile) ChatFirestore.updatePresence(false);
+        });
+
+        // Heartbeat cada 60s
+        setInterval(() => {
+            if (state.profile && state.isReady) ChatFirestore.updatePresence(true);
+        }, 60000);
+
+    };
+
+    return { state, init };
+})();
+
+
+// --- piola-chat.js ---
+// ============================================================================
+// PIOLA CHAT (VERSIÓN MODULAR)
+// Inicializador Global
+// ============================================================================
+
+const PiolaChat = (() => {
+    const init = () => {
+        if (typeof ChatCore !== 'undefined') {
+            ChatCore.init();
+        } else {
+            console.error('[PiolaChat] Faltan módulos del chat. No se puede inicializar.');
+        }
+    };
+    
+    // API Pública para compatibilidad hacia atrás si algún otro módulo lo usara
+    return {
+        init,
+        editProfile: () => {
+            if (typeof ChatUI !== 'undefined') ChatUI.showSetup();
+        },
+        getProfile: () => {
+            if (typeof ChatCore !== 'undefined') return ChatCore.state.profile;
+            return null;
+        }
+    };
+})();
+
+const waitForFirebase = () => {
+    return window.FirebaseManager.initialize().then(() => {
+        // Firebase está listo
+        return;
+    }).catch(() => {
+        // Even if it fails, we resolve to prevent blocking
+        // The individual modules will handle their own errors
+        console.warn('[PiolaChat] Firebase initialization failed, but continuing anyway');
+        return;
+    });
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await waitForFirebase();
+    setTimeout(() => Object.freeze && Object.freeze(PiolaChat), 10);
+    setTimeout(() => PiolaChat.init(), 500);
+});
+
