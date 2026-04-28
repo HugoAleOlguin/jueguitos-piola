@@ -9,7 +9,11 @@ const GameDetail = (() => {
 
         let proxiedUrl = game.image;
         if (game.image && game.image.startsWith('http')) {
-            proxiedUrl = `https://wsrv.nl/?url=${encodeURIComponent(game.image)}&w=400&output=webp&q=80`;
+            let proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(game.image)}&w=400&output=webp&q=80`;
+            if (game.image.toLowerCase().includes('.gif')) {
+                proxyUrl += '&n=-1'; // Preservar animación (GIF -> WebP animado)
+            }
+            proxiedUrl = proxyUrl;
         }
 
         gameContainer.innerHTML = `
