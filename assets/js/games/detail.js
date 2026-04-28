@@ -7,11 +7,16 @@ const GameDetail = (() => {
         const tagsHtml = generateTagsRef(game.tags);
         const desc = game.fullDescription || game.description;
 
+        let proxiedUrl = game.image;
+        if (game.image && game.image.startsWith('http')) {
+            proxiedUrl = `https://wsrv.nl/?url=${encodeURIComponent(game.image)}&w=400&output=webp&q=80`;
+        }
+
         gameContainer.innerHTML = `
             <div class="game-detail-container" style="animation: fadeInUp 0.5s ease;">
                 <div class="game-header">
                     <div style="display:flex; flex-direction:column; gap:10px; flex-shrink:0;">
-                        <img src="${game.image}" alt="${game.title}" class="game-poster" onerror="this.src='favicon.png'">
+                        <img src="${proxiedUrl}" alt="${game.title}" class="game-poster" onerror="this.src='favicon.png'">
                         <button class="set-bg-btn" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px; cursor:pointer; color:var(--text-muted); font-size:0.75rem; transition:all 0.2s; width:100%; text-align:center;">
                            Usar como fondo
                         </button>

@@ -22,7 +22,13 @@ const GridRenderer = (() => {
                 card.style.transform = 'none';
             }
 
-            const bgImage = game.image ? `url('${game.image}')` : 'linear-gradient(45deg, #111, #222)';
+            // Optimización vía Proxy: Compresión automática al vuelo sin lazy loading
+            let proxiedUrl = game.image;
+            if (game.image && game.image.startsWith('http')) {
+                // Generar URL WebP optimizada (400px de ancho suele ser suficiente para cards)
+                proxiedUrl = `https://wsrv.nl/?url=${encodeURIComponent(game.image)}&w=400&output=webp&q=80`;
+            }
+            const bgImage = proxiedUrl ? `url('${proxiedUrl}')` : 'linear-gradient(45deg, #111, #222)';
             const isUtility = game.tags.some(tag => tag.toLowerCase() === 'utilidad');
             const utilityRibbon = isUtility ? '<div class="utility-ribbon">Utilidad</div>' : '';
 
