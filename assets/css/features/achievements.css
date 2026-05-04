@@ -89,6 +89,8 @@ body.lite-mode .ach-title {
     inset: 0;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(5px);
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
     z-index: 2000;
     display: flex;
     justify-content: center;

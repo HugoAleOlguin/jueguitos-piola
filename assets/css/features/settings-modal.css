@@ -9,6 +9,8 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(16px);
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
     /* Deeper blur */
     z-index: 9999;
     display: flex;
@@ -574,6 +576,8 @@
     padding: 8px 16px;
     border-radius: 20px;
     backdrop-filter: blur(4px);
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
 }
 
 /* =====================================================
