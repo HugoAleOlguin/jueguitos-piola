@@ -7,6 +7,7 @@ const KeyboardManager = (() => {
     // --- Estado interno ---
     let hudVisible = false;
     let hudEl = null;
+    let scrollAnimId = null; // ID del requestAnimationFrame en curso para cancelarlo si llega otra tecla
 
     // -------------------------------------------------------------------------
     // INIT
@@ -167,7 +168,51 @@ const KeyboardManager = (() => {
 
     const _focusCard = (cards, index) => {
         cards[index].focus();
-        cards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        _smoothCenter(cards[index]);
+    };
+
+    // -------------------------------------------------------------------------
+    // SMOOTH SCROLL CENTRADO — Easing propio, sin depender del browser
+    // -------------------------------------------------------------------------
+
+    // Curva de aceleración: arranca rápido, desacelera suave al final (ease-out-quart)
+    const _easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
+
+    const _smoothCenter = (el, duration = 360) => {
+        // Cancelar animación en curso si el usuario presiona otra tecla antes de que termine
+        if (scrollAnimId) {
+            cancelAnimationFrame(scrollAnimId);
+            scrollAnimId = null;
+        }
+
+        const rect = el.getBoundingClientRect();
+        const elementCenterY = rect.top + rect.height / 2;
+        const viewportCenter = window.innerHeight / 2;
+        const targetScrollY = Math.max(0, window.scrollY + elementCenterY - viewportCenter);
+
+        // Si ya está casi centrado, no animar (evita micro-jitter)
+        if (Math.abs(targetScrollY - window.scrollY) < 8) return;
+
+        const startScrollY = window.scrollY;
+        const delta = targetScrollY - startScrollY;
+        let startTime = null;
+
+        const step = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = _easeOutQuart(progress);
+
+            window.scrollTo(0, startScrollY + delta * eased);
+
+            if (progress < 1) {
+                scrollAnimId = requestAnimationFrame(step);
+            } else {
+                scrollAnimId = null;
+            }
+        };
+
+        scrollAnimId = requestAnimationFrame(step);
     };
 
     // -------------------------------------------------------------------------
