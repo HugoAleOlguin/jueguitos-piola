@@ -14,6 +14,8 @@ const GridRenderer = (() => {
             const card = document.createElement('div');
             card.className = 'game-card';
             card.dataset.gameId = game.id;
+            card.tabIndex = 0; // Para navegación por teclado
+            card.setAttribute('role', 'button');
 
             if (animate) card.style.animationDelay = `${index * 0.03}s`;
             else {
