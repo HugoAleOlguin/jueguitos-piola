@@ -197,15 +197,31 @@ const KeyboardManager = (() => {
         _goHome();
     };
 
-    // Volver al home desde cualquier estado
+    // Volver al home desde cualquier estado o página
     const _goHome = () => {
+        // Caso 1: Vista de detalle de un juego (SPA)
         const gameView = document.getElementById('game-view');
         if (gameView && gameView.style.display !== 'none') {
-            const backBtn = gameView.querySelector('.btn-back-spa');
-            if (backBtn) { backBtn.click(); return; }
+            gameView.querySelector('.btn-back-spa')?.click();
+            return;
         }
-        // Si está en otra ruta, navegar limpio
-        if (window.Router) Router.navigateTo(window.location.pathname);
+
+        // Caso 2: Dentro del SPA pero en una vista secundaria (free-games, etc.)
+        // La grilla principal está oculta pero no estamos en un juego
+        const gamesGrid = document.getElementById('gamesGrid');
+        const gridHidden = gamesGrid && gamesGrid.style.display === 'none';
+        if (gridHidden && typeof Router !== 'undefined') {
+            Router.showHome();
+            return;
+        }
+
+        // Caso 3: Ya estamos en el home → no hacer nada
+        if (gamesGrid && gamesGrid.style.display !== 'none') return;
+
+        // Caso 4: Página completamente diferente (admin, mods, etc.) sin Router
+        // Navegamos al canonical que apunta al index
+        const canonical = document.querySelector('link[rel="canonical"]');
+        window.location.href = canonical ? canonical.href : window.location.origin + '/';
     };
 
     // -------------------------------------------------------------------------
