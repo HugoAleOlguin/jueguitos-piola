@@ -1,13 +1,12 @@
 // ============================================================================
-// KEYBOARD.JS — Navegación Full por Teclado
-// Maneja navegación en grilla, vista de detalle, modales, y HUD de atajos (Alt)
+// KEYBOARD.JS — Navegación Full por Teclado + HUD de Atajos (Alt)
 // ============================================================================
 
 const KeyboardManager = (() => {
     // --- Estado interno ---
     let hudVisible = false;
     let hudEl = null;
-    let scrollAnimId = null; // ID del requestAnimationFrame en curso para cancelarlo si llega otra tecla
+    let scrollAnimId = null;
 
     // -------------------------------------------------------------------------
     // INIT
@@ -22,28 +21,30 @@ const KeyboardManager = (() => {
     // DISPATCHER GLOBAL
     // -------------------------------------------------------------------------
     const _onKeyDown = (e) => {
-        // Mostrar HUD al mantener Alt (sin bloquear otros combos del sistema)
+        // Alt: mostrar HUD, bloquear el comportamiento nativo del navegador
         if (e.key === 'Alt') {
-            e.preventDefault(); // Evitar que Alt abra menú del navegador
+            e.preventDefault();
             _showHud();
             return;
         }
 
-        // Ignorar si el foco está en un input/textarea
-        // Sólo Escape funciona para salir del input
-        const isTyping = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+        // Si el foco está en un campo de texto, solo permitimos Escape
+        const isTyping = e.target.tagName === 'INPUT'
+            || e.target.tagName === 'TEXTAREA'
+            || e.target.isContentEditable;
+
         if (isTyping) {
             if (e.key === 'Escape') e.target.blur();
             return;
         }
 
-        // Escape global: cierra modales o vuelve al home si está en detalle
+        // Escape global
         if (e.key === 'Escape') {
             _handleEscape();
             return;
         }
 
-        // Slash / para enfocar búsqueda
+        // Slash: enfocar buscador
         if (e.key === '/') {
             const input = document.getElementById('searchInput');
             if (input) {
@@ -53,10 +54,15 @@ const KeyboardManager = (() => {
             return;
         }
 
-        // Determinar contexto actual
+        // Atajos de letra (solo cuando no hay modal abierto)
+        const isModalOpen = _getTopModal() !== null;
+        if (!isModalOpen && e.key.length === 1) {
+            if (_handleShortcut(e)) return;
+        }
+
+        // Rutas contextuales con flechas y Enter
         const gameView = document.getElementById('game-view');
         const isDetailActive = gameView && gameView.style.display !== 'none';
-        const isModalOpen = _getTopModal() !== null;
 
         if (isModalOpen) {
             _handleModalNavigation(e);
@@ -68,26 +74,104 @@ const KeyboardManager = (() => {
     };
 
     const _onKeyUp = (e) => {
+        // Bloquear también el keyup de Alt para evitar que el navegador
+        // active la barra de menú al soltar la tecla
         if (e.key === 'Alt') {
+            e.preventDefault();
             _hideHud();
         }
     };
 
     // -------------------------------------------------------------------------
-    // ESCAPE GLOBAL
+    // ATAJOS DE LETRA — Acciones rápidas globales
+    // Devuelve true si consumió el evento
     // -------------------------------------------------------------------------
-    const _handleEscape = () => {
-        // 1. Primero: cerrar modal si hay alguno abierto
-        const modal = _getTopModal();
-        if (modal) {
-            const closeBtn = modal.querySelector('.btn-close, [id*="CloseBtn"], [id*="Close"], .btn-close-vs, .btn-close-ach');
-            if (closeBtn) {
-                closeBtn.click();
-                return;
+    const _handleShortcut = (e) => {
+        switch (e.key.toLowerCase()) {
+            // C → Chat
+            case 'c': {
+                e.preventDefault();
+                const bubble = document.getElementById('piolaChatBubble');
+                if (bubble) bubble.click();
+                return true;
+            }
+            // L → Logros
+            case 'l': {
+                e.preventDefault();
+                const fabLogros = document.getElementById('btnAchievementsFab');
+                if (fabLogros) fabLogros.click();
+                return true;
+            }
+            // G → Minijuegos
+            case 'g': {
+                e.preventDefault();
+                const btnMini = document.getElementById('btnMiniGames');
+                if (btnMini) btnMini.click();
+                return true;
+            }
+            // R → Juego Aleatorio (Ruleta)
+            case 'r': {
+                e.preventDefault();
+                const btnRandom = document.getElementById('btnRandom');
+                if (btnRandom) btnRandom.click();
+                return true;
+            }
+            // S → Configuración (Settings)
+            case 's': {
+                e.preventDefault();
+                const btnSettings = document.getElementById('settingsToggle');
+                if (btnSettings) btnSettings.click();
+                return true;
+            }
+            // H → Home (volver al inicio)
+            case 'h': {
+                e.preventDefault();
+                const gameView = document.getElementById('game-view');
+                if (gameView && gameView.style.display !== 'none') {
+                    const backBtn = gameView.querySelector('.btn-back-spa');
+                    if (backBtn) backBtn.click();
+                }
+                return true;
+            }
+            // F → Free Games / Regalos
+            case 'f': {
+                e.preventDefault();
+                const btnFree = document.querySelector('[data-freegames], #btnFreeGames');
+                if (btnFree) btnFree.click();
+                return true;
             }
         }
+        return false;
+    };
 
-        // 2. Segundo: si estamos en vista de detalle, volver al home
+    // -------------------------------------------------------------------------
+    // ESCAPE GLOBAL — Cierra capa superior en orden de prioridad
+    // -------------------------------------------------------------------------
+    const _handleEscape = () => {
+        // 1. Chat abierto
+        const chatPanel = document.getElementById('piolaChatPanel');
+        if (chatPanel && chatPanel.classList.contains('open')) {
+            const closeChat = document.getElementById('btnCloseChat');
+            if (closeChat) { closeChat.click(); return; }
+        }
+
+        // 2. Setup de chat abierto
+        const chatSetup = document.getElementById('piolaChatSetup');
+        if (chatSetup && chatSetup.classList.contains('active')) {
+            chatSetup.classList.remove('active');
+            return;
+        }
+
+        // 3. Modales con botón de cierre
+        const modal = _getTopModal();
+        if (modal) {
+            const closeBtn = modal.querySelector(
+                '.btn-close, [id*="CloseBtn"], [id*="Close"], .btn-close-vs, .btn-close-ach'
+            );
+            if (closeBtn) { closeBtn.click(); return; }
+        }
+
+        // 4. Vista de detalle de juego → volver al home
         const gameView = document.getElementById('game-view');
         if (gameView && gameView.style.display !== 'none') {
             const backBtn = gameView.querySelector('.btn-back-spa');
@@ -99,7 +183,6 @@ const KeyboardManager = (() => {
     // HELPER: Obtener el modal visible más reciente
     // -------------------------------------------------------------------------
     const _getTopModal = () => {
-        // Buscamos modales visibles (no tienen display:none como estilo inline)
         const candidates = [
             document.getElementById('settingsModal'),
             document.getElementById('versusModal'),
@@ -107,13 +190,14 @@ const KeyboardManager = (() => {
             document.getElementById('miniGamesModal'),
             document.getElementById('gamedleModal'),
             document.getElementById('rouletteModal'),
-        ];
+        ].filter(Boolean);
 
         for (let i = candidates.length - 1; i >= 0; i--) {
             const el = candidates[i];
-            if (el && el.style.display !== 'none' && el.style.display !== '') return el;
-            // También verificar si tiene clase de visibilidad activa
-            if (el && !el.style.display && el.offsetParent !== null) return el;
+            // Un modal está abierto si no tiene display:none explícito
+            // y tiene visibilidad en el viewport
+            const isHiddenByStyle = el.style.display === 'none';
+            if (!isHiddenByStyle && el.offsetParent !== null) return el;
         }
         return null;
     };
@@ -131,13 +215,12 @@ const KeyboardManager = (() => {
 
         let currentIndex = cards.indexOf(document.activeElement);
 
-        // Enter: abrir la tarjeta enfocada
         if (e.key === 'Enter') {
             if (currentIndex !== -1) cards[currentIndex].click();
             return;
         }
 
-        // Si ninguna tarjeta tiene foco, enfocamos la primera
+        // Primer foco: ir a la primera tarjeta
         if (currentIndex === -1) {
             _focusCard(cards, 0);
             return;
@@ -175,11 +258,11 @@ const KeyboardManager = (() => {
     // SMOOTH SCROLL CENTRADO — Easing propio, sin depender del browser
     // -------------------------------------------------------------------------
 
-    // Curva de aceleración: arranca rápido, desacelera suave al final (ease-out-quart)
+    // Desacelera suave al final — se siente natural
     const _easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
 
     const _smoothCenter = (el, duration = 360) => {
-        // Cancelar animación en curso si el usuario presiona otra tecla antes de que termine
+        // Cancelar animación previa para evitar acumulación
         if (scrollAnimId) {
             cancelAnimationFrame(scrollAnimId);
             scrollAnimId = null;
@@ -190,7 +273,7 @@ const KeyboardManager = (() => {
         const viewportCenter = window.innerHeight / 2;
         const targetScrollY = Math.max(0, window.scrollY + elementCenterY - viewportCenter);
 
-        // Si ya está casi centrado, no animar (evita micro-jitter)
+        // Si ya está casi centrado no animar (evita micro-jitter)
         if (Math.abs(targetScrollY - window.scrollY) < 8) return;
 
         const startScrollY = window.scrollY;
@@ -228,11 +311,7 @@ const KeyboardManager = (() => {
         if (focusables.length === 0) return;
 
         let currentIndex = focusables.indexOf(document.activeElement);
-
-        if (currentIndex === -1) {
-            focusables[0].focus();
-            return;
-        }
+        if (currentIndex === -1) { focusables[0].focus(); return; }
 
         const isBack = e.key === 'ArrowLeft' || e.key === 'ArrowUp';
         const nextIndex = isBack
@@ -243,7 +322,7 @@ const KeyboardManager = (() => {
     };
 
     // -------------------------------------------------------------------------
-    // NAVEGACIÓN DENTRO DE MODALES
+    // NAVEGACIÓN EN MODALES
     // -------------------------------------------------------------------------
     const _handleModalNavigation = (e) => {
         const navKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -257,11 +336,7 @@ const KeyboardManager = (() => {
         if (focusables.length === 0) return;
 
         let currentIndex = focusables.indexOf(document.activeElement);
-
-        if (currentIndex === -1) {
-            focusables[0].focus();
-            return;
-        }
+        if (currentIndex === -1) { focusables[0].focus(); return; }
 
         const isBack = e.key === 'ArrowLeft' || e.key === 'ArrowUp';
         const nextIndex = isBack
@@ -271,7 +346,7 @@ const KeyboardManager = (() => {
         if (nextIndex !== currentIndex) focusables[nextIndex].focus();
     };
 
-    // Helper: obtener elementos focuseables visibles de un contenedor
+    // Helper: elementos focuseables visibles dentro de un contenedor
     const _getFocusables = (container) => {
         return Array.from(container.querySelectorAll(
             'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -279,7 +354,7 @@ const KeyboardManager = (() => {
     };
 
     // -------------------------------------------------------------------------
-    // HUD DE ATAJOS — Overlay al mantener Alt
+    // HUD DE ATAJOS (Overlay al mantener Alt)
     // -------------------------------------------------------------------------
     const _createHud = () => {
         const hud = document.createElement('div');
@@ -293,25 +368,36 @@ const KeyboardManager = (() => {
     const _buildHudHTML = () => {
         const groups = [
             {
-                title: 'Navegar Grilla',
+                title: 'Navegar',
                 keys: [
                     { key: '↑ ↓ ← →', label: 'Moverse entre juegos' },
-                    { key: 'Enter', label: 'Abrir juego seleccionado' },
-                    { key: '/', label: 'Buscar juego' },
+                    { key: 'Enter', label: 'Abrir juego' },
+                    { key: '/', label: 'Buscar' },
                 ],
             },
             {
-                title: 'Vista de Juego',
+                title: 'Juego Abierto',
                 keys: [
-                    { key: 'Esc', label: 'Volver a la grilla' },
                     { key: '← →', label: 'Moverse entre botones' },
-                    { key: 'Enter', label: 'Activar botón' },
+                    { key: 'Esc', label: 'Volver' },
+                    { key: 'H', label: 'Ir al inicio' },
+                ],
+            },
+            {
+                title: 'Acciones',
+                keys: [
+                    { key: 'C', label: 'Chat' },
+                    { key: 'L', label: 'Logros' },
+                    { key: 'G', label: 'Minijuegos' },
+                    { key: 'R', label: 'Aleatorio' },
+                    { key: 'S', label: 'Configuración' },
+                    { key: 'F', label: 'Regalos' },
                 ],
             },
             {
                 title: 'Global',
                 keys: [
-                    { key: 'Esc', label: 'Cerrar modal activo' },
+                    { key: 'Esc', label: 'Cerrar modal/chat' },
                     { key: 'Alt', label: 'Mostrar esta ayuda' },
                 ],
             },
