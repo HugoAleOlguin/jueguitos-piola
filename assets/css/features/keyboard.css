@@ -2,24 +2,19 @@
    KEYBOARD.CSS — Estilos para navegación por teclado y HUD de atajos
    ============================================================================ */
 
-/* --- Focus States --- */
+/* --- Focus States en tarjetas --- */
 
-/* Focus en tarjetas de juego */
 .game-card:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: 3px;
     box-shadow:
-        0 0 0 4px rgba(0, 243, 255, 0.12),
-        0 0 24px rgba(0, 243, 255, 0.2);
+        0 0 0 4px rgba(0, 243, 255, 0.10),
+        0 0 24px rgba(0, 243, 255, 0.18);
     transform: translateY(-4px) scale(1.01);
     border-color: var(--primary-color) !important;
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        outline 0.1s ease;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-/* Desactivar el outline de foco generado por mouse */
 .game-card:focus:not(:focus-visible) {
     outline: none;
     box-shadow: none;
@@ -30,7 +25,7 @@ button:focus-visible,
 a:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: 3px;
-    box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
     border-radius: 4px;
 }
 
@@ -41,25 +36,97 @@ a:focus:not(:focus-visible) {
 
 
 /* ============================================================================
+   BADGE PERMANENTE EN EL BUSCADOR
+   ============================================================================ */
+
+/* El .search-bar necesita ser position:relative para que el badge se ancle */
+.search-bar {
+    position: relative;
+}
+
+.search-kbd-hint {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.35);
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Ocultar el badge cuando el input está activo (el usuario ya sabe que está buscando) */
+#searchInput:focus ~ .search-kbd-hint {
+    opacity: 0;
+}
+
+
+/* ============================================================================
+   BADGES FLOTANTES — Aparecen al mantener Alt sobre cada elemento interactivo
+   ============================================================================ */
+
+.kbd-floating-badge {
+    position: fixed;
+    z-index: 10000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+
+    background: var(--primary-color, #00f3ff);
+    color: #000;
+    border-radius: 5px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    pointer-events: none;
+    user-select: none;
+
+    /* Entrada suave */
+    opacity: 0;
+    transform: translateY(4px) scale(0.88);
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.kbd-floating-badge--visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+
+/* ============================================================================
    HUD DE ATAJOS (Overlay al mantener Alt)
    ============================================================================ */
 
 #keyboard-hud {
-    /* Posicionamiento */
     position: fixed;
     bottom: 1.5rem;
     left: 50%;
-    transform: translateX(-50%) translateY(12px);
+    transform: translateX(-50%) translateY(10px);
     z-index: 9999;
-
-    /* Visibilidad — oculto por defecto */
     opacity: 0;
     pointer-events: none;
-
-    /* Transición de entrada */
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease;
+    transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 #keyboard-hud.hud--visible {
@@ -68,67 +135,63 @@ a:focus:not(:focus-visible) {
 }
 
 .hud-inner {
-    /* Glassmorphism suave, no agresivo */
-    background: rgba(5, 5, 10, 0.82);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(5, 5, 10, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     border-radius: 14px;
     padding: 1rem 1.25rem;
-    min-width: 380px;
-    max-width: 640px;
+    min-width: 360px;
+    max-width: 660px;
     box-shadow:
-        0 4px 32px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(0, 243, 255, 0.06) inset;
+        0 4px 32px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(0, 243, 255, 0.05) inset;
 }
 
-/* Encabezado del HUD */
 .hud-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.8rem;
-    padding-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.55rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .hud-title {
     font-family: var(--font-display, 'Orbitron', sans-serif);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.4);
 }
 
-/* Grupos de atajos */
 .hud-groups {
     display: flex;
-    gap: 1.25rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
 }
 
 .hud-group {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.3rem;
     flex: 1;
-    min-width: 110px;
+    min-width: 100px;
 }
 
 .hud-group-title {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--primary-color, #00f3ff);
-    opacity: 0.7;
+    opacity: 0.65;
     margin-bottom: 0.2rem;
 }
 
-/* Fila: key + label */
 .hud-row {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
 }
 
 /* Tecla estilo retro-minimal */
@@ -136,36 +199,36 @@ a:focus:not(:focus-visible) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 30px;
-    padding: 2px 7px;
+    min-width: 28px;
+    padding: 2px 6px;
     background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.13);
     border-bottom-width: 2px;
     border-radius: 5px;
     font-family: 'Roboto Mono', 'Courier New', monospace;
-    font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.7);
     white-space: nowrap;
     flex-shrink: 0;
-    letter-spacing: 0;
 }
 
 .hud-key--alt {
     background: rgba(0, 243, 255, 0.08);
-    border-color: rgba(0, 243, 255, 0.3);
+    border-color: rgba(0, 243, 255, 0.28);
     color: var(--primary-color, #00f3ff);
 }
 
-/* Label de la acción */
 .hud-label {
-    font-size: 0.73rem;
-    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.42);
     white-space: nowrap;
 }
 
-/* Responsive: en móvil el HUD se oculta (no tiene sentido sin teclado) */
+/* En móvil el HUD no tiene sentido */
 @media (max-width: 600px) {
-    #keyboard-hud {
+    #keyboard-hud,
+    .kbd-floating-badge,
+    .search-kbd-hint {
         display: none;
     }
 }

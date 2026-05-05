@@ -3,10 +3,21 @@
 // ============================================================================
 
 const KeyboardManager = (() => {
-    // --- Estado interno ---
     let hudVisible = false;
     let hudEl = null;
     let scrollAnimId = null;
+    let activeBadges = [];
+
+    // Mapeo de atajos → elemento destino en el DOM
+    const SHORTCUT_TARGETS = [
+        { key: 'B', selector: '#searchInput',      label: 'Buscar' },
+        { key: 'J', selector: '#btnMiniGames',     label: 'Minijuegos' },
+        { key: 'G', selector: '#btnFreeGames',     label: 'Juegos Gratis' },
+        { key: 'R', selector: '#btnRandom',        label: 'Ruleta' },
+        { key: 'N', selector: '#settingsToggle',   label: 'Config' },
+        { key: 'C', selector: '#piolaChatBubble',  label: 'Chat' },
+        { key: 'L', selector: '#btnAchievementsFab', label: 'Logros' },
+    ];
 
     // -------------------------------------------------------------------------
     // INIT
@@ -21,46 +32,54 @@ const KeyboardManager = (() => {
     // DISPATCHER GLOBAL
     // -------------------------------------------------------------------------
     const _onKeyDown = (e) => {
-        // Alt: mostrar HUD, bloquear el comportamiento nativo del navegador
+        // Alt: mostrar HUD + badges. Bloquear menú nativo del browser
         if (e.key === 'Alt') {
             e.preventDefault();
             _showHud();
+            _showBadges();
             return;
         }
 
-        // Si el foco está en un campo de texto, solo permitimos Escape
+        // Si el foco está en un campo de texto
         const isTyping = e.target.tagName === 'INPUT'
             || e.target.tagName === 'TEXTAREA'
             || e.target.isContentEditable;
 
         if (isTyping) {
-            if (e.key === 'Escape') e.target.blur();
+            // B o Esc desenfoca el buscador
+            if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') {
+                e.target.blur();
+            }
             return;
         }
 
-        // Escape global
+        // Escape global: cierra en cascada
         if (e.key === 'Escape') {
             _handleEscape();
             return;
         }
 
-        // Slash: enfocar buscador
-        if (e.key === '/') {
-            const input = document.getElementById('searchInput');
-            if (input) {
-                e.preventDefault();
-                input.focus();
-            }
+        // H o Escape-desde-juego: siempre volver al index
+        if (e.key === 'h' || e.key === 'H') {
+            e.preventDefault();
+            _goHome();
             return;
         }
 
-        // Atajos de letra (solo cuando no hay modal abierto)
+        // Slash es el alias de B para compatibilidad con convenciones web
+        if (e.key === '/') {
+            e.preventDefault();
+            _focusSearch();
+            return;
+        }
+
+        // Atajos de letra (solo cuando no hay modal ni input activo)
         const isModalOpen = _getTopModal() !== null;
         if (!isModalOpen && e.key.length === 1) {
             if (_handleShortcut(e)) return;
         }
 
-        // Rutas contextuales con flechas y Enter
+        // Navegación contextual con flechas
         const gameView = document.getElementById('game-view');
         const isDetailActive = gameView && gameView.style.display !== 'none';
 
@@ -74,130 +93,140 @@ const KeyboardManager = (() => {
     };
 
     const _onKeyUp = (e) => {
-        // Bloquear también el keyup de Alt para evitar que el navegador
-        // active la barra de menú al soltar la tecla
+        // preventDefault en keyup también → evita que el browser active la barra de menú
         if (e.key === 'Alt') {
             e.preventDefault();
             _hideHud();
+            _clearBadges();
         }
     };
 
     // -------------------------------------------------------------------------
-    // ATAJOS DE LETRA — Acciones rápidas globales
-    // Devuelve true si consumió el evento
+    // ATAJOS DE LETRA
     // -------------------------------------------------------------------------
     const _handleShortcut = (e) => {
         switch (e.key.toLowerCase()) {
-            // C → Chat
+            case 'b':
+                e.preventDefault();
+                _focusSearch();
+                return true;
             case 'c': {
                 e.preventDefault();
                 const bubble = document.getElementById('piolaChatBubble');
                 if (bubble) bubble.click();
                 return true;
             }
-            // L → Logros
             case 'l': {
                 e.preventDefault();
-                const fabLogros = document.getElementById('btnAchievementsFab');
-                if (fabLogros) fabLogros.click();
+                const fab = document.getElementById('btnAchievementsFab');
+                if (fab) fab.click();
                 return true;
             }
-            // G → Minijuegos
             case 'g': {
+                e.preventDefault();
+                // Free Games — el botón se genera dinámicamente por free-games/main.js
+                const btnFree = document.getElementById('btnFreeGames');
+                if (btnFree) btnFree.click();
+                return true;
+            }
+            case 'j': {
                 e.preventDefault();
                 const btnMini = document.getElementById('btnMiniGames');
                 if (btnMini) btnMini.click();
                 return true;
             }
-            // R → Juego Aleatorio (Ruleta)
             case 'r': {
                 e.preventDefault();
                 const btnRandom = document.getElementById('btnRandom');
                 if (btnRandom) btnRandom.click();
                 return true;
             }
-            // S → Configuración (Settings)
-            case 's': {
+            case 'n': {
                 e.preventDefault();
                 const btnSettings = document.getElementById('settingsToggle');
                 if (btnSettings) btnSettings.click();
-                return true;
-            }
-            // H → Home (volver al inicio)
-            case 'h': {
-                e.preventDefault();
-                const gameView = document.getElementById('game-view');
-                if (gameView && gameView.style.display !== 'none') {
-                    const backBtn = gameView.querySelector('.btn-back-spa');
-                    if (backBtn) backBtn.click();
-                }
-                return true;
-            }
-            // F → Free Games / Regalos
-            case 'f': {
-                e.preventDefault();
-                const btnFree = document.querySelector('[data-freegames], #btnFreeGames');
-                if (btnFree) btnFree.click();
                 return true;
             }
         }
         return false;
     };
 
+    const _focusSearch = () => {
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.focus();
+            input.select();
+        }
+    };
+
     // -------------------------------------------------------------------------
-    // ESCAPE GLOBAL — Cierra capa superior en orden de prioridad
+    // ESCAPE — Cierra en cascada: chat → setup → modal → detalle/home
     // -------------------------------------------------------------------------
     const _handleEscape = () => {
         // 1. Chat abierto
         const chatPanel = document.getElementById('piolaChatPanel');
         if (chatPanel && chatPanel.classList.contains('open')) {
-            const closeChat = document.getElementById('btnCloseChat');
-            if (closeChat) { closeChat.click(); return; }
+            document.getElementById('btnCloseChat')?.click();
+            return;
         }
 
-        // 2. Setup de chat abierto
+        // 2. Setup del chat
         const chatSetup = document.getElementById('piolaChatSetup');
         if (chatSetup && chatSetup.classList.contains('active')) {
             chatSetup.classList.remove('active');
             return;
         }
 
-        // 3. Modales con botón de cierre
+        // 3. Cualquier modal abierto (settings, logros, versus, minijuegos, etc.)
         const modal = _getTopModal();
         if (modal) {
+            // Intentar botón de cierre explícito dentro del modal
             const closeBtn = modal.querySelector(
-                '.btn-close, [id*="CloseBtn"], [id*="Close"], .btn-close-vs, .btn-close-ach'
+                '.btn-close, .btn-close-vs, .btn-close-ach, [id*="CloseBtn"], #btnCancelSettings'
             );
-            if (closeBtn) { closeBtn.click(); return; }
+            if (closeBtn) {
+                closeBtn.click();
+                return;
+            }
+            // Fallback: forzar display none si no hay botón de cierre
+            modal.style.display = 'none';
+            return;
         }
 
-        // 4. Vista de detalle de juego → volver al home
+        // 4. Vista de detalle → volver al home
+        _goHome();
+    };
+
+    // Volver al home desde cualquier estado
+    const _goHome = () => {
         const gameView = document.getElementById('game-view');
         if (gameView && gameView.style.display !== 'none') {
             const backBtn = gameView.querySelector('.btn-back-spa');
-            if (backBtn) backBtn.click();
+            if (backBtn) { backBtn.click(); return; }
         }
+        // Si está en otra ruta, navegar limpio
+        if (window.Router) Router.navigateTo(window.location.pathname);
     };
 
     // -------------------------------------------------------------------------
-    // HELPER: Obtener el modal visible más reciente
+    // HELPER: Detectar el modal visible más reciente
+    // Usamos getComputedStyle porque position:fixed tiene offsetParent=null siempre
     // -------------------------------------------------------------------------
     const _getTopModal = () => {
-        const candidates = [
-            document.getElementById('settingsModal'),
-            document.getElementById('versusModal'),
-            document.getElementById('achievementsModal'),
-            document.getElementById('miniGamesModal'),
-            document.getElementById('gamedleModal'),
-            document.getElementById('rouletteModal'),
-        ].filter(Boolean);
+        const ids = [
+            'settingsModal',
+            'rouletteModal',
+            'versusModal',
+            'achievementsModal',
+            'miniGamesModal',
+            'gamedleModal',
+        ];
 
-        for (let i = candidates.length - 1; i >= 0; i--) {
-            const el = candidates[i];
-            // Un modal está abierto si no tiene display:none explícito
-            // y tiene visibilidad en el viewport
-            const isHiddenByStyle = el.style.display === 'none';
-            if (!isHiddenByStyle && el.offsetParent !== null) return el;
+        for (let i = ids.length - 1; i >= 0; i--) {
+            const el = document.getElementById(ids[i]);
+            if (!el) continue;
+            const display = window.getComputedStyle(el).display;
+            if (display !== 'none') return el;
         }
         return null;
     };
@@ -220,11 +249,7 @@ const KeyboardManager = (() => {
             return;
         }
 
-        // Primer foco: ir a la primera tarjeta
-        if (currentIndex === -1) {
-            _focusCard(cards, 0);
-            return;
-        }
+        if (currentIndex === -1) { _focusCard(cards, 0); return; }
 
         const columns = _calcColumns(cards);
         let nextIndex = currentIndex;
@@ -239,7 +264,6 @@ const KeyboardManager = (() => {
         if (nextIndex !== currentIndex) _focusCard(cards, nextIndex);
     };
 
-    // Calcula cuántas columnas tiene la grilla midiendo el offsetTop
     const _calcColumns = (cards) => {
         if (cards.length <= 1) return 1;
         const firstTop = cards[0].offsetTop;
@@ -255,44 +279,27 @@ const KeyboardManager = (() => {
     };
 
     // -------------------------------------------------------------------------
-    // SMOOTH SCROLL CENTRADO — Easing propio, sin depender del browser
+    // SMOOTH SCROLL CENTRADO (easeOutQuart)
     // -------------------------------------------------------------------------
-
-    // Desacelera suave al final — se siente natural
     const _easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
 
     const _smoothCenter = (el, duration = 360) => {
-        // Cancelar animación previa para evitar acumulación
-        if (scrollAnimId) {
-            cancelAnimationFrame(scrollAnimId);
-            scrollAnimId = null;
-        }
+        if (scrollAnimId) { cancelAnimationFrame(scrollAnimId); scrollAnimId = null; }
 
         const rect = el.getBoundingClientRect();
-        const elementCenterY = rect.top + rect.height / 2;
-        const viewportCenter = window.innerHeight / 2;
-        const targetScrollY = Math.max(0, window.scrollY + elementCenterY - viewportCenter);
+        const targetScrollY = Math.max(0, window.scrollY + (rect.top + rect.height / 2) - window.innerHeight / 2);
 
-        // Si ya está casi centrado no animar (evita micro-jitter)
         if (Math.abs(targetScrollY - window.scrollY) < 8) return;
 
         const startScrollY = window.scrollY;
         const delta = targetScrollY - startScrollY;
         let startTime = null;
 
-        const step = (timestamp) => {
-            if (!startTime) startTime = timestamp;
-            const elapsed = timestamp - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = _easeOutQuart(progress);
-
-            window.scrollTo(0, startScrollY + delta * eased);
-
-            if (progress < 1) {
-                scrollAnimId = requestAnimationFrame(step);
-            } else {
-                scrollAnimId = null;
-            }
+        const step = (ts) => {
+            if (!startTime) startTime = ts;
+            const progress = Math.min((ts - startTime) / duration, 1);
+            window.scrollTo(0, startScrollY + delta * _easeOutQuart(progress));
+            scrollAnimId = progress < 1 ? requestAnimationFrame(step) : null;
         };
 
         scrollAnimId = requestAnimationFrame(step);
@@ -314,11 +321,8 @@ const KeyboardManager = (() => {
         if (currentIndex === -1) { focusables[0].focus(); return; }
 
         const isBack = e.key === 'ArrowLeft' || e.key === 'ArrowUp';
-        const nextIndex = isBack
-            ? Math.max(0, currentIndex - 1)
-            : Math.min(focusables.length - 1, currentIndex + 1);
-
-        if (nextIndex !== currentIndex) focusables[nextIndex].focus();
+        const next = isBack ? Math.max(0, currentIndex - 1) : Math.min(focusables.length - 1, currentIndex + 1);
+        if (next !== currentIndex) focusables[next].focus();
     };
 
     // -------------------------------------------------------------------------
@@ -339,18 +343,51 @@ const KeyboardManager = (() => {
         if (currentIndex === -1) { focusables[0].focus(); return; }
 
         const isBack = e.key === 'ArrowLeft' || e.key === 'ArrowUp';
-        const nextIndex = isBack
-            ? Math.max(0, currentIndex - 1)
-            : Math.min(focusables.length - 1, currentIndex + 1);
-
-        if (nextIndex !== currentIndex) focusables[nextIndex].focus();
+        const next = isBack ? Math.max(0, currentIndex - 1) : Math.min(focusables.length - 1, currentIndex + 1);
+        if (next !== currentIndex) focusables[next].focus();
     };
 
-    // Helper: elementos focuseables visibles dentro de un contenedor
-    const _getFocusables = (container) => {
-        return Array.from(container.querySelectorAll(
-            'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        )).filter(el => el.offsetWidth > 0 && el.offsetHeight > 0);
+    const _getFocusables = (container) => Array.from(container.querySelectorAll(
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(el => el.offsetWidth > 0 && el.offsetHeight > 0);
+
+    // -------------------------------------------------------------------------
+    // BADGES FLOTANTES — Aparecen sobre cada elemento al mantener Alt
+    // -------------------------------------------------------------------------
+    const _showBadges = () => {
+        _clearBadges();
+
+        SHORTCUT_TARGETS.forEach(({ key, selector }) => {
+            const el = document.querySelector(selector);
+            if (!el) return;
+
+            // Ignorar elementos ocultos
+            const display = window.getComputedStyle(el).display;
+            if (display === 'none') return;
+
+            const rect = el.getBoundingClientRect();
+            if (rect.width === 0) return;
+
+            const badge = document.createElement('div');
+            badge.className = 'kbd-floating-badge';
+            badge.textContent = key;
+
+            // Posicionar en la esquina superior derecha del elemento
+            badge.style.position = 'fixed';
+            badge.style.left = (rect.right - 14) + 'px';
+            badge.style.top  = (rect.top  - 10) + 'px';
+
+            document.body.appendChild(badge);
+            activeBadges.push(badge);
+
+            // Trigger de animación en el siguiente frame
+            requestAnimationFrame(() => badge.classList.add('kbd-floating-badge--visible'));
+        });
+    };
+
+    const _clearBadges = () => {
+        activeBadges.forEach(b => b.remove());
+        activeBadges = [];
     };
 
     // -------------------------------------------------------------------------
@@ -368,37 +405,30 @@ const KeyboardManager = (() => {
     const _buildHudHTML = () => {
         const groups = [
             {
-                title: 'Navegar',
+                title: 'Navegar Grilla',
                 keys: [
-                    { key: '↑ ↓ ← →', label: 'Moverse entre juegos' },
+                    { key: '↑↓←→', label: 'Moverse' },
                     { key: 'Enter', label: 'Abrir juego' },
-                    { key: '/', label: 'Buscar' },
                 ],
             },
             {
-                title: 'Juego Abierto',
-                keys: [
-                    { key: '← →', label: 'Moverse entre botones' },
-                    { key: 'Esc', label: 'Volver' },
-                    { key: 'H', label: 'Ir al inicio' },
-                ],
-            },
-            {
-                title: 'Acciones',
+                title: 'Abrir / Cerrar',
                 keys: [
                     { key: 'C', label: 'Chat' },
                     { key: 'L', label: 'Logros' },
-                    { key: 'G', label: 'Minijuegos' },
-                    { key: 'R', label: 'Aleatorio' },
-                    { key: 'S', label: 'Configuración' },
-                    { key: 'F', label: 'Regalos' },
+                    { key: 'J', label: 'Minijuegos' },
+                    { key: 'G', label: 'Juegos Gratis' },
+                    { key: 'R', label: 'Ruleta' },
+                    { key: 'N', label: 'Configuración' },
                 ],
             },
             {
-                title: 'Global',
+                title: 'Navegación',
                 keys: [
-                    { key: 'Esc', label: 'Cerrar modal/chat' },
-                    { key: 'Alt', label: 'Mostrar esta ayuda' },
+                    { key: 'B', label: 'Buscar' },
+                    { key: 'H', label: 'Inicio' },
+                    { key: 'Esc', label: 'Cerrar / Volver' },
+                    { key: 'Alt', label: 'Mostrar ayuda' },
                 ],
             },
         ];
@@ -426,24 +456,10 @@ const KeyboardManager = (() => {
         `;
     };
 
-    const _showHud = () => {
-        if (hudVisible || !hudEl) return;
-        hudVisible = true;
-        hudEl.classList.add('hud--visible');
-    };
+    const _showHud = () => { if (!hudVisible && hudEl) { hudVisible = true; hudEl.classList.add('hud--visible'); } };
+    const _hideHud = () => { if (hudVisible && hudEl)  { hudVisible = false; hudEl.classList.remove('hud--visible'); } };
 
-    const _hideHud = () => {
-        if (!hudVisible || !hudEl) return;
-        hudVisible = false;
-        hudEl.classList.remove('hud--visible');
-    };
-
-    // -------------------------------------------------------------------------
-    // API PÚBLICA
-    // -------------------------------------------------------------------------
     return { init };
 })();
 
-document.addEventListener('DOMContentLoaded', () => {
-    KeyboardManager.init();
-});
+document.addEventListener('DOMContentLoaded', () => { KeyboardManager.init(); });
