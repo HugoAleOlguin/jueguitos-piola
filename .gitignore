@@ -1,9 +1,9 @@
 .agent
-checklist_output.txt
-plan.md
-plan-organizacion.md
-logros.txt
-links-backup.json
-security-audit.js
-audit.js
+node_modules/
+dist/
+build/
 *.py
+.DS_Store
+*.log
+.env
+.env.local

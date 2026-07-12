@@ -1,0 +1,128 @@
+/* placeholder */
+/* Reset y base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* SCROLLBAR PERSONALIZADA */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #33f5ff, #d447ff);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) rgba(0, 0, 0, 0.3);
+}
+
+/* BODY Y FONDO */
+html {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image:
+        radial-gradient(ellipse at 5% 15%, rgba(188, 19, 254, 0.14) 0%, transparent 38%),
+        radial-gradient(ellipse at 95% 85%, rgba(0, 243, 255, 0.14) 0%, transparent 38%),
+        radial-gradient(ellipse at 80% 10%, rgba(0, 243, 255, 0.07) 0%, transparent 28%),
+        radial-gradient(ellipse at 20% 90%, rgba(188, 19, 254, 0.07) 0%, transparent 28%),
+        radial-gradient(ellipse at 50% 50%, rgba(0, 243, 255, 0.02) 0%, transparent 60%);
+    line-height: 1.6;
+    scroll-behavior: smooth;
+    position: relative;
+}
+
+/* Patrón de puntos sutil como textura de fondo */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Líneas de scan verticales muy sutiles */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px);
+    pointer-events: none;
+    z-index: 0;
+    animation: scanMove 8s linear infinite;
+}
+
+@keyframes scanMove {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 0 40px;
+    }
+}
+
+/* Asegurar que el contenido principal esté sobre los pseudoelementos */
+body>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* Selección de texto */
+::selection {
+    background: var(--primary-color);
+    color: #000;
+}
+
+/* Optimización de imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* CURSORES PERSONALIZADOS */
+.cursor-crosshair {
+    cursor: crosshair !important;
+}
+
+/* Force static cursor (no pointer/text change) */
+body.static-cursor * {
+    cursor: inherit !important;
+}
+
+/* Utility: hidden */
+.hidden {
+    display: none !important;
+}

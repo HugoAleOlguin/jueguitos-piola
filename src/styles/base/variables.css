@@ -1,0 +1,40 @@
+/* placeholder */
+:root {
+    /* placeholder */
+    /* Colores principales - TEMA OSCURO AMOLED FLUENT */
+    --bg-color: #000000;
+    --bg-secondary: #050505;
+    --text-color: #f5f5f7;
+    --text-muted: #86868b;
+    --primary-color: #ffd700; /* Oro Cyber */
+    --secondary-color: #00ff88; /* Verde Ácido */
+    --accent-orange: #ff9500;
+    --accent-red: #ff3b30;
+
+    /* Efectos de vidrio y contenedores */
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-bg-hover: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-hover: rgba(255, 255, 255, 0.18);
+    --card-bg: rgba(10, 10, 10, 0.95);
+
+    /* Sombras de profundidad estilo macOS/Fluent */
+    --glow-cyan: 0 0 20px rgba(0, 243, 255, 0.2);
+    --glow-secondary: 0 0 20px rgba(255, 215, 0, 0.2);
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.08);
+    --shadow-hover: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 1px rgba(255, 255, 255, 0.25);
+
+    /* Geometría suave estilo Desktop OS (Windows 11 / macOS) */
+    --border-radius-sm: 6px;
+    --border-radius-md: 14px;
+    --border-radius-lg: 24px;
+
+    /* Tipografías Grotescas e Industriales */
+    --font-main: "Space Mono", monospace;
+    --font-display: "Space Grotesk", sans-serif;
+
+    /* Transiciones fluidas */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}

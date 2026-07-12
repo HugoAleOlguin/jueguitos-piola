@@ -1,0 +1,195 @@
+/* placeholder */
+/* =====================================================
+   PÁGINA DE DETALLE DEL JUEGO
+   Incluye: container, header, poster, info, meta, descripción
+   ===================================================== */
+
+/* --- Container principal --- */
+.game-detail-container {
+    background: rgba(15, 15, 15, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 960px;
+    margin: 0 auto;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 36px;
+    align-items: start;
+    position: relative;
+    animation: fadeInUp 0.6s var(--ease-out-expo) forwards;
+}
+
+@media (max-width: 768px) {
+    .game-detail-container {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 20px;
+        margin: 10px;
+    }
+}
+
+.game-detail-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--primary-color), transparent 30%, transparent 70%, var(--secondary-color));
+    -webkit-mask: linear-gradient(#fff 0%, #fff 100%) content-box, linear-gradient(#fff 0%, #fff 100%);
+    mask: linear-gradient(#fff 0%, #fff 100%) content-box, linear-gradient(#fff 0%, #fff 100%);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* --- Header del juego --- */
+.game-header {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.game-poster {
+    width: 350px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 243, 255, 0.15);
+    border: 1px solid var(--glass-border);
+    transition: all 0.4s var(--ease-smooth);
+    object-fit: cover;
+}
+
+.game-poster:hover {
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 243, 255, 0.25);
+    border-color: var(--primary-color);
+}
+
+.game-info-header {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.game-info-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.2rem;
+    text-shadow: 0 0 30px rgba(0, 243, 255, 0.25);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+}
+
+/* --- Meta tags del juego --- */
+.game-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.game-meta span {
+    padding: 0.4rem 1rem;
+    background: rgba(188, 19, 254, 0.1);
+    border: 1px solid rgba(188, 19, 254, 0.3);
+    border-radius: 20px;
+    color: var(--secondary-color);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.game-description {
+    line-height: 1.85;
+    color: #aaa;
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+}
+
+/* --- Botón "Usar como fondo" compacto --- */
+.btn-set-bg {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-set-bg:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* --- Botón de descarga principal (minimalista, sin amarillo) --- */
+.btn-download {
+    background: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    color: #000000 !important;
+    padding: 12px 28px !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.82rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-download:hover {
+    background: transparent !important;
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.25) !important;
+}
+
+/* --- Botón de descarga secundario --- */
+.btn-download-secondary {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    padding: 12px 28px !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.82rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-download-secondary:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1) !important;
+}

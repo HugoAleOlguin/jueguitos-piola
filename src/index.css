@@ -1,0 +1,620 @@
+@import './styles/base/variables.css';
+@import './styles/base/reset.css';
+@import './styles/reset.css';
+
+/* Layouts */
+@import './styles/layouts/main-layout.css';
+@import './styles/layouts/grid.css';
+@import './styles/layouts/main.css';
+@import './styles/layouts/header.css';
+@import './styles/layouts/footer.css';
+
+/* Components */
+@import './styles/components/buttons.css';
+@import './styles/components/tags.css';
+@import './styles/components/game-card.css';
+@import './styles/components/game-card-style-default.css';
+@import './styles/components/game-card-style-compact.css';
+@import './styles/components/game-card-style-cyber.css';
+@import './styles/components/game-card-style-rainbow.css';
+@import './styles/components/search-bar.css';
+
+/* Features */
+@import './styles/features/settings-modal.css';
+@import './styles/features/achievements.css';
+@import './styles/features/extras.css';
+@import './styles/features/gamedle.css';
+@import './styles/features/keyboard.css';
+@import './styles/features/minigames-modal.css';
+@import './styles/features/piola-chat.css';
+@import './styles/features/roulette.css';
+@import './styles/features/theme-gallery.css';
+@import './styles/features/versus.css';
+
+/* Pages */
+@import './styles/pages/admin-v3.css';
+@import './styles/pages/free-games.css';
+@import './styles/pages/game-detail.css';
+
+/* Themes */
+@import './styles/themes/lite-mode.css';
+@import './styles/themes/retro.css';
+
+/* Utils */
+@import './styles/utils/animations.css';
+@import './styles/utils/responsive.css';
+
+/* ============================================================================
+   JUEGUITOS PIOLA - FLUENT 3D AMOLED GALLERY STYLES
+   - Contains styling rules for layout, placeholder and aria-label visual helpers.
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Reset global overrides */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: "Space Mono", monospace;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0 0 40px; /* espacio para el footer fijo */
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Header Flotante Premium — Fixed, siempre encima */
+header {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: calc(100% - 48px);
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    overflow: hidden;
+    padding: 1.2px; /* Espacio para el hilo de luz del border beam */
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.85);
+    transition: box-shadow 0.3s var(--ease-smooth);
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 27px;
+    background: #080808 !important; /* Opaque background blocks center glow bleed */
+    border-radius: 15px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2;
+}
+
+/* Borde estático cambiado de colores */
+.header-border-static {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: conic-gradient(
+        from 0deg,
+        #00f3ff 0%,
+        #00ff88 25%,
+        var(--primary-color, #ffd700) 50%,
+        #00f3ff 75%,
+        #00ff88 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
+header .logo {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.search-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px; /* Mismo ancho que el ancho mínimo de las cards */
+    z-index: 5;
+}
+
+.search-bar input {
+    width: 100% !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    font-family: "Space Mono", monospace !important;
+    color: #fff !important;
+    font-size: 0.8rem;
+    padding: 8px 14px !important;
+    outline: none;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.search-bar input:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+/* Botón Juegos Gratis - Vidrio Esmerilado Limpio */
+.btn-gift {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.8rem !important;
+    padding: 8px 16px !important;
+    border-radius: 10px !important;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: all 0.25s var(--ease-smooth);
+}
+
+.btn-gift:hover {
+    background: #fff !important;
+    border-color: #fff !important;
+    color: #000 !important;
+    transform: translateY(-1.5px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+}
+
+.btn-gift svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+/* Botón Ajustes - Vidrio Esmerilado Limpio */
+.btn-settings {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 8px !important;
+    border-radius: 10px !important;
+    transition: all 0.25s var(--ease-smooth);
+    width: 34px;
+    height: 34px;
+    box-sizing: border-box;
+}
+
+.btn-settings:hover {
+    background: #fff !important;
+    border-color: #fff !important;
+    color: #000 !important;
+    transform: translateY(-1.5px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+}
+
+.btn-settings svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Contenedor y Grilla de Juegos Centrada */
+.games-grid-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* En 1200px con gap de 32px esto acomoda un máximo de 3 a 4 tarjetas por fila */
+    gap: 32px;
+    padding: 30px 0 60px 0;
+}
+
+/* Tarjeta Física 3D */
+.game-card {
+    position: relative;
+    background: rgba(6, 6, 6, 0.88);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.card-image {
+    width: 100%;
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transform: translateZ(20px);
+}
+
+.card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    transform: translateZ(10px);
+}
+
+.card-title {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.3px;
+}
+
+.card-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+    flex-grow: 1;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Ficha de Detalles Premium macOS */
+.game-detail-container {
+    background: rgba(10, 10, 10, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: var(--shadow-hover) !important;
+    padding: 40px !important;
+    backdrop-filter: blur(30px);
+    WebkitBackdropFilter: blur(30px);
+}
+
+.game-poster {
+    border-radius: var(--border-radius-md) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.btn {
+    border-radius: 10px !important;
+    font-family: "Space Mono", monospace !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    padding: 12px 24px !important;
+    transition: all 0.25s var(--ease-smooth);
+}
+
+.btn-primary {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #fff !important;
+}
+
+.btn-primary:hover {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #000 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.2);
+}
+
+.btn-secondary {
+    background: rgba(10, 10, 10, 0.92) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6) !important;
+}
+
+.set-bg-btn {
+    border-radius: 10px !important;
+}
+
+/* Tags de Categoría */
+.tag {
+    font-family: "Space Mono", monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-muted);
+}
+
+.tag-coop {
+    border-color: rgba(0, 255, 136, 0.15);
+    background: rgba(0, 255, 136, 0.04);
+    color: var(--secondary-color);
+}
+
+.tag-terror {
+    border-color: rgba(255, 59, 48, 0.15);
+    background: rgba(255, 59, 48, 0.04);
+    color: var(--accent-red);
+}
+
+.tag-party {
+    border-color: rgba(255, 149, 0, 0.15);
+    background: rgba(255, 149, 0, 0.04);
+    color: var(--accent-orange);
+}
+
+.utility-ribbon {
+    font-family: "Space Mono", monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #fff;
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Footer macOS clean */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(3, 3, 3, 0.92);
+    backdrop-filter: blur(24px) saturate(0.5);
+    -webkit-backdrop-filter: blur(24px) saturate(0.5);
+    font-family: "Space Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.25);
+    font-weight: 400;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+        padding: 20px 0;
+    }
+
+    header {
+        margin: 10px auto;
+        padding: 1.2px;
+        width: calc(100% - 20px);
+    }
+
+    .header-inner {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+
+    .header-right {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-bar {
+        position: static;
+        transform: none;
+        width: 100%;
+    }
+
+    .search-bar input {
+        width: 100%;
+        text-align: center;
+    }
+
+    .btn-gift {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Game Detail: 1 columna en mobile */
+    #game-view [style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 28px !important;
+        padding: 24px !important;
+    }
+
+    #game-view [style*="320px"] {
+        max-width: 100% !important;
+    }
+}
+
+/* ============================================================================
+   PREMIUM COMPONENTS - EXTRACTED & ADAPTED FROM UNLUMEN, MAGIC UI, UIVERSE
+   ============================================================================ */
+
+/* 1. Magic UI - Retro Grid 3D Background */
+.retro-grid {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    opacity: 0.15;
+    z-index: 0;
+    perspective: 200px;
+    /* Difuminado suave hacia el horizonte */
+    mask-image: linear-gradient(to bottom, transparent 10%, black 80%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 10%, black 80%);
+}
+
+.retro-grid-lines {
+    position: absolute;
+    inset: -100% 0px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 50px 50px;
+    transform: rotateX(60deg);
+    transform-origin: 50% 0 0;
+}
+
+
+
+
+/* 2. Magic UI & Unlumen - Border Beam Laser Effect */
+.border-beam-wrapper {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    overflow: hidden;
+    margin: -1px;
+    z-index: 4;
+}
+
+.border-beam-wrapper::after {
+    content: '';
+    position: absolute;
+    width: 250%;
+    height: 250%;
+    top: -75%;
+    left: -75%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 50%,
+        rgba(255, 215, 0, 0.5) 80%,
+        rgba(0, 255, 136, 0.5) 90%,
+        transparent 100%
+    );
+    animation: border-beam-spin 6s linear infinite;
+    transform-origin: center center;
+}
+
+@keyframes border-beam-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 3. Uiverse / Unlumen - Premium Shimmering CTA Button */
+.btn-premium-shimmer {
+    position: relative;
+    background: linear-gradient(180deg, #18181b 0%, #09090b 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.btn-premium-shimmer::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        transparent 100%
+    );
+    transform: rotate(30deg);
+    animation: shimmer-sweep 4s infinite linear;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes shimmer-sweep {
+    0% {
+        transform: rotate(30deg) translate(-100%, -100%);
+    }
+    100% {
+        transform: rotate(30deg) translate(100%, 100%);
+    }
+}
+
+/* ============================================================================
+   ACCESSIBILITY: Respeta las preferencias del sistema en cuanto a animaciones.
+   aria-label and placeholder visual helpers included here.
+   ============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .retro-grid-lines {
+        animation: none;
+    }
+
+    .border-beam-wrapper::after {
+        animation: none;
+    }
+
+    .btn-premium-shimmer::before {
+        animation: none;
+    }
+}

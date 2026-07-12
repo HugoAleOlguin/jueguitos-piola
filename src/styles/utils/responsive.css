@@ -1,0 +1,591 @@
+/* placeholder */
+/* =====================================================
+   RESPONSIVE & ACCESIBILIDAD
+   Media queries globales para mobile y tablet.
+   Las media queries específicas de features (RAWG,
+   Versus, etc.) están en sus respectivos módulos.
+   ===================================================== */
+
+/* =====================================================
+   ACCESIBILIDAD - REDUCED MOTION
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .game-card {
+        opacity: 1;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - TABLETS
+   ===================================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    main {
+        padding: 2rem;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .game-poster {
+        width: 250px;
+    }
+
+    .game-info-header h1 {
+        font-size: 2rem;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - MÓVILES (≤768px)
+   Simplificación agresiva: ocultar lo innecesario,
+   reducir padding, arreglar z-index y overflow.
+   ===================================================== */
+@media (max-width: 768px) {
+
+    /* ---- HEADER ---- */
+    header {
+        padding: 0.75rem 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+    }
+
+    .logo {
+        font-size: 1rem;
+        letter-spacing: 1.5px;
+        z-index: 210;
+    }
+
+    /* Botón Hamburguesa */
+    .mobile-menu-toggle {
+        display: flex !important;
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 210;
+        transition: transform 0.3s var(--ease-out-expo);
+    }
+
+    .mobile-menu-toggle.active {
+        transform: rotate(90deg);
+        color: var(--secondary-color);
+    }
+
+    .mobile-menu-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Menú de Navegación Mobile */
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        background: rgba(2, 2, 2, 0.98);
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        padding: 2rem;
+        transition: right 0.4s var(--ease-out-expo);
+        z-index: 205;
+        backdrop-filter: blur(20px);
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .nav-menu .search-bar {
+        display: block !important;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .nav-menu .search-bar input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        padding: 1rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .nav-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+        align-items: center;
+    }
+
+    .nav-buttons .theme-toggle {
+        width: 100%;
+        max-width: 300px;
+        padding: 1rem;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+    }
+
+    .nav-buttons .theme-toggle::after {
+        content: attr(title);
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Ocultar Minijuegos en Mobile (Simplificación) */
+    #btnMiniGames,
+    #miniGamesModal,
+    .minigame-card {
+        display: none !important;
+    }
+
+    .theme-toggle svg,
+    .theme-toggle i svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    main {
+        padding: 1rem 0.75rem;
+    }
+
+    /* ---- GRID DE JUEGOS ---- */
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    /* ---- CARDS más compactas ---- */
+    .game-card {
+        border-radius: 14px;
+        /* Desactivar animaciones pesadas en mobile */
+        animation: none;
+        opacity: 1;
+        will-change: auto;
+        transition: transform 0.2s ease;
+    }
+
+    /* Sin hover fantasía en mobile */
+    .game-card:hover {
+        transform: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .game-card::before {
+        display: none;
+    }
+
+    .card-image {
+        height: 100px;
+    }
+
+    /* Ocultar efecto shimmer de la card-image */
+    .card-image::before {
+        display: none;
+    }
+
+    .card-content {
+        padding: 0.75rem;
+        gap: 0.25rem;
+    }
+
+    .card-title {
+        font-size: 0.85rem;
+        margin-bottom: 0;
+    }
+
+    /* Ocultar descripción en mobile para ahorrar espacio */
+    .card-desc {
+        display: none;
+    }
+
+    /* Tags más chicos */
+    .tag {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
+
+    /* ---- DETALLE DEL JUEGO ---- */
+    .game-detail-container {
+        padding: 1.25rem;
+        margin: 0.5rem;
+        border-radius: 16px;
+    }
+
+    .game-detail-container::before {
+        display: none;
+    }
+
+    .game-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .game-poster {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .game-poster:hover {
+        transform: none;
+    }
+
+    .game-info-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .game-meta {
+        justify-content: center;
+    }
+
+    .game-meta span {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .game-description {
+        font-size: 0.9rem;
+    }
+
+    /* ---- BOTONES DE ACCIÓN (Descargar, etc) ---- */
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.6rem;
+    }
+
+    .btn,
+    .button,
+    .btn-secondary,
+    .button-secondary {
+        width: 100%;
+        justify-content: center;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.78rem;
+        box-sizing: border-box;
+    }
+
+    /* Evitar overflow de botones largos */
+    .btn,
+    .button {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .game-specs {
+        grid-template-columns: 1fr;
+    }
+
+    .tabla-datos {
+        font-size: 0.75rem;
+    }
+
+    .tabla-datos th,
+    .tabla-datos td {
+        padding: 0.6rem;
+    }
+
+    /* ---- SETTINGS MODAL (Simplificación Total) ---- */
+    .settings-modal {
+        width: 94% !important;
+        height: 85vh !important;
+        max-height: 85vh !important;
+        border-radius: 20px;
+        margin: 0;
+        animation: none !important;
+    }
+
+    .settings-layout {
+        display: block !important; /* Quitar grid */
+        overflow-y: auto;
+        height: 100%;
+    }
+
+    .settings-nav {
+        display: none !important; /* Ocultar tabs por completo */
+    }
+
+    .settings-panel {
+        padding: 1.25rem 1rem !important;
+        display: block !important;
+    }
+
+    /* Mostrar todas las secciones una tras otra */
+    .tab-pane {
+        display: block !important;
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+        margin-bottom: 2rem;
+        animation: none !important;
+    }
+
+    .settings-section {
+        padding: 1rem !important;
+        margin-bottom: 0.75rem !important;
+        border-left-width: 3px !important;
+    }
+
+    .settings-section h3 {
+        font-size: 0.9rem;
+        margin-bottom: 1rem !important;
+        color: var(--primary-color);
+    }
+
+    /* Ocultar secciones no críticas en mobile */
+    .settings-hide-mobile,
+    .tab-mobile-notice {
+        display: none !important;
+    }
+
+    /* Links del footer ocultos para ganar espacio */
+    .settings-author-links {
+        display: none !important;
+    }
+
+    .settings-footer {
+        padding: 1rem !important;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-save {
+        padding: 10px 20px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* ---- MODALES: tamaño y posición correctos ---- */
+    /* Achievements Modal */
+    .achievements-window {
+        width: 95% !important;
+        max-width: none !important;
+        max-height: 85vh;
+        border-radius: 16px;
+    }
+
+    .achievements-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .achievements-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .achievements-grid-large {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .achievement-card {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .achievement-card .ach-icon-large {
+        font-size: 1.8rem;
+        width: 44px;
+        height: 44px;
+    }
+
+    /* Minijuegos Modal */
+    #miniGamesModal {
+        width: 95% !important;
+        max-width: none !important;
+        border-radius: 16px;
+    }
+
+    #miniGamesGrid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    /* Gallery Modal (Tienda de temas) */
+    .gallery-modal {
+        width: 95% !important;
+        max-width: none !important;
+        max-height: 85vh;
+        border-radius: 16px;
+    }
+
+    .gallery-header {
+        padding: 12px 16px;
+    }
+
+    .gallery-header h2 {
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+
+    .remote-themes-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .remote-theme-preview {
+        height: 60px;
+    }
+
+    .remote-theme-info {
+        padding: 8px;
+    }
+
+    .remote-theme-name {
+        font-size: 0.75rem;
+    }
+
+    /* Versus Modal */
+    .versus-container {
+        width: 95% !important;
+        height: 85vh !important;
+        border-radius: 16px;
+    }
+
+    .vs-mode-btn {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* ---- FLOATING ELEMENTS ---- */
+    /* FAB de logros: más chico y sin sobreponerse */
+    .floating-fab {
+        width: 42px !important;
+        height: 42px !important;
+        bottom: 14px !important;
+        right: 14px !important;
+    }
+
+    .floating-fab svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    /* ---- CHAT — más pequeño y sin teclado automático ---- */
+    .piola-chat-bubble {
+        width: 42px;
+        height: 42px;
+        bottom: 14px;
+        left: 14px;
+    }
+
+    /* Chat panel — fullwidth mobile, más bajo */
+    .piola-chat-panel {
+        width: calc(100vw - 16px);
+        left: 8px;
+        bottom: 8px;
+        max-height: 60vh;
+        border-radius: 14px;
+    }
+
+    .piola-chat-messages {
+        min-height: 160px;
+        max-height: 40vh;
+    }
+
+    /* Drag handle oculto en mobile (no hay mouse) */
+    .piola-chat-resize-handle {
+        display: none;
+    }
+
+    /* Chat profile card — no se desborde */
+    .piola-profile-modal .profile-card {
+        width: calc(100vw - 24px) !important;
+        min-height: auto;
+        border-radius: 16px;
+    }
+
+    .profile-card .profile-body {
+        padding: 12px 20px 24px;
+    }
+
+    .profile-card .profile-avatar-large {
+        width: 72px;
+        height: 72px;
+    }
+
+    .profile-card .profile-avatar-wrapper {
+        margin-top: -40px;
+    }
+
+    .profile-card .profile-name {
+        font-size: 1rem;
+    }
+
+    /* Chat setup card */
+    .piola-chat-setup .setup-card {
+        width: calc(100vw - 40px);
+        max-width: 340px;
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+        padding: 1rem;
+        font-size: 0.75rem;
+    }
+
+    /* ---- PERFORMANCE: Desactivar efectos pesados en mobile ---- */
+    .game-card,
+    .game-detail-container {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    #particles-canvas {
+        display: none !important;
+    }
+
+    #cursor-follow-dot {
+        display: none !important;
+    }
+}
+
+/* =====================================================
+   EXTRA SMALL (≤400px) — Phones muy chicos
+   ===================================================== */
+@media (max-width: 400px) {
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-info-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .logo {
+        font-size: 0.85rem;
+    }
+
+    .card-image {
+        height: 120px;
+    }
+}

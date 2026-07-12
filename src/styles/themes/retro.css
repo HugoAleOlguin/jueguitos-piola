@@ -1,0 +1,96 @@
+/* placeholder */
+/* =====================================================
+   🕹️ MODO PRIME (Re-implementación CSS Override)
+   =====================================================
+   Basado en old/styles.css (Legacy).
+   Usa !important para forzar el estilo sobre settings.js.
+   ===================================================== */
+
+body.prime-mode {
+    /* Variables Retro */
+    --retro-grid-color: rgba(253, 190, 241, 0.2);
+    --retro-primary: #4CAF50;
+    --retro-bg: #050505;
+
+    /* Variables del Sistema Moderno (Sobrescritas) */
+    --primary-color: #4CAF50 !important;
+    --glass-blur: 5px !important;
+    /* Valor fijo del legacy */
+
+    /* Fondo Grid (Legacy) - USANDO SHORTHAND PARA OVERRIDE TOTAL */
+    background:
+        linear-gradient(0deg, transparent 24%, var(--retro-grid-color) 25%, var(--retro-grid-color) 26%, transparent 27%, transparent 74%, var(--retro-grid-color) 75%, var(--retro-grid-color) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, var(--retro-grid-color) 25%, var(--retro-grid-color) 26%, transparent 27%, transparent 74%, var(--retro-grid-color) 75%, var(--retro-grid-color) 76%, transparent 77%, transparent),
+        var(--retro-bg) !important;
+
+    background-size: 50px 50px !important;
+    background-repeat: repeat !important;
+    background-attachment: scroll !important;
+    /* Evitar fixed si causa problemas */
+
+    /* Fuente Legacy */
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Header Legacy */
+body.prime-mode header {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(5px) !important;
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
+    border-bottom: none !important;
+    color: #4CAF50 !important;
+}
+
+body.prime-mode header .logo {
+    text-shadow: none !important;
+    color: #4CAF50 !important;
+}
+
+/* Game Cards Legacy */
+body.prime-mode .game-card {
+    background-color: rgba(20, 0, 15, 0.85) !important;
+    border: 1px solid rgba(255, 9, 148, 0.616) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    transform: none !important;
+    /* Reset hover effects? No, legacy had hover */
+}
+
+body.prime-mode .game-card:hover {
+    transform: scale(1.03) !important;
+    background-color: rgba(41, 2, 30, 0.9) !important;
+}
+
+body.prime-mode .game-card h3 {
+    color: aliceblue !important;
+    font-family: inherit !important;
+    text-shadow: none !important;
+}
+
+body.prime-mode .game-card p {
+    color: #bbb !important;
+}
+
+body.prime-mode .game-card a.jugar-ahora {
+    background: #4CAF50 !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body.prime-mode .game-card a.jugar-ahora:hover {
+    background: #45a049 !important;
+}
+
+/* Scrollbar Legacy */
+
+/* Firefox Retro Mode */
+body.prime-mode * {
+    scrollbar-color: #d53369 rgba(0, 0, 0, 0.3);
+}
+
+/* Ocultar elementos modernos si es necesario */
+body.prime-mode .modern-only {
+    display: none !important;
+}
