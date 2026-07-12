@@ -85,7 +85,6 @@ export const GameCard = ({ game, onOpen }) => {
     return (
         <motion.div
             ref={cardRef}
-            variants={cardVariants}
             className="game-card"
             onClick={handleClick}
             onMouseMove={handleMouseMove}

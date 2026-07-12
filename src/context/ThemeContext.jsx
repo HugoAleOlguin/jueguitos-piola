@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { ImageCacheStore } from '../services/backgroundStore';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
@@ -24,8 +23,6 @@ export const ThemeProvider = ({ children }) => {
         };
     });
 
-    const bgBlobUrlRef = useRef(null);
-
     // Guardar configuraciones individuales o en bloque
     const updateSettings = (newSettings) => {
         setSettings(prev => {
@@ -41,14 +38,8 @@ export const ThemeProvider = ({ children }) => {
     };
 
     // Restaurar valores por defecto
-    const resetSettings = async () => {
+    const resetSettings = () => {
         Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
-        try {
-            await ImageCacheStore.deleteBlob('custom_bg');
-        } catch (e) {
-            console.warn('Error clearing IndexedDB assets:', e);
-        }
-        
         setSettings({
             bgType: DEFAULTS.BG_TYPE,
             bgValue: DEFAULTS.BG_VALUE,
@@ -81,36 +72,12 @@ export const ThemeProvider = ({ children }) => {
         body.style.removeProperty('background-attachment');
         body.style.removeProperty('background-position');
 
-        let activeUrl = null;
-
-        const applyBackground = async () => {
-            if (settings.bgType === 'blob') {
-                try {
-                    const blob = await ImageCacheStore.getBlob(settings.bgValue || 'custom_bg');
-                    if (blob) {
-                        const url = URL.createObjectURL(blob);
-                        if (bgBlobUrlRef.current) {
-                            URL.revokeObjectURL(bgBlobUrlRef.current);
-                        }
-                        bgBlobUrlRef.current = url;
-                        activeUrl = url;
-                    }
-                } catch (e) {
-                    console.error('Error loading background blob:', e);
-                }
-            } else if (settings.bgType === 'url' && settings.bgValue) {
-                activeUrl = settings.bgValue;
-            }
-
-            if (activeUrl) {
-                body.style.setProperty('background-image', `url('${activeUrl}')`, 'important');
-                body.style.backgroundSize = 'cover';
-                body.style.backgroundAttachment = 'fixed';
-                body.style.backgroundPosition = 'center';
-            }
-        };
-
-        applyBackground();
+        if (settings.bgType === 'url' && settings.bgValue) {
+            body.style.setProperty('background-image', `url('${settings.bgValue}')`, 'important');
+            body.style.backgroundSize = 'cover';
+            body.style.backgroundAttachment = 'fixed';
+            body.style.backgroundPosition = 'center';
+        }
     }, [settings.bgType, settings.bgValue]);
 
     return (

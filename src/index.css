@@ -17,8 +17,6 @@
 
 /* Features */
 @import './styles/features/settings-modal.css';
-@import './styles/features/achievements.css';
-@import './styles/features/piola-chat.css';
 
 /* Pages */
 @import './styles/pages/free-games.css';

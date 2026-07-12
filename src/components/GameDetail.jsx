@@ -83,7 +83,7 @@ export const GameDetail = ({ game, onBack }) => {
             id="game-view"
         >
             <div className="game-detail-container">
-                {/* ── Columna izquierda: Imagen + Usar como fondo ── */}
+                {/* ── Columna izquierda: Imagen + Usar como fondo + Volver ── */}
                 <motion.div variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div style={{
                         borderRadius: '14px',
@@ -108,6 +108,16 @@ export const GameDetail = ({ game, onBack }) => {
                         whileTap={{ scale: 0.98 }}
                     >
                         Usar como fondo
+                    </motion.button>
+
+                    <motion.button
+                        className="btn-back"
+                        onClick={onBack}
+                        whileHover={{ x: -2 }}
+                        whileTap={{ scale: 0.985 }}
+                        style={{ marginTop: '4px' }}
+                    >
+                        ← Volver
                     </motion.button>
                 </motion.div>
 
@@ -202,21 +212,6 @@ export const GameDetail = ({ game, onBack }) => {
                     </motion.div>
                 </div>
             </div>
-
-            {/* Botón Volver — fuera del panel, alineado a la derecha */}
-            <motion.div
-                variants={itemVariants}
-                style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '18px' }}
-            >
-                <motion.button
-                    className="btn-back"
-                    onClick={onBack}
-                    whileHover={{ x: -2 }}
-                    whileTap={{ scale: 0.985 }}
-                >
-                    ← Volver
-                </motion.button>
-            </motion.div>
         </motion.div>
     );
 };
