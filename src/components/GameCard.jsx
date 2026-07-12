@@ -93,7 +93,7 @@ export const GameCard = ({ game, onOpen }) => {
             style={{
                 outline: 'none',
                 transformStyle: 'preserve-3d',
-                perspective: '1000px',
+                transformPerspective: 1000,
                 rotateX: rotX,
                 rotateY: rotY,
                 scale: scaleS,

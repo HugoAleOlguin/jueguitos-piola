@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // placeholder
-import { motion } from 'framer-motion';
+import { motion, useSpring } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { getTagClass } from './GameCard';
 
@@ -30,6 +30,42 @@ const itemVariants = {
 export const GameDetail = ({ game, onBack }) => {
     const { updateSettings } = useTheme();
     const desc = game.fullDescription || game.description;
+
+    const cardRef = useRef(null);
+    const rotX = useSpring(0, { stiffness: 280, damping: 28 });
+    const rotY = useSpring(0, { stiffness: 280, damping: 28 });
+    const scaleS = useSpring(1, { stiffness: 280, damping: 28 });
+    const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handleMouseMove = (e) => {
+        const card = cardRef.current;
+        if (!card) return;
+        const box = card.getBoundingClientRect();
+
+        const x = e.clientX - box.left - box.width / 2;
+        const y = e.clientY - box.top - box.height / 2;
+
+        const maxRot = 10;
+        rotX.set((-y / (box.height / 2)) * maxRot);
+        rotY.set((x / (box.width / 2)) * maxRot);
+
+        const gx = ((e.clientX - box.left) / box.width) * 100;
+        const gy = ((e.clientY - box.top) / box.height) * 100;
+        setGlowPos({ x: gx, y: gy });
+    };
+
+    const handleMouseEnter = () => {
+        scaleS.set(1.035);
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        rotX.set(0);
+        rotY.set(0);
+        scaleS.set(1);
+        setIsHovered(false);
+    };
 
     // Proxy de imagen
     let proxiedUrl = game.image;
@@ -85,21 +121,53 @@ export const GameDetail = ({ game, onBack }) => {
             <div className="game-detail-container">
                 {/* ── Columna izquierda: Imagen + Usar como fondo + Volver ── */}
                 <motion.div variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{
-                        borderRadius: '14px',
-                        overflow: 'hidden',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
-                        aspectRatio: '16 / 9',
-                        background: '#111'
-                    }}>
+                    <motion.div
+                        ref={cardRef}
+                        onMouseMove={handleMouseMove}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        style={{
+                            borderRadius: '14px',
+                            overflow: 'hidden',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+                            aspectRatio: '16 / 9',
+                            background: '#111',
+                            position: 'relative',
+                            transformStyle: 'preserve-3d',
+                            transformPerspective: 1000,
+                            rotateX: rotX,
+                            rotateY: rotY,
+                            scale: scaleS,
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <div
+                            style={{
+                                position: 'absolute',
+                                inset: 0,
+                                pointerEvents: 'none',
+                                zIndex: 4,
+                                opacity: isHovered ? 0.8 : 0,
+                                transition: 'opacity 0.3s ease',
+                                background: isHovered
+                                    ? `radial-gradient(circle 120px at ${glowPos.x}% ${glowPos.y}%, rgba(80, 160, 255, 0.18), transparent 70%)`
+                                    : 'none',
+                            }}
+                        />
                         <img
                             src={proxiedUrl}
                             alt={game.title}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            style={{ 
+                                width: '100%', 
+                                height: '100%', 
+                                objectFit: 'cover', 
+                                display: 'block',
+                                transform: 'translateZ(20px)'
+                            }}
                             onError={(e) => { e.target.src = 'favicon.png'; }}
                         />
-                    </div>
+                    </motion.div>
 
                     <motion.button
                         className="btn-set-bg"

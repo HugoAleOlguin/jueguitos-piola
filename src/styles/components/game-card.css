@@ -14,9 +14,7 @@
     height: 100%;
     will-change: transform, box-shadow;
 
-    /* Animación de entrada escalonada */
-    animation: fadeIn 0.5s var(--ease-out-expo) forwards;
-    opacity: 0;
+    opacity: 1;
 }
 
 /* =====================================================

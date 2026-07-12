@@ -89,12 +89,12 @@ El chat conecta con **Firebase Firestore** para proporcionar mensajería en tiem
 ### Credenciales de Conexión (Firebase SDK v9+)
 ```javascript
 const firebaseConfig = {
-    apiKey: "AIzaSyDcO_CpJ4x8DK2_t-obafVM0m2Pu9cKGWM",
-    authDomain: "jueguitos-piola.firebaseapp.com",
-    projectId: "jueguitos-piola",
-    storageBucket: "jueguitos-piola.firebasestorage.app",
-    messagingSenderId: "372800075568",
-    appId: "1:372800075568:web:80e91799d1340d1a85faf5"
+    apiKey: "TU_API_KEY_AQUI",
+    authDomain: "TU_PROJECT_ID.firebaseapp.com",
+    projectId: "TU_PROJECT_ID",
+    storageBucket: "TU_PROJECT_ID.firebasestorage.app",
+    messagingSenderId: "TU_MESSAGING_SENDER_ID",
+    appId: "TU_APP_ID"
 };
 ```
 
