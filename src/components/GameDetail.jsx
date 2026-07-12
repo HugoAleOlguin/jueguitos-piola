@@ -5,29 +5,25 @@ import { useTheme } from '../context/ThemeContext';
 import { getTagClass } from './GameCard';
 
 const detailVariants = {
-    hidden: { opacity: 0, scale: 0.96, y: 28, filter: 'blur(6px)' },
+    hidden: { opacity: 0, y: 10 },
     visible: { 
         opacity: 1, 
-        scale: 1,
         y: 0,
-        filter: 'blur(0px)',
         transition: {
-            type: 'spring',
-            stiffness: 120,
-            damping: 20,
-            staggerChildren: 0.08,
-            delayChildren: 0.06
+            duration: 0.12,
+            ease: 'easeOut',
+            staggerChildren: 0.015,
+            delayChildren: 0.01
         }
     }
 };
 
 const itemVariants = {
-    hidden: { opacity: 0, y: 18, filter: 'blur(4px)' },
+    hidden: { opacity: 0, y: 5 },
     visible: { 
         opacity: 1, 
         y: 0,
-        filter: 'blur(0px)',
-        transition: { type: 'spring', stiffness: 130, damping: 20 }
+        transition: { duration: 0.08, ease: 'easeOut' }
     }
 };
 
@@ -181,8 +177,8 @@ export const GameDetail = ({ game, onBack }) => {
                                         rel="noreferrer"
                                         className={css}
                                         onClick={handleDownloadClick}
-                                        whileHover={{ scale: 1.04, y: -2 }}
-                                        whileTap={{ scale: 0.95 }}
+                                        whileHover={{ scale: 1.015, y: -1 }}
+                                        whileTap={{ scale: 0.985 }}
                                     >
                                         {label}
                                     </motion.a>
@@ -196,8 +192,8 @@ export const GameDetail = ({ game, onBack }) => {
                                     rel="noreferrer"
                                     className="btn-download"
                                     onClick={handleDownloadClick}
-                                    whileHover={{ scale: 1.04, y: -2 }}
-                                    whileTap={{ scale: 0.95 }}
+                                    whileHover={{ scale: 1.015, y: -1 }}
+                                    whileTap={{ scale: 0.985 }}
                                 >
                                     ↓ Descargar
                                 </motion.a>
@@ -213,22 +209,10 @@ export const GameDetail = ({ game, onBack }) => {
                 style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '18px' }}
             >
                 <motion.button
-                    className="btn btn-secondary"
+                    className="btn-back"
                     onClick={onBack}
-                    whileHover={{ x: -4, scale: 1.03 }}
-                    whileTap={{ scale: 0.96 }}
-                    transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-                    style={{
-                        padding: '10px 22px',
-                        cursor: 'pointer',
-                        borderRadius: '10px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        fontSize: '0.82rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.03em'
-                    }}
+                    whileHover={{ x: -2 }}
+                    whileTap={{ scale: 0.985 }}
                 >
                     ← Volver
                 </motion.button>

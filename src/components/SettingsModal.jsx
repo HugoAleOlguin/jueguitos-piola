@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Palette, Trash2, Plus, Check } from 'lucide-react';
+import { Settings, Palette, Trash2, Check } from 'lucide-react';
 
 const PRESETS = [
     {
@@ -43,11 +43,6 @@ export const SettingsModal = ({ onClose }) => {
         }
     });
 
-    // Custom theme form states
-    const [newThemeName, setNewThemeName] = useState('');
-    const [newThemeBg, setNewThemeBg] = useState('');
-    const [themeError, setThemeError] = useState('');
-
     // Save general settings
     const handleSave = () => {
         updateSettings({
@@ -79,29 +74,25 @@ export const SettingsModal = ({ onClose }) => {
         setTempBgPreview(theme.bgValue);
     };
 
-    // Create a new custom theme
-    const handleSaveCustomTheme = (e) => {
-        e.preventDefault();
-        if (!newThemeName.trim() || !newThemeBg.trim()) return;
+    // Save current background as custom theme
+    const handleSaveAsTheme = () => {
+        const url = bgValue.trim();
+        if (!url) return;
 
-        if (!newThemeBg.trim().startsWith('http://') && !newThemeBg.trim().startsWith('https://')) {
-            setThemeError('La URL del fondo debe comenzar con http:// o https://');
-            return;
-        }
+        const name = prompt('Ingresa un nombre para tu tema personalizado:');
+        if (!name || !name.trim()) return;
 
         const newTheme = {
             id: Date.now().toString(),
-            name: newThemeName.trim(),
-            bgValue: newThemeBg.trim()
+            name: name.trim(),
+            bgValue: url
         };
 
         const updated = [...customThemes, newTheme];
         setCustomThemes(updated);
         localStorage.setItem('jueguitos_custom_themes', JSON.stringify(updated));
         
-        setNewThemeName('');
-        setNewThemeBg('');
-        setThemeError('');
+        alert(`Tema "${name.trim()}" guardado con éxito.`);
     };
 
     // Delete a custom theme
@@ -110,15 +101,6 @@ export const SettingsModal = ({ onClose }) => {
         const updated = customThemes.filter(t => t.id !== id);
         setCustomThemes(updated);
         localStorage.setItem('jueguitos_custom_themes', JSON.stringify(updated));
-    };
-
-    // Helper to auto-fill current backdrop URL into custom theme form
-    const handleUseCurrentBg = () => {
-        if (bgValue.trim()) {
-            setNewThemeBg(bgValue.trim());
-        } else if (settings.bgValue) {
-            setNewThemeBg(settings.bgValue);
-        }
     };
 
     return (
@@ -327,25 +309,61 @@ export const SettingsModal = ({ onClose }) => {
 
                                 <AnimatePresence>
                                     {tempBgPreview && (
-                                        <motion.div 
-                                            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                                            animate={{ opacity: 1, height: '80px', marginTop: '10px' }}
-                                            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                                            style={{ 
-                                                backgroundImage: `url('${tempBgPreview}')`, 
-                                                backgroundSize: 'cover', 
-                                                backgroundPosition: 'center', 
-                                                borderRadius: '12px', 
-                                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                                position: 'relative',
-                                                overflow: 'hidden'
-                                            }}
-                                        >
-                                            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)' }} />
-                                            <span style={{ position: 'absolute', bottom: '6px', left: '10px', fontSize: '0.65rem', fontWeight: 'bold', color: '#fff', opacity: 0.7 }}>
-                                                Vista Previa
-                                            </span>
-                                        </motion.div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+                                            <motion.div 
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: '80px' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                style={{ 
+                                                    backgroundImage: `url('${tempBgPreview}')`, 
+                                                    backgroundSize: 'cover', 
+                                                    backgroundPosition: 'center', 
+                                                    borderRadius: '12px', 
+                                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                                    position: 'relative',
+                                                    overflow: 'hidden'
+                                                }}
+                                            >
+                                                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)' }} />
+                                                <span style={{ position: 'absolute', bottom: '6px', left: '10px', fontSize: '0.65rem', fontWeight: 'bold', color: '#fff', opacity: 0.7 }}>
+                                                    Vista Previa
+                                                </span>
+                                            </motion.div>
+
+                                            <motion.button
+                                                type="button"
+                                                onClick={handleSaveAsTheme}
+                                                initial={{ opacity: 0, scale: 0.98 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '10px',
+                                                    background: 'rgba(0, 243, 255, 0.08)',
+                                                    border: '1px solid rgba(0, 243, 255, 0.15)',
+                                                    borderRadius: '10px',
+                                                    color: 'var(--primary-color, #00f3ff)',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 'bold',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    gap: '6px'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background = 'rgba(0, 243, 255, 0.16)';
+                                                    e.currentTarget.style.borderColor = 'rgba(0, 243, 255, 0.3)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background = 'rgba(0, 243, 255, 0.08)';
+                                                    e.currentTarget.style.borderColor = 'rgba(0, 243, 255, 0.15)';
+                                                }}
+                                            >
+                                                <Palette size={14} />
+                                                Guardar como tema
+                                            </motion.button>
+                                        </div>
                                     )}
                                 </AnimatePresence>
                             </div>
@@ -490,9 +508,9 @@ export const SettingsModal = ({ onClose }) => {
                                     Mis Temas Guardados
                                 </span>
                                 {customThemes.length === 0 ? (
-                                    <div style={{ textAlign: 'center', padding: '16px 20px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px dashed rgba(255,255,255,0.08)' }}>
+                                    <div style={{ textAlign: 'center', padding: '24px 20px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px dashed rgba(255,255,255,0.08)' }}>
                                         <span style={{ fontSize: '0.75rem', color: '#666', fontStyle: 'italic' }}>
-                                            No tienes temas guardados aún.
+                                            No tienes temas guardados aún. Créalos desde la pestaña "General".
                                         </span>
                                     </div>
                                 ) : (
@@ -597,111 +615,6 @@ export const SettingsModal = ({ onClose }) => {
                                         })}
                                     </div>
                                 )}
-                            </div>
-
-                            {/* Create New Custom Theme */}
-                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                <span style={{ display: 'block', fontSize: '0.75rem', color: '#888', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                    Guardar Tema Personalizado
-                                </span>
-                                <form onSubmit={handleSaveCustomTheme} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    <div>
-                                        <input
-                                            type="text"
-                                            placeholder="Nombre del tema (ej: Espacio Profundo)"
-                                            value={newThemeName}
-                                            onChange={(e) => setNewThemeName(e.target.value)}
-                                            style={{
-                                                width: '100%',
-                                                padding: '10px 12px',
-                                                background: 'rgba(0,0,0,0.5)',
-                                                border: '1px solid rgba(255,255,255,0.08)',
-                                                borderRadius: '10px',
-                                                color: '#fff',
-                                                fontSize: '0.8rem',
-                                                outline: 'none',
-                                                boxSizing: 'border-box',
-                                                transition: 'border-color 0.2s'
-                                            }}
-                                            onFocus={(e) => e.target.style.borderColor = 'var(--primary-color, #00f3ff)'}
-                                            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
-                                        />
-                                    </div>
-                                    
-                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                        <input
-                                            type="text"
-                                            placeholder="Enlace de la imagen o GIF de fondo..."
-                                            value={newThemeBg}
-                                            onChange={(e) => setNewThemeBg(e.target.value)}
-                                            style={{
-                                                flexGrow: 1,
-                                                padding: '10px 12px',
-                                                background: 'rgba(0,0,0,0.5)',
-                                                border: '1px solid rgba(255,255,255,0.08)',
-                                                borderRadius: '10px',
-                                                color: '#fff',
-                                                fontSize: '0.8rem',
-                                                outline: 'none',
-                                                boxSizing: 'border-box',
-                                                transition: 'border-color 0.2s'
-                                            }}
-                                            onFocus={(e) => e.target.style.borderColor = 'var(--primary-color, #00f3ff)'}
-                                            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={handleUseCurrentBg}
-                                            style={{
-                                                padding: '10px 12px',
-                                                background: 'rgba(255,255,255,0.05)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '10px',
-                                                color: '#ccc',
-                                                fontSize: '0.75rem',
-                                                cursor: 'pointer',
-                                                whiteSpace: 'nowrap',
-                                                fontWeight: 'bold',
-                                                transition: 'all 0.2s'
-                                            }}
-                                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                                            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                                            title="Autocompletar con el fondo actual"
-                                        >
-                                            Usar actual
-                                        </button>
-                                    </div>
-
-                                    {themeError && (
-                                        <span style={{ color: '#ff453a', fontSize: '0.7rem', fontWeight: 'bold' }}>
-                                            {themeError}
-                                        </span>
-                                    )}
-
-                                    <button
-                                        type="submit"
-                                        disabled={!newThemeName.trim() || !newThemeBg.trim()}
-                                        style={{
-                                            width: '100%',
-                                            padding: '10px',
-                                            background: (!newThemeName.trim() || !newThemeBg.trim()) ? 'rgba(255,255,255,0.02)' : 'var(--primary-color, #00f3ff)',
-                                            color: (!newThemeName.trim() || !newThemeBg.trim()) ? '#555' : '#000',
-                                            border: 'none',
-                                            borderRadius: '10px',
-                                            fontWeight: 'bold',
-                                            fontSize: '0.8rem',
-                                            cursor: (!newThemeName.trim() || !newThemeBg.trim()) ? 'not-allowed' : 'pointer',
-                                            transition: 'all 0.2s',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '6px'
-                                        }}
-                                    >
-                                        <Plus size={14} />
-                                        Guardar Tema
-                                    </button>
-                                </form>
                             </div>
                         </>
                     )}

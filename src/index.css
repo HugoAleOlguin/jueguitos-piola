@@ -13,32 +13,16 @@
 @import './styles/components/buttons.css';
 @import './styles/components/tags.css';
 @import './styles/components/game-card.css';
-@import './styles/components/game-card-style-default.css';
-@import './styles/components/game-card-style-compact.css';
-@import './styles/components/game-card-style-cyber.css';
-@import './styles/components/game-card-style-rainbow.css';
 @import './styles/components/search-bar.css';
 
 /* Features */
 @import './styles/features/settings-modal.css';
 @import './styles/features/achievements.css';
-@import './styles/features/extras.css';
-@import './styles/features/gamedle.css';
-@import './styles/features/keyboard.css';
-@import './styles/features/minigames-modal.css';
 @import './styles/features/piola-chat.css';
-@import './styles/features/roulette.css';
-@import './styles/features/theme-gallery.css';
-@import './styles/features/versus.css';
 
 /* Pages */
-@import './styles/pages/admin-v3.css';
 @import './styles/pages/free-games.css';
 @import './styles/pages/game-detail.css';
-
-/* Themes */
-@import './styles/themes/lite-mode.css';
-@import './styles/themes/retro.css';
 
 /* Utils */
 @import './styles/utils/animations.css';
@@ -64,6 +48,10 @@ body {
 
 /* Header Flotante Premium — Fixed, siempre encima */
 header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px;
     max-width: 1200px;
     margin: 0 auto;
     width: calc(100% - 48px);
@@ -73,42 +61,13 @@ header {
     transform: translateX(-50%);
     z-index: 1000;
     overflow: hidden;
-    padding: 1.2px; /* Espacio para el hilo de luz del border beam */
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(10, 10, 10, 0.45) !important;
+    backdrop-filter: blur(20px) saturate(0.8) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(0.8) !important;
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.85);
     transition: box-shadow 0.3s var(--ease-smooth);
-}
-
-.header-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 13px 27px;
-    background: #080808 !important; /* Opaque background blocks center glow bleed */
-    border-radius: 15px;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 2;
-}
-
-/* Borde estático cambiado de colores */
-.header-border-static {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: conic-gradient(
-        from 0deg,
-        #00f3ff 0%,
-        #00ff88 25%,
-        var(--primary-color, #ffd700) 50%,
-        #00f3ff 75%,
-        #00ff88 100%
-    );
-    z-index: 1;
-    pointer-events: none;
 }
 
 header .logo {
@@ -173,11 +132,11 @@ header .logo {
 }
 
 .btn-gift:hover {
-    background: #fff !important;
-    border-color: #fff !important;
-    color: #000 !important;
-    transform: translateY(-1.5px);
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }
 
 .btn-gift svg {
@@ -204,11 +163,11 @@ header .logo {
 }
 
 .btn-settings:hover {
-    background: #fff !important;
-    border-color: #fff !important;
-    color: #000 !important;
-    transform: translateY(-1.5px);
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }
 
 .btn-settings svg {
@@ -231,12 +190,11 @@ header .logo {
     padding: 30px 0 60px 0;
 }
 
-/* Tarjeta Física 3D */
 .game-card {
     position: relative;
-    background: rgba(6, 6, 6, 0.88);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: rgba(10, 10, 10, 0.45) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--border-radius-md);
     overflow: hidden;
@@ -409,9 +367,9 @@ footer {
     right: 0;
     z-index: 999;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(3, 3, 3, 0.92);
-    backdrop-filter: blur(24px) saturate(0.5);
-    -webkit-backdrop-filter: blur(24px) saturate(0.5);
+    background: rgba(10, 10, 10, 0.45) !important;
+    backdrop-filter: blur(20px) saturate(0.8) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(0.8) !important;
     font-family: "Space Mono", monospace;
     text-transform: uppercase;
     letter-spacing: 1px;
