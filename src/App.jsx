@@ -9,6 +9,7 @@ import { gamesData } from './data/gamesData';
 import { useTheme } from './context/ThemeContext';
 import { SettingsModal } from './components/SettingsModal';
 import { AnimatePresence } from 'framer-motion';
+import { ChatWidget } from './components/ChatWidget';
 
 export default function App() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -152,6 +153,8 @@ export default function App() {
             <AnimatePresence>
                 {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
             </AnimatePresence>
+
+            <ChatWidget />
 
             <footer>
                 <p>&copy; 2026 Jueguitos Piola. Todos los derechos reservados.</p>

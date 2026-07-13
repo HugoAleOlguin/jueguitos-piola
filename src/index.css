@@ -17,6 +17,7 @@
 
 /* Features */
 @import './styles/features/settings-modal.css';
+@import './styles/features/chat-widget.css';
 
 /* Pages */
 @import './styles/pages/free-games.css';
