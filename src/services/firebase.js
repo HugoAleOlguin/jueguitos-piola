@@ -31,11 +31,12 @@ if (isFirebaseConfigured) {
         // Inicializar App
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         
-        // Inicializar Firestore con Caché Persistente Multi-Pestaña (Offline Support)
+        // Inicializar Firestore con Caché Persistente Multi-Pestaña (Offline Support) y forzar Long Polling para evitar problemas de CORS/bloqueo de red
         db = initializeFirestore(app, {
             localCache: persistentLocalCache({
                 tabManager: persistentMultipleTabManager()
-            })
+            }),
+            experimentalForceLongPolling: true
         });
     } catch (e) {
         console.error("Error al inicializar Firebase/Firestore persistente:", e);
