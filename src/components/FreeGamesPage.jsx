@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 // URL con sort por popularidad para mostrar lo mejor primero
 const GAMERPOWER_URL = 'https://www.gamerpower.com/api/giveaways?type=game&sort-by=popularity';
 
-const PROXIES = [
-    `https://corsproxy.io/?${encodeURIComponent(GAMERPOWER_URL)}`,
+// Fuentes de datos: Intentar llamada directa primero (GamerPower tiene CORS habilitado) y usar proxies como respaldo
+const SOURCES = [
+    GAMERPOWER_URL,
+    `https://corsproxy.io/?url=${encodeURIComponent(GAMERPOWER_URL)}`,
     `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(GAMERPOWER_URL)}`,
 ];
 
@@ -288,9 +290,9 @@ export const FreeGamesPage = ({ onBack }) => {
         setStatus('loading');
         let lastError = null;
 
-        for (const proxyUrl of PROXIES) {
+        for (const sourceUrl of SOURCES) {
             try {
-                const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
+                const res = await fetch(sourceUrl, { signal: AbortSignal.timeout(6000) });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const raw = await res.json();
                 if (!Array.isArray(raw)) { setStatus('empty'); return; }
