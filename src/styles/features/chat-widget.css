@@ -67,7 +67,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 22px;
+    padding: 14px 18px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(5, 5, 5, 0.2);
 }
@@ -80,14 +80,13 @@
 
 .chat-panel-title {
     font-family: "Space Grotesk", sans-serif;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     font-weight: 700;
     color: #fff;
     margin: 0;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
 }
-
 
 .chat-panel-close {
     background: transparent;
@@ -114,12 +113,13 @@
 
 /* Chat Message List */
 .chat-panel-messages {
+    position: relative;
     flex-grow: 1;
-    padding: 22px;
+    padding: 16px 18px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 12px;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
@@ -137,10 +137,46 @@
     border-radius: 2px;
 }
 
+/* 📅 Divisores de Fecha Contextuales (tipo WhatsApp) */
+.chat-date-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    position: relative;
+    user-select: none;
+}
+
+.chat-date-separator-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1) 20%, rgba(255, 255, 255, 0.1) 80%, transparent);
+    z-index: 1;
+}
+
+.chat-date-separator-pill {
+    position: relative;
+    z-index: 2;
+    background: rgba(18, 20, 26, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 3px 12px;
+    font-family: "Space Mono", monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
 /* Structured Messages in Bubbles */
 .chat-message-container {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: flex-start;
     width: 100%;
 }
@@ -150,8 +186,8 @@
 }
 
 .chat-message-avatar {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -168,9 +204,9 @@
 .chat-message-bubble {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    max-width: 78%;
-    padding: 10px 14px;
+    gap: 3px;
+    max-width: 80%;
+    padding: 8px 12px;
     border-radius: 4px 14px 14px 14px;
 }
 
@@ -181,16 +217,33 @@
 }
 
 .chat-message-container.chat-me .chat-message-bubble {
-    background: rgba(0, 243, 255, 0.04);
-    border: 1px solid rgba(0, 243, 255, 0.1);
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.12);
     border-radius: 14px 4px 14px 14px;
+}
+
+/* 👥 Agrupación de Mensajes Consecutivos */
+.chat-message-container.chat-message-grouped {
+    margin-top: -6px;
+}
+
+.chat-message-container.chat-message-grouped .chat-message-avatar-placeholder {
+    width: 28px;
+    height: 1px;
+    flex-shrink: 0;
+}
+
+.chat-message-container.chat-message-grouped .chat-message-bubble {
+    border-radius: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .chat-message-header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
 }
 
 .chat-message-author {
@@ -201,25 +254,162 @@
 
 .chat-message-time {
     font-size: 0.58rem;
-    color: rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.25);
+    font-family: "Space Mono", monospace;
 }
 
 .chat-message-text {
     font-family: "Space Mono", monospace;
-    font-size: 0.75rem;
+    font-size: 0.76rem;
     line-height: 1.45;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.85);
     word-break: break-word;
+}
+
+@keyframes chatMediaShimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* ⬇️ Botón Flotante de Scroll al Fondo (Nuevos Mensajes) */
+.chat-scroll-bottom-btn {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(18, 20, 26, 0.95);
+    border: 1px solid rgba(0, 243, 255, 0.35);
+    border-radius: 20px;
+    padding: 6px 14px;
+    color: #00f3ff;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 243, 255, 0.2);
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.chat-scroll-bottom-btn:hover {
+    background: rgba(0, 243, 255, 0.15);
+    border-color: #00f3ff;
+    transform: translateX(-50%) translateY(-2px);
+}
+
+.chat-scroll-bottom-btn svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 2.5;
+}
+
+/* 💡 Barra sutil de Tips Interactivos */
+.chat-tip-banner {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: "Space Mono", monospace;
+    user-select: none;
+    line-height: 1.35;
+}
+
+.chat-tip-content {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex: 1;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.chat-tip-tag {
+    color: #ffd700;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.chat-tip-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.chat-tip-next-btn,
+.chat-tip-close-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 3px 6px;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-tip-next-btn:hover,
+.chat-tip-close-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.chat-tip-close-btn:hover {
+    color: #ff4d4f;
+}
+
+.chat-panel-tips-toggle {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    color: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.chat-panel-tips-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffd700;
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+.chat-panel-tips-toggle.active {
+    color: #ffd700;
+    border-color: rgba(255, 215, 0, 0.35);
+    background: rgba(255, 215, 0, 0.08);
 }
 
 /* Chat Input Bar */
 .chat-panel-input-form {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 18px;
+    gap: 8px;
+    padding: 12px 16px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(5, 5, 5, 0.22);
+    background: rgba(5, 5, 5, 0.3);
 }
 
 .chat-panel-input {
@@ -227,7 +417,7 @@
     background: rgba(255, 255, 255, 0.03) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 12px !important;
-    padding: 11px 16px !important;
+    padding: 9px 14px !important;
     color: #fff !important;
     font-family: "Space Mono", monospace !important;
     font-size: 0.78rem !important;
@@ -245,8 +435,8 @@
     color: #fff !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 12px !important;
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -263,9 +453,70 @@
 }
 
 .chat-panel-send-btn svg {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
     fill: currentColor;
+}
+
+/* Compact AMOLED Guest Input Bar */
+.chat-panel-guest-cta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(5, 5, 8, 0.6);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.chat-panel-guest-cta:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.chat-guest-input-box {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 9px 12px;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: "Space Mono", monospace;
+    font-size: 0.74rem;
+    transition: all 0.2s ease;
+}
+
+.chat-panel-guest-cta:hover .chat-guest-input-box {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.chat-guest-input-box svg {
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.chat-guest-action-btn {
+    background: #fff !important;
+    color: #000 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 8px 14px !important;
+    font-family: "Space Grotesk", sans-serif !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 12px rgba(255, 255, 255, 0.15);
+}
+
+.chat-guest-action-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
 }
 
 /* Responsive adjustment */
@@ -275,7 +526,7 @@
         left: 16px;
         right: 16px;
         width: calc(100% - 32px);
-        height: 440px;
+        height: 460px;
     }
     
     .chat-widget-toggle {

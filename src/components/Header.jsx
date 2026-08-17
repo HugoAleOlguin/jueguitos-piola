@@ -1,7 +1,10 @@
 import React from 'react';
-// placeholder
+import { useAuth } from '../context/AuthContext';
+import { generateRandomAvatar } from './ui/AvatarSelector';
 
 export const Header = ({ searchQuery, setSearchQuery, onGoHome, showSearch, onFreeGames, onOpenSettings }) => {
+    const { isAuthenticated, userProfile, openLogin, openProfile } = useAuth();
+
     return (
         <header id="mainHeader">
             <h1 
@@ -27,6 +30,68 @@ export const Header = ({ searchQuery, setSearchQuery, onGoHome, showSearch, onFr
             )}
 
             <div className="header-right">
+                {/* Botón de Perfil / Iniciar Sesión */}
+                {isAuthenticated && userProfile ? (
+                    <button
+                        className="btn-profile-header"
+                        onClick={openProfile}
+                        title={`Mi Perfil: ${userProfile.name}`}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: `1px solid ${userProfile.nameColor || '#00f3ff'}55`,
+                            borderRadius: '30px',
+                            padding: '4px 12px 4px 6px',
+                            color: userProfile.nameColor || '#00f3ff',
+                            fontSize: '0.82rem',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            fontFamily: 'Space Grotesk, sans-serif'
+                        }}
+                    >
+                        <img 
+                            src={userProfile.avatar} 
+                            alt={userProfile.name}
+                            style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
+                            onError={(e) => {
+                                e.target.src = generateRandomAvatar(userProfile.name);
+                            }}
+                        />
+                        <span style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {userProfile.name}
+                        </span>
+                    </button>
+                ) : (
+                    <button
+                        className="btn-login-header"
+                        onClick={openLogin}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            background: 'rgba(255, 255, 255, 0.06)',
+                            border: '1px solid rgba(255, 255, 255, 0.12)',
+                            borderRadius: '18px',
+                            padding: '6px 14px',
+                            color: '#fff',
+                            fontSize: '0.78rem',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            fontFamily: 'Space Grotesk, sans-serif'
+                        }}
+                    >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Entrar</span>
+                    </button>
+                )}
+
                 <button 
                     className="btn-gift" 
                     aria-label="Ver juegos gratis"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
     collection, 
     query, 
@@ -8,41 +8,39 @@ import {
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../services/firebase';
 
+// Caché global en memoria para carga instantánea (0ms)
+let cachedMessages = [];
+let cachedUsersMap = {};
+
 /**
- * Hook optimizado para suscribirse en tiempo real a los últimos 80 mensajes del chat
- * Solo activa el listener de Firestore si el chat está abierto (isOpen === true)
- * @param {boolean} isOpen - Estado de apertura del chat widget
- * @returns {object} - { messages, loading, error }
+ * Hook optimizado para suscribirse en tiempo real a los mensajes del chat
+ * y a los perfiles actualizados de los usuarios para reflejar avatares y colores en vivo
  */
 export const useChatMessages = (isOpen) => {
-    const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(isFirebaseConfigured && isOpen);
+    const [messages, setMessages] = useState(() => cachedMessages);
+    const [usersMap, setUsersMap] = useState(() => cachedUsersMap);
+    const [loading, setLoading] = useState(() => isFirebaseConfigured && cachedMessages.length === 0);
     const [error, setError] = useState(null);
+    const isMountedRef = useRef(true);
 
     useEffect(() => {
-        // Si Firebase no está configurado, o el chat está cerrado, cancelamos cualquier escucha activa
-        if (!isFirebaseConfigured || !db || !isOpen) {
+        isMountedRef.current = true;
+        if (!isFirebaseConfigured || !db) {
             setLoading(false);
             return;
         }
 
-        setLoading(true);
-        setError(null);
-
         try {
-            // Consulta optimizada para obtener los 80 mensajes más recientes
+            // 1. Suscripción en tiempo real a los 80 mensajes más recientes
             const q = query(
                 collection(db, 'messages'),
                 orderBy('createdAt', 'desc'),
                 limit(80)
             );
 
-            // Escuchar cambios en tiempo real
-            const unsubscribe = onSnapshot(q, (snapshot) => {
+            const unsubscribeMessages = onSnapshot(q, (snapshot) => {
                 const fetchedMessages = snapshot.docs.map((doc) => {
                     const data = doc.data();
-                    
-                    // Convertir Timestamp de Firestore a Date
                     const date = data.createdAt ? data.createdAt.toDate() : new Date();
                     const timeString = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
@@ -54,27 +52,63 @@ export const useChatMessages = (isOpen) => {
                         authorName: data.authorName,
                         authorAvatar: data.authorAvatar,
                         authorColor: data.authorColor,
-                        time: timeString
+                        description: data.description,
+                        favoriteGame: data.favoriteGame,
+                        time: timeString,
+                        createdAt: date
                     };
                 });
 
-                // Invertimos el orden para mostrarlos de más antiguo a más reciente
-                setMessages(fetchedMessages.reverse());
-                setLoading(false);
+                const ordered = fetchedMessages.reverse();
+                cachedMessages = ordered;
+                if (isMountedRef.current) {
+                    setMessages(ordered);
+                    setLoading(false);
+                }
             }, (err) => {
-                console.error("Error en tiempo real de Firestore:", err);
-                setError(err);
-                setLoading(false);
+                console.error("Error en tiempo real de Firestore (messages):", err);
+                if (isMountedRef.current) {
+                    setError(err);
+                    setLoading(false);
+                }
             });
 
-            // Función de limpieza para anular suscripción al cerrar el chat o desmontar
-            return () => unsubscribe();
-        } catch (err) {
-            console.error("Error al iniciar suscripción a Firestore:", err);
-            setError(err);
-            setLoading(false);
-        }
-    }, [isOpen]); // Re-ejecutar al abrir/cerrar el chat
+            // 2. Suscripción en tiempo real a los perfiles de usuarios para actualizar fotos/colores para todos
+            const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
+                const map = {};
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    map[doc.id] = {
+                        id: doc.id,
+                        name: data.name,
+                        avatar: data.avatar,
+                        nameColor: data.nameColor,
+                        description: data.description,
+                        favoriteGame: data.favoriteGame
+                    };
+                });
 
-    return { messages, loading, error };
+                cachedUsersMap = map;
+                if (isMountedRef.current) {
+                    setUsersMap(map);
+                }
+            }, (err) => {
+                console.warn("Aviso: no se pudo sincronizar directorio de usuarios:", err);
+            });
+
+            return () => {
+                isMountedRef.current = false;
+                unsubscribeMessages();
+                unsubscribeUsers();
+            };
+        } catch (err) {
+            console.error("Error al suscribirse a Firestore:", err);
+            if (isMountedRef.current) {
+                setError(err);
+                setLoading(false);
+            }
+        }
+    }, []);
+
+    return { messages, usersMap, loading, error };
 };

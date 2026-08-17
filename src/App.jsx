@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useLayoutEffect } from 'react';
-// placeholder
 import { Header } from './components/Header';
 import { GamesGrid } from './components/GamesGrid';
 import { GameDetail } from './components/GameDetail';
@@ -8,6 +7,7 @@ import { Waves } from './components/ui/wave-background';
 import { gamesData } from './data/gamesData';
 import { useTheme } from './context/ThemeContext';
 import { SettingsModal } from './components/SettingsModal';
+import { AuthModal } from './components/AuthModal';
 import { AnimatePresence } from 'framer-motion';
 import { ChatWidget } from './components/ChatWidget';
 
@@ -102,7 +102,7 @@ export default function App() {
         return gamesData.find(g => g.id === selectedGameId) || null;
     }, [selectedGameId]);
 
-    // Restaura scroll position del catálogo al volver de forma síncrona (evita el "tp" visual)
+    // Restaura scroll position del catálogo al volver de forma síncrona
     useLayoutEffect(() => {
         if (view === 'catalog') {
             window.scrollTo(0, catalogScrollY);
@@ -154,6 +154,10 @@ export default function App() {
                 {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
             </AnimatePresence>
 
+            {/* Modal Global de Autenticación y Perfil */}
+            <AuthModal />
+
+            {/* Widget del Chat */}
             <ChatWidget />
 
             <footer>

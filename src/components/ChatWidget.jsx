@@ -2,124 +2,134 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { isFirebaseConfigured, sendChatMessage } from '../services/firebase';
 import { useChatMessages } from '../hooks/useChatMessages';
+import { useAuth } from '../context/AuthContext';
+import { generateRandomAvatar } from './ui/AvatarSelector';
+import { UserProfileViewModal } from './UserProfileViewModal';
+import { ChatMessageMedia } from './ui/ChatMessageMedia';
+import { 
+    getDateSeparatorLabel, 
+    isSameDay, 
+    shouldGroupMessage, 
+    renderFormattedText 
+} from '../utils/chatFormatters';
+
+const CHAT_TIPS = [
+    "Pega un enlace de foto o GIF para enviarlo directo.",
+    "Usa *negrita*, _cursiva_ o `código` en tu texto.",
+    "Haz clic en la foto o nombre de un usuario para ver su perfil.",
+    "Haz clic en tu apodo arriba para personalizar tu avatar y color."
+];
 
 export const ChatWidget = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messageText, setMessageText] = useState('');
-    
-    // Perfil local por defecto o leído de localStorage
-    const [userProfile, setUserProfile] = useState(() => {
+    const [tipIndex, setTipIndex] = useState(0);
+    const [selectedUserProfile, setSelectedUserProfile] = useState(null);
+    const [showTips, setShowTips] = useState(() => {
         try {
-            const stored = localStorage.getItem('piola_chat_profile');
-            if (stored) {
-                return JSON.parse(stored);
-            }
+            return localStorage.getItem('piola_chat_show_tips') !== 'false';
         } catch (e) {
-            console.error('Error al leer piola_chat_profile', e);
+            return true;
         }
-        return {
-            id: 'user_local_sketch',
-            name: 'Invitado',
-            avatar: 'https://api.dicebear.com/7.x/thumbs/svg?seed=Invitado',
-            nameColor: '#ffd700',
-            description: 'Explorando jueguitos piola.'
-        };
     });
 
-    // Suscripción a Mensajes de Firebase (solo activa si isOpen es true)
-    const { messages: dbMessages, loading: dbLoading } = useChatMessages(isOpen);
+    const toggleTips = () => {
+        setShowTips((prev) => {
+            const nextVal = !prev;
+            try {
+                localStorage.setItem('piola_chat_show_tips', String(nextVal));
+            } catch (e) {}
+            return nextVal;
+        });
+    };
+    
+    const { 
+        userProfile, 
+        isAuthenticated, 
+        openLogin, 
+        openProfile 
+    } = useAuth();
+
+    // Suscripción a Mensajes y Directorio de Usuarios en tiempo real de Firebase
+    const { messages: dbMessages, usersMap = {}, loading: dbLoading } = useChatMessages(isOpen);
 
     // Fallback: Mensajes locales para modo Demo
     const [localMessages, setLocalMessages] = useState([
         {
             id: 'm1',
-            text: '¡Buenas! ¿Alguien para jugar unas partidas hoy?',
+            text: 'Buenas. Alguien para jugar unas partidas hoy?',
             type: 'text',
             authorName: 'Carlos',
-            authorAvatar: 'https://api.dicebear.com/7.x/thumbs/svg?seed=Carlos',
+            authorAvatar: generateRandomAvatar('Carlos'),
             authorColor: '#00f3ff',
-            time: '12:30'
+            time: '12:30',
+            description: 'Jugador de estrategia y arcades.',
+            favoriteGame: 'Age of Empires, Doom',
+            createdAt: new Date(Date.now() - 3600000)
         },
         {
             id: 'm2',
-            text: '¡Esta web de juegos retro está re piola! Agregué varios a favoritos.',
+            text: 'Esta web de juegos esta excelente. Agregue varios a favoritos.',
             type: 'text',
             authorName: 'Ana',
-            authorAvatar: 'https://api.dicebear.com/7.x/thumbs/svg?seed=Ana',
-            authorColor: '#ff3b30',
-            time: '12:32'
+            authorAvatar: generateRandomAvatar('Ana'),
+            authorColor: '#ff007f',
+            time: '12:32',
+            description: 'Fan de los plataformas retro y pixel art.',
+            favoriteGame: 'Super Mario World, Celeste',
+            createdAt: new Date(Date.now() - 3400000)
         },
         {
             id: 'm3',
-            text: '¿Ya desbloquearon el logro de "Sos Re Pesado"? Jaja no dejen en paz al logo.',
+            text: 'Ya completaron la ruleta de juegos?',
             type: 'text',
             authorName: 'GamerPro',
-            authorAvatar: 'https://api.dicebear.com/7.x/thumbs/svg?seed=GamerPro',
+            authorAvatar: generateRandomAvatar('GamerPro'),
             authorColor: '#00ff88',
-            time: '12:35'
+            time: '12:35',
+            description: 'Completando todos los logros.',
+            favoriteGame: 'Half-Life, Portal',
+            createdAt: new Date(Date.now() - 3200000)
         }
     ]);
 
-    // Elegir los mensajes activos según la configuración
     const activeMessages = isFirebaseConfigured ? dbMessages : localMessages;
 
     const messagesContainerRef = useRef(null);
-    const prevIsOpen = useRef(isOpen);
-    const prevMessagesCount = useRef(activeMessages.length);
 
-    // Gestión del Scroll: Salto instantáneo al abrir, scroll suave en nuevos mensajes
+    // Rotar tips automáticamente cada 12 segundos
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTipIndex((prev) => (prev + 1) % CHAT_TIPS.length);
+        }, 12000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Función para desplazarse al fondo
+    const scrollToBottom = (behavior = 'smooth') => {
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
+                behavior
+            });
+        }
+    };
+
+    // Auto-scroll al fondo al abrir o recibir mensaje
     useEffect(() => {
         if (isOpen) {
-            const justOpened = !prevIsOpen.current;
-            const hasNewMessage = activeMessages.length > prevMessagesCount.current;
-
-            if (justOpened) {
-                // Ir instantáneamente al fondo sin animación al abrir el chat
-                if (messagesContainerRef.current) {
-                    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-                }
-                
-                // Guardar marca de último leído
-                localStorage.setItem('piola_chat_last_read', Date.now().toString());
-            } else if (hasNewMessage) {
-                // Hacer scroll suave solo cuando entra un nuevo mensaje mientras está abierto
-                if (messagesContainerRef.current) {
-                    messagesContainerRef.current.scrollTo({
-                        top: messagesContainerRef.current.scrollHeight,
-                        behavior: 'smooth'
-                    });
-                }
-            }
+            setTimeout(() => scrollToBottom('auto'), 50);
         }
-        
-        prevIsOpen.current = isOpen;
-        prevMessagesCount.current = activeMessages.length;
-    }, [isOpen, activeMessages]);
-
-    // Recargar perfil local si cambia
-    useEffect(() => {
-        const handleProfileChange = () => {
-            try {
-                const stored = localStorage.getItem('piola_chat_profile');
-                if (stored) {
-                    setUserProfile(JSON.parse(stored));
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        };
-
-        window.addEventListener('storage', handleProfileChange);
-        window.addEventListener('piola_profile_updated', handleProfileChange);
-        
-        return () => {
-            window.removeEventListener('storage', handleProfileChange);
-            window.removeEventListener('piola_profile_updated', handleProfileChange);
-        };
-    }, []);
+    }, [isOpen, activeMessages.length]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
+
+        if (!isAuthenticated) {
+            openLogin();
+            return;
+        }
+
         const trimmed = messageText.trim();
         if (!trimmed) return;
 
@@ -133,11 +143,11 @@ export const ChatWidget = () => {
         if (isFirebaseConfigured) {
             try {
                 await sendChatMessage(trimmed, userProfile);
+                scrollToBottom('smooth');
             } catch (err) {
                 console.error("Error al enviar mensaje a Firebase:", err);
             }
         } else {
-            // Lógica local fallback (Demo)
             const now = new Date();
             const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
             
@@ -149,22 +159,23 @@ export const ChatWidget = () => {
                 id: `m_local_${Date.now()}`,
                 text: trimmed,
                 type: isImageLink ? 'image' : 'text',
-                authorName: userProfile.name,
-                authorAvatar: userProfile.avatar || `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(userProfile.name)}`,
-                authorColor: userProfile.nameColor || '#ffd700',
-                time: timeString
+                authorName: userProfile?.name || 'Usuario',
+                authorAvatar: userProfile?.avatar || generateRandomAvatar('Usuario'),
+                authorColor: userProfile?.nameColor || '#00f3ff',
+                description: userProfile?.description || 'Jugador en Jueguitos Piola',
+                favoriteGame: userProfile?.favoriteGame || 'Juegos Retro',
+                time: timeString,
+                createdAt: now
             };
 
             setLocalMessages((prev) => [...prev, newMsg]);
+            scrollToBottom('smooth');
 
-            // Simular respuesta de bot
             setTimeout(() => {
                 const botReplies = [
-                    "¡Alto mensaje! Cuando esté listo Firebase, esto se sincronizará en tiempo real con todos.",
-                    "Esa es la actitud retro 🕹️",
-                    "¡Buenísima! Seguí probando los minijuegos mientras tanto.",
-                    "Jajaja de una.",
-                    "¡Qué piola!"
+                    "Mensaje recibido. Conectado con la comunidad.",
+                    "Disfruta las partidas y los minijuegos.",
+                    "Sincronizando con los servidores en vivo."
                 ];
                 const randomReply = botReplies[Math.floor(Math.random() * botReplies.length)];
                 
@@ -173,21 +184,30 @@ export const ChatWidget = () => {
                     text: randomReply,
                     type: 'text',
                     authorName: 'PiolaBot',
-                    authorAvatar: 'https://api.dicebear.com/7.x/thumbs/svg?seed=PiolaBot',
-                    authorColor: '#a855f7',
+                    authorAvatar: generateRandomAvatar('PiolaBot'),
+                    authorColor: '#ffd700',
+                    description: 'Asistente automatizado de Jueguitos Piola.',
+                    favoriteGame: 'Pac-Man, Space Invaders',
                     time: (() => {
                         const d = new Date();
                         return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-                    })()
+                    })(),
+                    createdAt: new Date()
                 };
                 setLocalMessages((prev) => [...prev, botMsg]);
-            }, 1500);
+            }, 1200);
         }
     };
 
     return (
         <>
-            {/* Botón de Chat (Toggle) */}
+            {/* Modal de Inspección de Perfil de Usuario */}
+            <UserProfileViewModal 
+                user={selectedUserProfile}
+                onClose={() => setSelectedUserProfile(null)}
+            />
+
+            {/* Botón de Chat (Toggle flotante) */}
             <button 
                 className={`chat-widget-toggle ${isOpen ? 'active' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
@@ -214,116 +234,292 @@ export const ChatWidget = () => {
                         initial={{ opacity: 0, scale: 0.96, y: 20, transformOrigin: "bottom left" }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.96, y: 20 }}
-                        transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.45 }}
+                        transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.35 }}
                     >
                         {/* Cabecera del Panel */}
                         <div className="chat-panel-header">
                             <div className="chat-panel-title-container">
                                 <h3 className="chat-panel-title">
-                                    {isFirebaseConfigured ? 'Piola Chat' : 'Piola Chat (Demo)'}
+                                    Piola Chat
                                 </h3>
                             </div>
-                            <button 
-                                className="chat-panel-close"
-                                onClick={() => setIsOpen(false)}
-                                aria-label="Cerrar chat"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
+
+                            {/* Estado del Usuario en la Cabecera */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                {isAuthenticated && userProfile ? (
+                                    <button 
+                                        type="button"
+                                        onClick={openProfile}
+                                        title="Editar mi perfil"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            background: 'rgba(255,255,255,0.06)',
+                                            border: `1px solid ${userProfile.nameColor || '#00f3ff'}55`,
+                                            borderRadius: '20px',
+                                            padding: '3px 8px 3px 4px',
+                                            color: userProfile.nameColor || '#00f3ff',
+                                            fontSize: '0.75rem',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            fontFamily: 'Space Grotesk, sans-serif'
+                                        }}
+                                    >
+                                        <img 
+                                            src={userProfile.avatar} 
+                                            alt={userProfile.name}
+                                            style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }}
+                                            onError={(e) => {
+                                                e.target.src = generateRandomAvatar(userProfile.name);
+                                            }}
+                                        />
+                                        <span style={{ maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 'bold' }}>
+                                            {userProfile.name}
+                                        </span>
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={openLogin}
+                                        style={{
+                                            background: 'rgba(255, 255, 255, 0.08)',
+                                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                                            borderRadius: '6px',
+                                            padding: '4px 10px',
+                                            color: '#fff',
+                                            fontSize: '0.72rem',
+                                            fontWeight: '700',
+                                            cursor: 'pointer',
+                                            fontFamily: 'Space Grotesk, sans-serif'
+                                        }}
+                                    >
+                                        Entrar
+                                    </button>
+                                )}
+
+                                <button 
+                                    type="button"
+                                    className={`chat-panel-tips-toggle ${showTips ? 'active' : ''}`}
+                                    onClick={toggleTips}
+                                    title={showTips ? "Ocultar consejos" : "Mostrar consejos"}
+                                    aria-label={showTips ? "Ocultar consejos" : "Mostrar consejos"}
+                                >
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill={showTips ? "#ffd700" : "none"} stroke={showTips ? "#ffd700" : "currentColor"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"></path>
+                                        <line x1="9" y1="21" x2="15" y2="21"></line>
+                                    </svg>
+                                </button>
+
+                                <button 
+                                    className="chat-panel-close"
+                                    onClick={() => setIsOpen(false)}
+                                    aria-label="Cerrar chat"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Contenedor de Mensajes */}
+                        {/* Contenedor de Mensajes con Divisores de Fecha y Agrupación */}
                         <div 
                             className="chat-panel-messages"
                             ref={messagesContainerRef}
                         >
-                            {isFirebaseConfigured && dbLoading ? (
+                            {isFirebaseConfigured && dbLoading && activeMessages.length === 0 ? (
                                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', fontFamily: 'Space Mono, monospace', fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>
                                     Cargando mensajes...
                                 </div>
                             ) : (
-                                activeMessages.map((msg) => {
-                                    const isMe = msg.authorId === userProfile.id || msg.authorName === userProfile.name;
+                                activeMessages.map((msg, index) => {
+                                    const prevMsg = index > 0 ? activeMessages[index - 1] : null;
+                                    
+                                    // 1. Determinar si hay cambio de día para insertar divisor
+                                    const isFirstMessage = index === 0;
+                                    const hasDateChanged = isFirstMessage || !isSameDay(msg.createdAt || msg.time, prevMsg?.createdAt || prevMsg?.time);
+                                    
+                                    // 2. Determinar si es un mensaje agrupado con el anterior
+                                    const isGrouped = !hasDateChanged && shouldGroupMessage(msg, prevMsg);
+
+                                    const isMe = isAuthenticated && (
+                                        (userProfile?.id && msg.authorId === userProfile.id) ||
+                                        (userProfile?.name && msg.authorName === userProfile.name)
+                                    );
+
+                                    // Perfil reactivo en tiempo real (se actualiza para todos si el autor cambia foto/color)
+                                    const liveAuthor = (isMe && userProfile) 
+                                        ? userProfile 
+                                        : (msg.authorId && usersMap[msg.authorId] ? usersMap[msg.authorId] : null);
+
+                                    const displayAvatar = liveAuthor?.avatar || msg.authorAvatar || generateRandomAvatar(msg.authorName);
+                                    const displayColor = liveAuthor?.nameColor || msg.authorColor || '#00f3ff';
+                                    const displayName = liveAuthor?.name || msg.authorName || 'Usuario';
+                                    const displayBio = liveAuthor?.description || msg.description || 'Explorando jueguitos piola.';
+                                    const displayGame = liveAuthor?.favoriteGame || msg.favoriteGame || 'Juegos Retro';
+
+                                    const profilePayload = {
+                                        ...msg,
+                                        authorName: displayName,
+                                        name: displayName,
+                                        authorAvatar: displayAvatar,
+                                        avatar: displayAvatar,
+                                        authorColor: displayColor,
+                                        nameColor: displayColor,
+                                        description: displayBio,
+                                        favoriteGame: displayGame
+                                    };
+
                                     return (
-                                        <div 
-                                            key={msg.id} 
-                                            className={`chat-message-container ${isMe ? 'chat-me' : 'chat-other'}`}
-                                        >
-                                            <div className="chat-message-avatar">
-                                                <img 
-                                                    src={msg.authorAvatar} 
-                                                    alt={`Avatar de ${msg.authorName}`} 
-                                                    loading="lazy"
-                                                />
-                                            </div>
-                                            <div className="chat-message-bubble">
-                                                <div className="chat-message-header">
-                                                    <span 
-                                                        className="chat-message-author"
-                                                        style={{ color: msg.authorColor }}
-                                                    >
-                                                        {msg.authorName}
-                                                    </span>
-                                                    <span className="chat-message-time">{msg.time}</span>
+                                        <React.Fragment key={msg.id || index}>
+                                            {/* 📅 Divisor de Fecha contextual */}
+                                            {hasDateChanged && (
+                                                <div className="chat-date-separator">
+                                                    <div className="chat-date-separator-line" />
+                                                    <div className="chat-date-separator-pill">
+                                                        {getDateSeparatorLabel(msg.createdAt || msg.time)}
+                                                    </div>
                                                 </div>
-                                                <div className="chat-message-text">
-                                                    {msg.type === 'image' ? (
+                                            )}
+
+                                            {/* 💬 Burbuja de Mensaje */}
+                                            <div className={`chat-message-container ${isMe ? 'chat-me' : 'chat-other'} ${isGrouped ? 'chat-message-grouped' : ''}`}>
+                                                {!isGrouped ? (
+                                                    <div 
+                                                        className="chat-message-avatar"
+                                                        onClick={() => setSelectedUserProfile(profilePayload)}
+                                                        title={`Ver perfil de @${displayName}`}
+                                                        style={{ cursor: 'pointer', transition: 'transform 0.15s ease' }}
+                                                    >
                                                         <img 
-                                                            src={msg.text} 
-                                                            alt="Contenido multimedia" 
-                                                            style={{ 
-                                                                maxWidth: '100%', 
-                                                                maxHeight: '220px', 
-                                                                borderRadius: '8px', 
-                                                                marginTop: '6px',
-                                                                display: 'block',
-                                                                objectFit: 'contain'
-                                                            }}
+                                                            src={displayAvatar} 
+                                                            alt={`Avatar de ${displayName}`} 
                                                             loading="lazy"
                                                             onError={(e) => {
-                                                                // Fallback si la imagen falla en cargar: mostrar enlace de texto
-                                                                e.target.style.display = 'none';
-                                                                const fallbackText = document.createElement('span');
-                                                                fallbackText.innerText = msg.text;
-                                                                fallbackText.style.wordBreak = 'break-word';
-                                                                e.target.parentNode.appendChild(fallbackText);
+                                                                e.target.src = generateRandomAvatar(displayName);
                                                             }}
                                                         />
-                                                    ) : (
-                                                        msg.text
+                                                    </div>
+                                                ) : (
+                                                    <div className="chat-message-avatar-placeholder" />
+                                                )}
+
+                                                <div className="chat-message-bubble">
+                                                    {!isGrouped && (
+                                                        <div className="chat-message-header">
+                                                            <span 
+                                                                className="chat-message-author"
+                                                                onClick={() => setSelectedUserProfile(profilePayload)}
+                                                                title={`Ver perfil de @${displayName}`}
+                                                                style={{ 
+                                                                    color: displayColor,
+                                                                    cursor: 'pointer',
+                                                                    textDecoration: 'none'
+                                                                }}
+                                                            >
+                                                                {displayName}
+                                                            </span>
+                                                            <span className="chat-message-time">{msg.time}</span>
+                                                        </div>
                                                     )}
+
+                                                    <div className="chat-message-text">
+                                                        {msg.type === 'image' ? (
+                                                            <ChatMessageMedia 
+                                                                src={msg.text} 
+                                                                alt={`Multimedia de ${displayName}`} 
+                                                                isGrouped={isGrouped} 
+                                                            />
+                                                        ) : (
+                                                            renderFormattedText(msg.text)
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </React.Fragment>
                                     );
                                 })
                             )}
                         </div>
 
-                        {/* Input de Envío */}
-                        <form className="chat-panel-input-form" onSubmit={handleSendMessage}>
-                            <input
-                                type="text"
-                                className="chat-panel-input"
-                                placeholder={isFirebaseConfigured ? "Escribe un mensaje piola..." : "Modo demo activa..."}
-                                value={messageText}
-                                onChange={(e) => setMessageText(e.target.value)}
-                                maxLength={300}
-                                aria-label="Texto del mensaje"
-                            />
-                            <button 
-                                type="submit" 
-                                className="chat-panel-send-btn"
-                                aria-label="Enviar mensaje"
+                        {/* 💡 Banner de Tips Sutiles (Ocultable / Mostrable) */}
+                        {showTips && (
+                            <div className="chat-tip-banner">
+                                <div className="chat-tip-content">
+                                    <span className="chat-tip-tag">Tip:</span>
+                                    <span>{CHAT_TIPS[tipIndex]}</span>
+                                </div>
+                                <div className="chat-tip-actions">
+                                    <button 
+                                        type="button" 
+                                        className="chat-tip-next-btn"
+                                        onClick={() => setTipIndex((prev) => (prev + 1) % CHAT_TIPS.length)}
+                                        title="Siguiente consejo"
+                                    >
+                                        ❯
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        className="chat-tip-close-btn"
+                                        onClick={toggleTips}
+                                        title="Ocultar consejos"
+                                        aria-label="Ocultar consejos"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Barra de Envío / Modo Invitado */}
+                        {!isAuthenticated ? (
+                            <div 
+                                className="chat-panel-guest-cta"
+                                onClick={openLogin}
+                                title="Haz clic para iniciar sesión o crear cuenta"
                             >
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                                </svg>
-                            </button>
-                        </form>
+                                <div className="chat-guest-input-box">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <span>Inicia sesión para escribir...</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="chat-guest-action-btn"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openLogin();
+                                    }}
+                                >
+                                    Entrar
+                                </button>
+                            </div>
+                        ) : (
+                            <form className="chat-panel-input-form" onSubmit={handleSendMessage}>
+                                <input
+                                    type="text"
+                                    className="chat-panel-input"
+                                    placeholder={`Escribe como @${userProfile?.name || 'Usuario'}...`}
+                                    value={messageText}
+                                    onChange={(e) => setMessageText(e.target.value)}
+                                    maxLength={300}
+                                    aria-label="Texto del mensaje"
+                                />
+                                <button 
+                                    type="submit" 
+                                    className="chat-panel-send-btn"
+                                    aria-label="Enviar mensaje"
+                                >
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
