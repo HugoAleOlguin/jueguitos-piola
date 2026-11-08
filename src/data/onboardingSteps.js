@@ -1,23 +1,29 @@
 export const ONBOARDING_STEPS = [
   {
     id: 1,
-    tag: 'CATALOGO',
+    targetId: 'searchBar',
+    tag: 'BUSCADOR',
     badge: '1 de 3',
-    title: 'Explora o prueba tu suerte',
-    description: 'Busca por nombre, filtra por categorias o usa la ruleta para elegir un juego al azar.'
+    title: 'Encuentra cualquier juego',
+    description: 'Escribe el titulo del juego que buscas para encontrarlo de inmediato en el catalogo.',
+    placement: 'bottom'
   },
   {
     id: 2,
-    tag: 'COMUNIDAD',
+    targetId: 'chatWidgetToggle',
+    tag: 'PIOLA CHAT',
     badge: '2 de 3',
-    title: 'Chat en tiempo real',
-    description: 'Comparte con otros jugadores, personaliza tu avatar y cambia el color de tu nombre.'
+    title: 'Comunidad en tiempo real',
+    description: 'Abre el chat para conversar con otros jugadores, ver usuarios en linea y personalizar tu perfil.',
+    placement: 'top-left'
   },
   {
     id: 3,
-    tag: 'BENEFICIOS Y AJUSTES',
+    targetId: 'onboardingOffersSettings',
+    tag: 'OFERTAS Y AJUSTES',
     badge: '3 de 3',
-    title: 'Juegos gratis y personalizacion',
-    description: 'Revisa ofertas de Steam o Epic en la seccion de Juegos Gratis y cambia el fondo animado desde Ajustes.'
+    title: 'Juegos gratis y apariencia',
+    description: 'Revisa los giveaways activos de Steam y Epic en Juegos Gratis, o cambia el fondo visual desde Ajustes.',
+    placement: 'bottom-right'
   }
 ];

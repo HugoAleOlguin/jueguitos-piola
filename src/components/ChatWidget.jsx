@@ -209,6 +209,7 @@ export const ChatWidget = () => {
 
             {/* Botón de Chat (Toggle flotante) */}
             <button 
+                id="chatWidgetToggle"
                 className={`chat-widget-toggle ${isOpen ? 'active' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Cerrar chat" : "Abrir chat"}
