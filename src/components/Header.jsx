@@ -1,16 +1,23 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { generateRandomAvatar } from './ui/AvatarSelector';
+import { useAchievements } from '../context/AchievementContext';
 
 export const Header = ({ searchQuery, setSearchQuery, onGoHome, showSearch, onFreeGames, onOpenSettings }) => {
     const { isAuthenticated, userProfile, openLogin, openProfile } = useAuth();
+    const { trackEvent } = useAchievements();
+
+    const handleLogoClick = () => {
+        trackEvent('LOGO_CLICK');
+        if (onGoHome) onGoHome();
+    };
 
     return (
         <header id="mainHeader">
             <h1 
                 className="logo" 
-                onClick={onGoHome} 
-                onKeyDown={(e) => { if (e.key === 'Enter') onGoHome(); }}
+                onClick={handleLogoClick} 
+                onKeyDown={(e) => { if (e.key === 'Enter') handleLogoClick(); }}
                 tabIndex={0}
                 role="banner"
             >

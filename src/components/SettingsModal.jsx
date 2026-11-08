@@ -35,6 +35,15 @@ export const SettingsModal = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('appearance'); // 'appearance' | 'performance' | 'general'
   const [customUrl, setCustomUrl] = useState('');
 
+  // Bloquear scroll de la pagina de atras cuando el modal esta abierto
+  React.useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
+
   const [customThemes, setCustomThemes] = useState(() => {
     try {
       const saved = localStorage.getItem('jueguitos_custom_themes');
@@ -564,6 +573,47 @@ export const SettingsModal = ({ onClose }) => {
                     }}
                   >
                     Ver guia
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '14px 16px',
+                    borderRadius: '10px',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)'
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '0.84rem', fontWeight: '600', color: '#ffffff' }}>
+                      Logros y Medallas
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: '#9ca3af', marginTop: '2px' }}>
+                      Atajo de teclado rapido: presiona la tecla L
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'l' }));
+                    }}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.12)',
+                      border: '1px solid rgba(255, 255, 255, 0.16)',
+                      color: '#ffffff',
+                      borderRadius: '8px',
+                      padding: '8px 14px',
+                      fontSize: '0.78rem',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Ver logros
                   </button>
                 </div>
 

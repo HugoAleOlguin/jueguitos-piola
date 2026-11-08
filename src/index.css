@@ -27,6 +27,9 @@
 @import './styles/utils/animations.css';
 @import './styles/utils/responsive.css';
 
+/* Temas especiales */
+@import './styles/themes/retro.css';
+
 /* ============================================================================
    JUEGUITOS PIOLA - FLUENT 3D AMOLED GALLERY STYLES
    - Contains styling rules for layout, placeholder and aria-label visual helpers.

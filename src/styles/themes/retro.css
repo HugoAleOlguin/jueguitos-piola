@@ -1,0 +1,162 @@
+/* =====================================================
+   MODO PRIME (Re-implementacion CSS en homenaje a /old)
+   Basado fielmente en old/styles.css y retro.css
+   ===================================================== */
+
+body.prime-mode {
+    --retro-grid-color: rgba(253, 190, 241, 0.2);
+    --retro-primary: #4CAF50;
+    --retro-bg: #050505;
+
+    /* Sobrescritura de variables globales */
+    --primary-color: #4CAF50 !important;
+    --accent-color: #4CAF50 !important;
+    --bg-color: #050505 !important;
+    --card-bg: rgba(20, 0, 15, 0.85) !important;
+    --text-color: #ffffff !important;
+
+    /* Fondo con cuadricula retro clasica */
+    background-color: #050505 !important;
+    background-image: 
+        linear-gradient(0deg, transparent 24%, var(--retro-grid-color) 25%, var(--retro-grid-color) 26%, transparent 27%, transparent 74%, var(--retro-grid-color) 75%, var(--retro-grid-color) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, var(--retro-grid-color) 25%, var(--retro-grid-color) 26%, transparent 27%, transparent 74%, var(--retro-grid-color) 75%, var(--retro-grid-color) 76%, transparent 77%, transparent) !important;
+    background-size: 50px 50px !important;
+    background-repeat: repeat !important;
+    background-attachment: fixed !important;
+
+    /* Tipografia de la epoca legacy */
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Header Retro */
+body.prime-mode header,
+body.prime-mode #mainHeader {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(5px) !important;
+    border: 1px solid rgba(76, 175, 80, 0.4) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 15px rgba(76, 175, 80, 0.15) !important;
+}
+
+body.prime-mode header .logo,
+body.prime-mode #mainHeader .logo {
+    color: #4CAF50 !important;
+    text-shadow: 0 0 12px rgba(76, 175, 80, 0.6) !important;
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+}
+
+body.prime-mode .search-bar input {
+    background: rgba(10, 15, 10, 0.85) !important;
+    border: 1px solid rgba(76, 175, 80, 0.5) !important;
+    color: #4CAF50 !important;
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+}
+
+body.prime-mode .search-bar input::placeholder {
+    color: rgba(76, 175, 80, 0.55) !important;
+}
+
+body.prime-mode .search-bar input:focus {
+    border-color: #4CAF50 !important;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.3) !important;
+}
+
+/* Tarjetas de juego estilo /old */
+body.prime-mode .game-card {
+    background-color: rgba(20, 0, 15, 0.88) !important;
+    border: 1px solid rgba(255, 9, 148, 0.616) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.25s ease, border-color 0.25s ease !important;
+}
+
+body.prime-mode .game-card:hover {
+    transform: scale(1.03) translateY(-2px) !important;
+    background-color: rgba(41, 2, 30, 0.95) !important;
+    border-color: rgba(255, 9, 148, 0.9) !important;
+    box-shadow: 0 8px 24px rgba(255, 9, 148, 0.25) !important;
+}
+
+body.prime-mode .game-card .card-title {
+    color: #ffffff !important;
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+    font-weight: 700 !important;
+    text-shadow: none !important;
+}
+
+body.prime-mode .game-card .card-desc {
+    color: #bbbbbb !important;
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+}
+
+body.prime-mode .game-card .tag {
+    background: rgba(76, 175, 80, 0.12) !important;
+    border-color: rgba(76, 175, 80, 0.4) !important;
+    color: #4CAF50 !important;
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* Boton de regalos y configuracion en header */
+body.prime-mode .btn-gift,
+body.prime-mode .btn-settings {
+    border-color: rgba(76, 175, 80, 0.4) !important;
+    color: #4CAF50 !important;
+}
+
+body.prime-mode .btn-gift:hover,
+body.prime-mode .btn-settings:hover {
+    background: rgba(76, 175, 80, 0.2) !important;
+    border-color: #4CAF50 !important;
+}
+
+/* Scrollbar retro con gradiente */
+body.prime-mode ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+body.prime-mode ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+}
+
+body.prime-mode ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d53369, #daae51) !important;
+    border-radius: 4px;
+}
+
+body.prime-mode ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #e84a82, #ecc36a) !important;
+}
+
+/* Badge flotante indicador del Modo Prime activo */
+.prime-mode-indicator {
+    position: fixed;
+    top: 86px;
+    right: 24px;
+    z-index: 998;
+    background: rgba(5, 10, 5, 0.92);
+    border: 1px solid #4CAF50;
+    color: #4CAF50;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(76, 175, 80, 0.25);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.prime-mode-indicator:hover {
+    background: rgba(15, 30, 15, 0.98);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(76, 175, 80, 0.4);
+}

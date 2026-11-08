@@ -11,6 +11,9 @@ import { AuthModal } from './components/AuthModal';
 import { AnimatePresence } from 'framer-motion';
 import { ChatWidget } from './components/ChatWidget';
 import { OnboardingGuide } from './components/onboarding/OnboardingGuide';
+import { AchievementsModal } from './components/AchievementsModal';
+import { AchievementToast } from './components/AchievementToast';
+import { useAchievements } from './context/AchievementContext';
 
 export default function App() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -18,8 +21,43 @@ export default function App() {
     const [view, setView] = useState('catalog'); // 'catalog' | 'detail' | 'freegames'
     const [catalogScrollY, setCatalogScrollY] = useState(0);
     const [showSettings, setShowSettings] = useState(false);
+    const [showAchievements, setShowAchievements] = useState(false);
 
-    const { settings } = useTheme();
+    const { settings, isPrimeMode, togglePrimeMode } = useTheme();
+    const { unlock, trackEvent } = useAchievements();
+
+    const handleSearch = (query) => {
+        const val = query.toLowerCase().trim();
+        if (val === 'prime') {
+            unlock('prime');
+            togglePrimeMode();
+            // Limpiar buscador a los 400ms para mostrar todos los juegos con el estilo retro
+            setTimeout(() => {
+                setSearchQuery('');
+            }, 400);
+            return;
+        }
+        setSearchQuery(query);
+    };
+
+    // Atajo de teclado: Tecla 'L' abre y cierra logros
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const tag = document.activeElement?.tagName?.toLowerCase();
+            if (tag === 'input' || tag === 'textarea' || document.activeElement?.isContentEditable) {
+                return;
+            }
+
+            if (e.key === 'l' || e.key === 'L') {
+                setShowAchievements((prev) => !prev);
+            } else if (e.key === 'Escape') {
+                setShowAchievements(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     // Enrutamiento reactivo basado en Query Params (compatible con GitHub Pages)
     useEffect(() => {
@@ -112,18 +150,30 @@ export default function App() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', color: 'var(--text-color)', position: 'relative', overflowX: 'hidden' }}>
-            {settings.disableWaves !== 'true' && (
+            {settings.disableWaves !== 'true' && !isPrimeMode && (
                 <Waves strokeColor="rgba(255, 255, 255, 0.12)" backgroundColor="transparent" pointerSize={0.4} />
             )}
             <Header
                 searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
+                setSearchQuery={handleSearch}
                 onRandomGame={handleRandomGame}
                 onGoHome={navigateToCatalog}
                 showSearch={view === 'catalog'}
                 onFreeGames={navigateToFreeGames}
                 onOpenSettings={() => setShowSettings(true)}
             />
+
+            {/* Indicador flotante cuando el Modo Prime esta activo */}
+            {isPrimeMode && (
+                <div 
+                    className="prime-mode-indicator" 
+                    onClick={togglePrimeMode}
+                    title="Haz clic para volver al diseno moderno"
+                >
+                    <span>MODO PRIME ACTIVO</span>
+                    <span style={{ fontSize: '0.65rem', color: '#a3e635' }}>[SALIR]</span>
+                </div>
+            )}
 
             <main style={{ flexGrow: 1, width: '100%', paddingTop: '90px' }}>
                 {view === 'freegames' && (
@@ -155,6 +205,15 @@ export default function App() {
                 {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
             </AnimatePresence>
 
+            {/* Vitrina de Logros (Atajo tecla L) */}
+            <AchievementsModal 
+                isOpen={showAchievements} 
+                onClose={() => setShowAchievements(false)} 
+            />
+
+            {/* Notificacion emergente de logro desbloqueado */}
+            <AchievementToast />
+
             {/* Modal Global de Autenticación y Perfil */}
             <AuthModal />
 
@@ -164,7 +223,11 @@ export default function App() {
             {/* Guia flotante de bienvenida */}
             <OnboardingGuide />
 
-            <footer>
+            <footer
+                onClick={() => trackEvent('FOOTER_CLICK')}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                title="Curioso"
+            >
                 <p>&copy; 2026 Jueguitos Piola. Todos los derechos reservados.</p>
             </footer>
         </div>

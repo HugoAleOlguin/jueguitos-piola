@@ -5,7 +5,8 @@ const ThemeContext = createContext();
 export const STORAGE_KEYS = {
     BG_TYPE: 'jueguitos_settings_bg_type',
     BG_VALUE: 'jueguitos_settings_bg_value',
-    DISABLE_WAVES: 'jueguitos_settings_disable_waves'
+    DISABLE_WAVES: 'jueguitos_settings_disable_waves',
+    PRIME_MODE: 'jueguitos_prime_mode'
 };
 
 export const DEFAULTS = {
@@ -22,6 +23,24 @@ export const ThemeProvider = ({ children }) => {
             disableWaves: localStorage.getItem(STORAGE_KEYS.DISABLE_WAVES) || DEFAULTS.DISABLE_WAVES
         };
     });
+
+    const [isPrimeMode, setIsPrimeMode] = useState(() => {
+        try {
+            return localStorage.getItem(STORAGE_KEYS.PRIME_MODE) === 'true';
+        } catch {
+            return false;
+        }
+    });
+
+    const togglePrimeMode = () => {
+        setIsPrimeMode(prev => {
+            const next = !prev;
+            try {
+                localStorage.setItem(STORAGE_KEYS.PRIME_MODE, String(next));
+            } catch {}
+            return next;
+        });
+    };
 
     // Guardar configuraciones individuales o en bloque
     const updateSettings = (newSettings) => {
@@ -63,9 +82,25 @@ export const ThemeProvider = ({ children }) => {
         };
     }, []);
 
-    // Aplicación del fondo de pantalla
+    // Aplicación del modo prime y sincronizacion de clases
     useEffect(() => {
         const body = document.body;
+        if (isPrimeMode) {
+            body.classList.add('prime-mode');
+            body.style.removeProperty('background-image');
+            body.style.removeProperty('background-size');
+            body.style.removeProperty('background-attachment');
+            body.style.removeProperty('background-position');
+        } else {
+            body.classList.remove('prime-mode');
+        }
+    }, [isPrimeMode]);
+
+    // Aplicación del fondo de pantalla personalizado
+    useEffect(() => {
+        const body = document.body;
+
+        if (isPrimeMode) return;
 
         body.style.removeProperty('background-image');
         body.style.removeProperty('background-size');
@@ -78,10 +113,10 @@ export const ThemeProvider = ({ children }) => {
             body.style.backgroundAttachment = 'fixed';
             body.style.backgroundPosition = 'center';
         }
-    }, [settings.bgType, settings.bgValue]);
+    }, [settings.bgType, settings.bgValue, isPrimeMode]);
 
     return (
-        <ThemeContext.Provider value={{ settings, updateSettings, resetSettings }}>
+        <ThemeContext.Provider value={{ settings, updateSettings, resetSettings, isPrimeMode, togglePrimeMode }}>
             {children}
         </ThemeContext.Provider>
     );
