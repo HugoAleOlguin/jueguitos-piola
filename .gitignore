@@ -10,3 +10,4 @@ build/
 .agents/
 graphify-out/
 chat-auth-implementation.md
+.worktrees/
