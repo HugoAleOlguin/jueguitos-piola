@@ -8,13 +8,14 @@ import {
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../services/firebase';
 
-// Caché global en memoria para carga instantánea (0ms)
+// Cache global en memoria para carga instantanea (0ms)
 let cachedMessages = [];
 let cachedUsersMap = {};
 
 /**
  * Hook optimizado para suscribirse en tiempo real a los mensajes del chat
- * y a los perfiles actualizados de los usuarios para reflejar avatares y colores en vivo
+ * Consume unicamente los ultimos 60 mensajes y extrae los perfiles de los autores
+ * presentes, eliminando la descarga masiva de la coleccion completa de usuarios.
  */
 export const useChatMessages = (isOpen) => {
     const [messages, setMessages] = useState(() => cachedMessages);
@@ -25,27 +26,46 @@ export const useChatMessages = (isOpen) => {
 
     useEffect(() => {
         isMountedRef.current = true;
-        if (!isFirebaseConfigured || !db) {
+        
+        // Si Firebase no esta configurado, o si el chat esta cerrado y ya tenemos cache, pausamos el listener
+        if (!isFirebaseConfigured || !db || (!isOpen && cachedMessages.length > 0)) {
             setLoading(false);
             return;
         }
 
+        let unsubscribe = () => {};
+
         try {
-            // 1. Suscripción en tiempo real a los 80 mensajes más recientes
+            // Suscripcion en tiempo real acotada a los 60 mensajes mas recientes
             const q = query(
                 collection(db, 'messages'),
                 orderBy('createdAt', 'desc'),
-                limit(80)
+                limit(60)
             );
 
-            const unsubscribeMessages = onSnapshot(q, (snapshot) => {
-                const fetchedMessages = snapshot.docs.map((doc) => {
-                    const data = doc.data();
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                const map = { ...cachedUsersMap };
+                const fetchedMessages = snapshot.docs.map((docSnap) => {
+                    const data = docSnap.data();
                     const date = data.createdAt ? data.createdAt.toDate() : new Date();
-                    const timeString = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                    const hours = date.getHours().toString().padStart(2, '0');
+                    const minutes = date.getMinutes().toString().padStart(2, '0');
+                    const timeString = `${hours}:${minutes}`;
+
+                    // Registrar perfil del autor directamente desde el mensaje sin consultar colecciones ajenas
+                    if (data.authorId && data.authorId !== 'anonymous') {
+                        map[data.authorId] = {
+                            id: data.authorId,
+                            name: data.authorName,
+                            avatar: data.authorAvatar,
+                            nameColor: data.authorColor,
+                            description: data.description,
+                            favoriteGame: data.favoriteGame
+                        };
+                    }
 
                     return {
-                        id: doc.id,
+                        id: docSnap.id,
                         text: data.text,
                         type: data.type || 'text',
                         authorId: data.authorId,
@@ -61,8 +81,11 @@ export const useChatMessages = (isOpen) => {
 
                 const ordered = fetchedMessages.reverse();
                 cachedMessages = ordered;
+                cachedUsersMap = map;
+
                 if (isMountedRef.current) {
                     setMessages(ordered);
+                    setUsersMap(map);
                     setLoading(false);
                 }
             }, (err) => {
@@ -72,43 +95,19 @@ export const useChatMessages = (isOpen) => {
                     setLoading(false);
                 }
             });
-
-            // 2. Suscripción en tiempo real a los perfiles de usuarios para actualizar fotos/colores para todos
-            const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
-                const map = {};
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    map[doc.id] = {
-                        id: doc.id,
-                        name: data.name,
-                        avatar: data.avatar,
-                        nameColor: data.nameColor,
-                        description: data.description,
-                        favoriteGame: data.favoriteGame
-                    };
-                });
-
-                cachedUsersMap = map;
-                if (isMountedRef.current) {
-                    setUsersMap(map);
-                }
-            }, (err) => {
-                console.warn("Aviso: no se pudo sincronizar directorio de usuarios:", err);
-            });
-
-            return () => {
-                isMountedRef.current = false;
-                unsubscribeMessages();
-                unsubscribeUsers();
-            };
         } catch (err) {
-            console.error("Error al suscribirse a Firestore:", err);
+            console.error("Error al inicializar suscripcion a Firestore:", err);
             if (isMountedRef.current) {
                 setError(err);
                 setLoading(false);
             }
         }
-    }, []);
+
+        return () => {
+            isMountedRef.current = false;
+            unsubscribe();
+        };
+    }, [isOpen]);
 
     return { messages, usersMap, loading, error };
 };
