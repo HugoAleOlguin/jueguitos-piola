@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Palette, Trash2, Check } from 'lucide-react';
+import { Settings, Palette, Trash2, Check, Compass } from 'lucide-react';
 
 const PRESETS = [
     {
@@ -61,6 +61,17 @@ export const SettingsModal = ({ onClose }) => {
             setTempBgPreview('');
             onClose();
         }
+    };
+
+    // Reactivate onboarding guide
+    const handleRestartGuide = () => {
+        try {
+            localStorage.removeItem('jueguitos_onboarding_guide');
+        } catch (e) {
+            console.error('Error al reiniciar guia:', e);
+        }
+        window.dispatchEvent(new CustomEvent('jueguitos_restart_onboarding'));
+        onClose();
     };
 
     // Apply a selected theme (Preset or Custom)
@@ -426,6 +437,44 @@ export const SettingsModal = ({ onClose }) => {
                                         Estático (Fijo)
                                     </button>
                                 </div>
+                            </div>
+
+                            {/* Section 3: Guia de bienvenida */}
+                            <div>
+                                <span style={{ display: 'block', fontSize: '0.75rem', color: '#888', marginBottom: '8px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    Guia interactiva
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={handleRestartGuide}
+                                    style={{
+                                        width: '100%',
+                                        padding: '11px 14px',
+                                        background: 'rgba(0, 243, 255, 0.08)',
+                                        border: '1px solid rgba(0, 243, 255, 0.2)',
+                                        borderRadius: '12px',
+                                        color: 'var(--primary-color, #00f3ff)',
+                                        fontSize: '0.82rem',
+                                        fontWeight: '600',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(0, 243, 255, 0.16)';
+                                        e.currentTarget.style.borderColor = 'rgba(0, 243, 255, 0.35)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(0, 243, 255, 0.08)';
+                                        e.currentTarget.style.borderColor = 'rgba(0, 243, 255, 0.2)';
+                                    }}
+                                >
+                                    <Compass size={15} />
+                                    Ver guia de bienvenida
+                                </button>
                             </div>
                         </>
                     ) : (

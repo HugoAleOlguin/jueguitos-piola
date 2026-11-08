@@ -10,6 +10,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { AuthModal } from './components/AuthModal';
 import { AnimatePresence } from 'framer-motion';
 import { ChatWidget } from './components/ChatWidget';
+import { OnboardingGuide } from './components/onboarding/OnboardingGuide';
 
 export default function App() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -159,6 +160,9 @@ export default function App() {
 
             {/* Widget del Chat */}
             <ChatWidget />
+
+            {/* Guia flotante de bienvenida */}
+            <OnboardingGuide />
 
             <footer>
                 <p>&copy; 2026 Jueguitos Piola. Todos los derechos reservados.</p>
