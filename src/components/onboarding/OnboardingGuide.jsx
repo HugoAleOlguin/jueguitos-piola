@@ -146,15 +146,17 @@ export const OnboardingGuide = ({ steps = ONBOARDING_STEPS }) => {
 
   // Calcular la posicion exacta de la tarjeta segun el elemento objetivo
   const getCardStyle = () => {
-    const cardWidth = 350;
+    const cardWidth = Math.min(350, window.innerWidth - 32);
     const padding = 16;
 
     if (!targetRect) {
       return {
         position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        width: `${cardWidth}px`
+        bottom: `${padding}px`,
+        right: `${padding}px`,
+        width: `${cardWidth}px`,
+        maxWidth: `calc(100vw - ${padding * 2}px)`,
+        boxSizing: 'border-box'
       };
     }
 
@@ -162,56 +164,69 @@ export const OnboardingGuide = ({ steps = ONBOARDING_STEPS }) => {
       // Posicion debajo del buscador (centrado horizontalmente con el input)
       const idealLeft = targetRect.left + (targetRect.width / 2) - (cardWidth / 2);
       const safeLeft = Math.max(padding, Math.min(idealLeft, window.innerWidth - cardWidth - padding));
+      const safeTop = Math.max(padding, Math.min(targetRect.bottom + 14, window.innerHeight - 240));
       return {
         position: 'fixed',
-        top: `${Math.round(targetRect.bottom + 14)}px`,
+        top: `${Math.round(safeTop)}px`,
         left: `${Math.round(safeLeft)}px`,
-        width: `${cardWidth}px`
+        width: `${cardWidth}px`,
+        maxWidth: `calc(100vw - ${padding * 2}px)`,
+        boxSizing: 'border-box'
       };
     }
 
-    if (step.placement === 'top-left') {
-      // Posicion arriba del boton de chat (esquina inferior derecha)
-      const safeRight = Math.max(padding, window.innerWidth - targetRect.right);
+    if (step.placement === 'top-left' || step.placement === 'chat') {
+      // Posicion arriba del boton de chat (que esta en la esquina inferior izquierda)
+      const idealLeft = targetRect.left;
+      const safeLeft = Math.max(padding, Math.min(idealLeft, window.innerWidth - cardWidth - padding));
+      const safeBottom = Math.max(padding, Math.min(window.innerHeight - targetRect.top + 14, window.innerHeight - 100));
       return {
         position: 'fixed',
-        bottom: `${Math.round(window.innerHeight - targetRect.top + 14)}px`,
-        right: `${Math.round(safeRight)}px`,
-        width: `${cardWidth}px`
+        bottom: `${Math.round(safeBottom)}px`,
+        left: `${Math.round(safeLeft)}px`,
+        width: `${cardWidth}px`,
+        maxWidth: `calc(100vw - ${padding * 2}px)`,
+        boxSizing: 'border-box'
       };
     }
 
     if (step.placement === 'bottom-right') {
-      // Posicion debajo de ofertas y configuracion (alineado a la derecha)
-      const safeRight = Math.max(padding, window.innerWidth - targetRect.right);
+      // Posicion debajo de ofertas y configuracion (alineado con el borde derecho)
+      const idealLeft = targetRect.right - cardWidth;
+      const safeLeft = Math.max(padding, Math.min(idealLeft, window.innerWidth - cardWidth - padding));
+      const safeTop = Math.max(padding, Math.min(targetRect.bottom + 14, window.innerHeight - 240));
       return {
         position: 'fixed',
-        top: `${Math.round(targetRect.bottom + 14)}px`,
-        right: `${Math.round(safeRight)}px`,
-        width: `${cardWidth}px`
+        top: `${Math.round(safeTop)}px`,
+        left: `${Math.round(safeLeft)}px`,
+        width: `${cardWidth}px`,
+        maxWidth: `calc(100vw - ${padding * 2}px)`,
+        boxSizing: 'border-box'
       };
     }
 
     return {
       position: 'fixed',
-      bottom: '24px',
-      right: '24px',
-      width: `${cardWidth}px`
+      bottom: `${padding}px`,
+      right: `${padding}px`,
+      width: `${cardWidth}px`,
+      maxWidth: `calc(100vw - ${padding * 2}px)`,
+      boxSizing: 'border-box'
     };
   };
 
   return (
     <AnimatePresence>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 9990, pointerEvents: 'none' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 9990, pointerEvents: 'none', overflow: 'hidden', width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh' }}>
         {/* Recorte del foco (Spotlight sobrio con sombra oscura expansiva) */}
         {targetRect && (
           <div
             style={{
               position: 'fixed',
-              top: `${Math.round(targetRect.top - 6)}px`,
-              left: `${Math.round(targetRect.left - 6)}px`,
-              width: `${Math.round(targetRect.width + 12)}px`,
-              height: `${Math.round(targetRect.height + 12)}px`,
+              top: `${Math.round(Math.max(0, targetRect.top - 6))}px`,
+              left: `${Math.round(Math.max(0, targetRect.left - 6))}px`,
+              width: `${Math.round(Math.min(window.innerWidth - Math.max(0, targetRect.left - 6), targetRect.width + 12))}px`,
+              height: `${Math.round(Math.min(window.innerHeight - Math.max(0, targetRect.top - 6), targetRect.height + 12))}px`,
               borderRadius: '12px',
               border: '1.5px solid rgba(255, 255, 255, 0.45)',
               boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.65)',
